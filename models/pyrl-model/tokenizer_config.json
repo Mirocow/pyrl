@@ -1,0 +1,10 @@
+{
+  "tokenizer_class": "PyrlTokenizer",
+  "bos_token": "<bos>",
+  "eos_token": "<eos>",
+  "unk_token": "<unk>",
+  "pad_token": "<pad>",
+  "mask_token": "<mask>",
+  "model_max_length": 2048,
+  "vocab_size": 1778
+}

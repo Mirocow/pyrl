@@ -208,6 +208,31 @@ generate-examples:
         python scripts/generate_examples.py || echo "Script not found"
 
 # ===========================================
+# Training
+# ===========================================
+
+train:
+        @echo "Training Pyrl model..."
+        python scripts/train_model.py --examples examples/10000_examples.pyrl
+
+train-custom:
+        @echo "Train with custom options..."
+        @echo "Usage: make train-custom EXAMPLES=path/to/examples.pyrl EPOCHS=20"
+        python scripts/train_model.py --examples $(or $(EXAMPLES),examples/10000_examples.pyrl) --epochs $(or $(EPOCHS),10)
+
+train-full:
+        @echo "Full training with all examples..."
+        python scripts/train_model.py --examples examples/10000_examples.pyrl --epochs 20 --batch-size 64
+
+train-quick:
+        @echo "Quick training for testing..."
+        python scripts/train_model.py --examples examples/10000_examples.pyrl --epochs 3 --batch-size 16
+
+train-dir:
+        @echo "Training from directory..."
+        python scripts/train_model.py --examples-dir examples/
+
+# ===========================================
 # Archive
 # ===========================================
 

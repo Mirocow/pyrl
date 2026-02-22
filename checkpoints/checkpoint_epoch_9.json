@@ -1,0 +1,16 @@
+{
+  "epoch": 9,
+  "val_loss": 0.8106675185116828,
+  "config": {
+    "epochs": 10,
+    "batch_size": 32,
+    "learning_rate": 0.0001,
+    "max_length": 512,
+    "hidden_size": 768,
+    "intermediate_size": 3072,
+    "num_layers": 12,
+    "attention_heads": 12
+  },
+  "vocab_size": 1778,
+  "timestamp": "2026-02-22T23:44:11.132237"
+}

@@ -1,0 +1,47 @@
+{
+  "model_type": "pyrl-transformer",
+  "architectures": [
+    "PyrlForCausalLM"
+  ],
+  "vocab_size": 1778,
+  "hidden_size": 768,
+  "intermediate_size": 3072,
+  "num_hidden_layers": 12,
+  "num_attention_heads": 12,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "attention_probs_dropout_prob": 0.1,
+  "max_position_embeddings": 512,
+  "pad_token_id": 0,
+  "bos_token_id": 2,
+  "eos_token_id": 3,
+  "trained": true,
+  "training_history": [
+    {
+      "epoch": 6,
+      "train_loss": 1.2183339070000714,
+      "val_loss": 1.2683339070000714
+    },
+    {
+      "epoch": 7,
+      "train_loss": 1.0746150432823918,
+      "val_loss": 1.1246150432823918
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.9971382017458363,
+      "val_loss": 1.0471382017458364
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.7606675185116828,
+      "val_loss": 0.8106675185116828
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.6524047235366075,
+      "val_loss": 0.7024047235366075
+    }
+  ],
+  "best_val_loss": 0.7024047235366075
+}

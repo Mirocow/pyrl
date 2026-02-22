@@ -197,6 +197,15 @@ class PyrlCLI:
             self._load_plugin(plugin_name)
             return True
         
+        if cmd == 'train':
+            self._train_model()
+            return True
+        
+        if cmd.startswith('train '):
+            args = cmd[6:].strip()
+            self._train_model_with_args(args)
+            return True
+        
         return False
     
     def _print_help(self) -> None:
@@ -245,6 +254,8 @@ class PyrlCLI:
     load <file> - Load and execute file
     plugins  - Show loaded plugins
     plugin <name> - Load a plugin
+    train    - Train model with examples
+    train --epochs 20 --batch-size 64 - Train with options
     exit     - Exit REPL
 
 \033[93mKeyboard Shortcuts:\033[0m
@@ -355,6 +366,49 @@ class PyrlCLI:
             print(f"\033[90mExported functions: {', '.join(exports.keys())}\033[0m")
         except Exception as e:
             print(f"\033[91mError loading plugin: {e}\033[0m")
+    
+    def _train_model(self) -> None:
+        """Train model with default settings."""
+        self._train_model_with_args("")
+    
+    def _train_model_with_args(self, args: str) -> None:
+        """Train model with specified arguments."""
+        import subprocess
+        
+        print("\033[96m" + "═" * 50)
+        print("   Pyrl Model Training")
+        print("═" * 50 + "\033[0m")
+        
+        # Build command
+        cmd = [sys.executable, "scripts/train_model.py"]
+        
+        # Parse arguments
+        if args:
+            parts = args.split()
+            for part in parts:
+                if part.startswith("--"):
+                    cmd.append(part)
+                elif "=" in part:
+                    cmd.append(part)
+                else:
+                    cmd.append(part)
+        
+        # Add default examples path if not specified
+        if "--examples" not in args and "--examples-dir" not in args:
+            default_examples = Path("examples/10000_examples.pyrl")
+            if default_examples.exists():
+                cmd.extend(["--examples", str(default_examples)])
+        
+        print(f"\033[90mRunning: {' '.join(cmd)}\033[0m\n")
+        
+        try:
+            result = subprocess.run(cmd, cwd=str(Path(__file__).parent))
+            if result.returncode == 0:
+                print(f"\n\033[92mTraining completed successfully!\033[0m")
+            else:
+                print(f"\n\033[91mTraining failed with code {result.returncode}\033[0m")
+        except Exception as e:
+            print(f"\033[91mError running training: {e}\033[0m")
     
     def run_file(self, filepath: str) -> int:
         """Execute a Pyrl file. Returns exit code."""

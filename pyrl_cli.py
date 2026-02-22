@@ -24,6 +24,7 @@ from src.core.vm import PyrlVM
 from src.core.lexer import tokenize
 from src.core.parser import parse
 from src.core.exceptions import PyrlError
+from src.core.builtins import load_builtin_plugins, get_loaded_plugins
 
 
 __version__ = "1.0.0"
@@ -36,6 +37,8 @@ class PyrlCLI:
     def __init__(self, debug: bool = False):
         self.vm = PyrlVM(debug=debug)
         self.debug = debug
+        # Load built-in plugins
+        load_builtin_plugins(self.vm.env)
     
     def run_repl(self) -> None:
         """Start interactive REPL session."""
@@ -185,6 +188,15 @@ class PyrlCLI:
             self._load_file(filepath)
             return True
         
+        if cmd == 'plugins':
+            self._print_plugins()
+            return True
+        
+        if cmd.startswith('plugin '):
+            plugin_name = cmd[7:].strip()
+            self._load_plugin(plugin_name)
+            return True
+        
         return False
     
     def _print_help(self) -> None:
@@ -231,6 +243,8 @@ class PyrlCLI:
     reset    - Reset VM state
     version  - Show version
     load <file> - Load and execute file
+    plugins  - Show loaded plugins
+    plugin <name> - Load a plugin
     exit     - Exit REPL
 
 \033[93mKeyboard Shortcuts:\033[0m
@@ -309,6 +323,38 @@ class PyrlCLI:
                 self._print_result(result)
         except Exception as e:
             print(f"\033[91mError loading file: {e}\033[0m")
+    
+    def _print_plugins(self) -> None:
+        """Print loaded plugins."""
+        plugins = get_loaded_plugins()
+        if not plugins:
+            print("\033[90mNo plugins loaded.\033[0m")
+            return
+        
+        print("\n\033[93mLoaded Plugins:\033[0m")
+        print("─" * 40)
+        
+        for plugin_name, exports in sorted(plugins.items()):
+            print(f"  \033[92m{plugin_name}\033[0m")
+            for func_name in exports.keys():
+                print(f"    └─ {func_name}")
+        print()
+    
+    def _load_plugin(self, plugin_name: str) -> None:
+        """Load a plugin by name."""
+        try:
+            from src.core.builtins import _plugin_loader
+            exports = _plugin_loader.load_plugin(plugin_name)
+            
+            # Register in VM environment
+            for name, value in exports.items():
+                full_name = f"{plugin_name}_{name}"
+                self.vm.env.define(full_name, value)
+            
+            print(f"\033[92mPlugin '{plugin_name}' loaded successfully.\033[0m")
+            print(f"\033[90mExported functions: {', '.join(exports.keys())}\033[0m")
+        except Exception as e:
+            print(f"\033[91mError loading plugin: {e}\033[0m")
     
     def run_file(self, filepath: str) -> int:
         """Execute a Pyrl file. Returns exit code."""

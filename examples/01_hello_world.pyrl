@@ -1,0 +1,15 @@
+# Hello World - Basic Pyrl Example
+# Demonstrates basic output and variable assignment
+
+# Simple print statement
+print("Hello, World!")
+
+# Variable assignment with scalar sigil
+$name = "Pyrl"
+print("Welcome to " + $name + "!")
+
+# String operations
+$greeting = "Hello"
+$target = "World"
+$message = $greeting + ", " + $target + "!"
+print($message)

@@ -1,0 +1,90 @@
+# Control Flow in Pyrl
+# Demonstrates if/else, loops, and control statements
+
+# ===========================================
+# IF/ELIF/ELSE STATEMENTS
+# ===========================================
+
+$x = 10
+
+if $x > 0:
+    print("Positive number")
+elif $x < 0:
+    print("Negative number")
+else:
+    print("Zero")
+
+# Nested conditions
+$age = 25
+$has_id = True
+
+if $age >= 18:
+    if $has_id:
+        print("Access granted")
+    else:
+        print("ID required")
+else:
+    print("Too young")
+
+# ===========================================
+# WHILE LOOPS
+# ===========================================
+
+# Basic while loop
+$count = 0
+while $count < 5:
+    print("Count: " + str($count))
+    $count = $count + 1
+
+# While with break
+$i = 0
+while True:
+    print("Iteration " + str($i))
+    $i = $i + 1
+    if $i >= 3:
+        break
+
+# ===========================================
+# FOR LOOPS
+# ===========================================
+
+# Iterate over range
+print("Range iteration:")
+for $i in range(5):
+    print($i)
+
+# Iterate over array
+@fruits = ["apple", "banana", "cherry"]
+print("Fruit iteration:")
+for $fruit in @fruits:
+    print("  - " + $fruit)
+
+# Iterate with index using enumerate
+@items = ["first", "second", "third"]
+for $pair in enumerate(@items):
+    print($pair)
+
+# Continue statement
+print("Even numbers 0-9:")
+for $n in range(10):
+    if $n % 2 != 0:
+        continue
+    print($n)
+
+# ===========================================
+# COMBINED CONTROL FLOW
+# ===========================================
+
+# Find first number divisible by 7
+@numbers = [10, 20, 35, 40, 50]
+for $num in @numbers:
+    if $num % 7 == 0:
+        print("Found: " + str($num))
+        break
+
+# Nested loops
+print("Multiplication table (partial):")
+for $i in range(1, 4):
+    for $j in range(1, 4):
+        $product = $i * $j
+        print(str($i) + " x " + str($j) + " = " + str($product))

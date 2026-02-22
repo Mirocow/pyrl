@@ -1,0 +1,78 @@
+# Variables and Data Types in Pyrl
+# Demonstrates sigil-based variable declarations
+
+# ===========================================
+# SCALAR VARIABLES ($)
+# Single values: numbers, strings, booleans
+# ===========================================
+
+# Numbers
+$integer = 42
+$float_num = 3.14159
+$negative = -100
+$scientific = 1.5e10
+
+print("Integer: " + str($integer))
+print("Float: " + str($float_num))
+
+# Strings
+$name = "Alice"
+$multiline = "Line 1\nLine 2\nLine 3"
+$escaped = "She said \"Hello\""
+
+print("Name: " + $name)
+
+# Booleans
+$is_active = True
+$is_complete = False
+
+print("Active: " + str($is_active))
+
+# None value
+$empty = None
+print("Empty: " + str($empty))
+
+# ===========================================
+# ARRAY VARIABLES (@)
+# Lists of values
+# ===========================================
+
+@numbers = [1, 2, 3, 4, 5]
+@names = ["Alice", "Bob", "Charlie"]
+@mixed = [1, "two", 3.0, True, None]
+@empty_array = []
+
+print("Numbers: " + str(@numbers))
+print("First number: " + str(@numbers[0]))
+print("Names count: " + str(len(@names)))
+
+# ===========================================
+# HASH VARIABLES (%)
+# Key-value dictionaries
+# ===========================================
+
+%person = {
+    name: "John",
+    age: 30,
+    city: "New York"
+}
+
+%config = {
+    debug: True,
+    port: 8000,
+    host: "localhost"
+}
+
+print("Person name: " + %person["name"])
+print("Person age: " + str(%person["age"]))
+
+# ===========================================
+# FUNCTION REFERENCES (&)
+# References to callable functions
+# ===========================================
+
+def greet($name):
+    return "Hello, " + $name + "!"
+
+$greeter = &greet
+print($greeter("World"))

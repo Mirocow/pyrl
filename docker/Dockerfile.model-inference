@@ -1,0 +1,38 @@
+# Pyrl Model Inference Dockerfile
+# Serves the Pyrl language model for inference
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install ML dependencies
+RUN pip install --no-cache-dir \
+    torch \
+    transformers \
+    numpy \
+    fastapi \
+    uvicorn
+
+# Copy source code
+COPY src/ ./src/
+
+# Copy models (if building with models included)
+COPY models/ ./models/
+
+# Copy inference server
+COPY pyrl_inference.py .
+
+# Environment variables
+ENV PYRL_MODELS_DIR=/app/models
+ENV PYRL_SERVER_HOST=0.0.0.0
+ENV PYRL_SERVER_PORT=8001
+
+# Expose inference port
+EXPOSE 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')" || exit 1
+
+# Run inference server
+CMD ["python", "-m", "uvicorn", "pyrl_inference:app", "--host", "0.0.0.0", "--port", "8001"]

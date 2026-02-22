@@ -1,0 +1,154 @@
+# Functions in Pyrl
+# Demonstrates function definitions, parameters, and returns
+
+# ===========================================
+# BASIC FUNCTIONS
+# ===========================================
+
+# Simple function with no parameters
+def say_hello():
+    print("Hello from Pyrl!")
+
+say_hello()
+
+# Function with parameters
+def greet($name):
+    print("Hello, " + $name + "!")
+
+greet("Alice")
+greet("Bob")
+
+# Function with return value
+def add($a, $b):
+    return $a + $b
+
+$result = add(5, 3)
+print("5 + 3 = " + str($result))
+
+# ===========================================
+# FUNCTIONS WITH MULTIPLE PARAMETERS
+# ===========================================
+
+def create_person($name, $age, $city):
+    return {
+        name: $name,
+        age: $age,
+        city: $city
+    }
+
+%person = create_person("Charlie", 25, "London")
+print("Created person: " + str(%person))
+
+# Function with calculation
+def calculate_area($width, $height):
+    $area = $width * $height
+    return $area
+
+$room_area = calculate_area(10, 12)
+print("Room area: " + str($room_area))
+
+# ===========================================
+# RECURSIVE FUNCTIONS
+# ===========================================
+
+# Factorial
+def factorial($n):
+    if $n <= 1:
+        return 1
+    return $n * factorial($n - 1)
+
+print("5! = " + str(factorial(5)))
+
+# Fibonacci
+def fibonacci($n):
+    if $n <= 1:
+        return $n
+    return fibonacci($n - 1) + fibonacci($n - 2)
+
+print("Fibonacci(10) = " + str(fibonacci(10)))
+
+# ===========================================
+# FUNCTIONS WITH CONDITIONAL LOGIC
+# ===========================================
+
+def get_grade($score):
+    if $score >= 90:
+        return "A"
+    elif $score >= 80:
+        return "B"
+    elif $score >= 70:
+        return "C"
+    elif $score >= 60:
+        return "D"
+    else:
+        return "F"
+
+@scores = [95, 82, 67, 78, 55, 91]
+for $score in @scores:
+    $grade = get_grade($score)
+    print("Score " + str($score) + " -> Grade " + $grade)
+
+# ===========================================
+# HIGHER-ORDER FUNCTIONS
+# ===========================================
+
+def apply_operation($x, $y, $operation):
+    return $operation($x, $y)
+
+def multiply($a, $b):
+    return $a * $b
+
+def subtract($a, $b):
+    return $a - $b
+
+$multiply_func = &multiply
+$subtract_func = &subtract
+
+print("Apply multiply: " + str(apply_operation(10, 5, $multiply_func)))
+print("Apply subtract: " + str(apply_operation(10, 5, $subtract_func)))
+
+# ===========================================
+# UTILITY FUNCTIONS
+# ===========================================
+
+def is_even($n):
+    return $n % 2 == 0
+
+def is_odd($n):
+    return $n % 2 != 0
+
+def abs_value($n):
+    if $n < 0:
+        return -$n
+    return $n
+
+def max_of_two($a, $b):
+    if $a > $b:
+        return $a
+    return $b
+
+print("Is 4 even? " + str(is_even(4)))
+print("Is 7 odd? " + str(is_odd(7)))
+print("abs(-15) = " + str(abs_value(-15)))
+print("max(10, 20) = " + str(max_of_two(10, 20)))
+
+# ===========================================
+# ARRAY PROCESSING FUNCTIONS
+# ===========================================
+
+def sum_array(@arr):
+    $total = 0
+    for $num in @arr:
+        $total = $total + $num
+    return $total
+
+def find_max(@arr):
+    $max_val = @arr[0]
+    for $num in @arr:
+        if $num > $max_val:
+            $max_val = $num
+    return $max_val
+
+@numbers = [3, 7, 2, 9, 1, 5]
+print("Sum: " + str(sum_array(@numbers)))
+print("Max: " + str(find_max(@numbers)))

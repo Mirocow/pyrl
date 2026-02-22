@@ -1,0 +1,174 @@
+# Arrays and Hashes in Pyrl
+# Demonstrates collection operations
+
+# ===========================================
+# ARRAY OPERATIONS
+# ===========================================
+
+# Creating arrays
+@empty = []
+@numbers = [1, 2, 3, 4, 5]
+@words = ["hello", "world", "pyrl"]
+@nested = [[1, 2], [3, 4], [5, 6]]
+
+print("Original array: " + str(@numbers))
+
+# Accessing elements
+print("First element: " + str(@numbers[0]))
+print("Last element: " + str(@numbers[4]))
+print("Array length: " + str(len(@numbers)))
+
+# Modifying arrays
+@fruits = ["apple", "banana"]
+append(@fruits, "cherry")
+print("After append: " + str(@fruits))
+
+insert(@fruits, 1, "orange")
+print("After insert: " + str(@fruits))
+
+$removed = pop(@fruits)
+print("Popped: " + $removed)
+print("After pop: " + str(@fruits))
+
+# Array iteration
+print("\nIterating over array:")
+for $item in @fruits:
+    print("  - " + $item)
+
+# ===========================================
+# ARRAY METHODS
+# ===========================================
+
+@nums = [3, 1, 4, 1, 5, 9, 2, 6]
+
+# Sorting
+@sorted_nums = sorted(@nums)
+print("Sorted: " + str(@sorted_nums))
+
+@sorted_desc = sorted(@nums, reverse=True)
+print("Sorted desc: " + str(@sorted_desc))
+
+# Reversing
+@reversed_nums = reversed(@nums)
+print("Reversed: " + str(@reversed_nums))
+
+# Finding elements
+$has_five = 5 in @nums
+print("Contains 5: " + str($has_five))
+
+# ===========================================
+# HASH OPERATIONS
+# ===========================================
+
+# Creating hashes
+%empty = {}
+%person = {
+    name: "Alice",
+    age: 30,
+    city: "New York"
+}
+%config = {
+    debug: True,
+    port: 8000,
+    workers: 4
+}
+
+print("Person hash: " + str(%person))
+
+# Accessing values
+print("Name: " + %person["name"])
+print("Age: " + str(%person["age"]))
+
+# Safe access with default
+$country = get(%person, "country", "Unknown")
+print("Country: " + $country)
+
+# Modifying hashes
+%person["email"] = "alice@example.com"
+print("After adding email: " + str(%person))
+
+%person["age"] = 31
+print("After updating age: " + str(%person))
+
+# Hash keys and values
+@keys = keys(%person)
+@values = values(%person)
+print("Keys: " + str(@keys))
+print("Values: " + str(@values))
+
+# Iterating over hash
+print("\nIterating over hash:")
+for $key in @keys:
+    $value = %person[$key]
+    print("  " + $key + ": " + str($value))
+
+# ===========================================
+# COMPLEX DATA STRUCTURES
+# ===========================================
+
+# Array of hashes
+@people = [
+    {name: "Alice", age: 30},
+    {name: "Bob", age: 25},
+    {name: "Charlie", age: 35}
+]
+
+print("\nPeople array:")
+for $person in @people:
+    print("  " + $person["name"] + " is " + str($person["age"]))
+
+# Hash with array values
+%scores = {
+    Alice: [85, 90, 88],
+    Bob: [78, 82, 80],
+    Charlie: [92, 95, 98]
+}
+
+print("\nScores:")
+for $name in keys(%scores):
+    @student_scores = %scores[$name]
+    $avg = sum(@student_scores) / len(@student_scores)
+    print("  " + $name + " average: " + str($avg))
+
+# Nested hash
+%company = {
+    name: "Tech Corp",
+    address: {
+        street: "123 Main St",
+        city: "San Francisco",
+        zip: "94102"
+    },
+    employees: 100
+}
+
+print("\nCompany city: " + %company["address"]["city"])
+
+# ===========================================
+# PRACTICAL EXAMPLES
+# ===========================================
+
+# Word frequency counter
+def word_frequency(@words):
+    %freq = {}
+    for $word in @words:
+        $current = get(%freq, $word, 0)
+        %freq[$word] = $current + 1
+    return %freq
+
+@text_words = ["the", "quick", "brown", "fox", "the", "lazy", "dog", "the"]
+%frequency = word_frequency(@text_words)
+print("\nWord frequency: " + str(%frequency))
+
+# Group by first letter
+def group_by_first_letter(@words):
+    %groups = {}
+    for $word in @words:
+        $first = lower($word[0])
+        if not %groups[$first]:
+            %groups[$first] = []
+        append(%groups[$first], $word)
+    return %groups
+
+@animals = ["Ant", "Bear", "Cat", "Ape", "Dog", "Bee"]
+%grouped = group_by_first_letter(@animals)
+print("\nGrouped animals: " + str(%grouped))

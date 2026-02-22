@@ -1,0 +1,150 @@
+"""
+Pyrl Configuration Module
+Configuration management for the Pyrl interpreter.
+"""
+import os
+from pathlib import Path
+from typing import Optional
+
+
+class Config:
+    """Configuration class for Pyrl."""
+    
+    def __init__(self, env_file: Optional[str] = None):
+        """
+        Initialize configuration.
+        
+        Args:
+            env_file: Path to .env file (optional)
+        """
+        self._load_env(env_file)
+        self._init_paths()
+    
+    def _load_env(self, env_file: Optional[str] = None) -> None:
+        """Load environment variables from .env file."""
+        if env_file:
+            env_path = Path(env_file)
+        else:
+            # Look for .env in current directory or parent directories
+            env_path = Path.cwd() / ".env"
+        
+        if env_path.exists():
+            with open(env_path, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        key, value = line.split("=", 1)
+                        key = key.strip()
+                        value = value.strip()
+                        # Remove quotes if present
+                        if value.startswith('"') and value.endswith('"'):
+                            value = value[1:-1]
+                        elif value.startswith("'") and value.endswith("'"):
+                            value = value[1:-1]
+                        os.environ.setdefault(key, value)
+    
+    def _init_paths(self) -> None:
+        """Initialize path configurations."""
+        # Project root
+        self.project_root = Path(__file__).parent.parent.parent
+        
+        # Data directory
+        self.data_dir = Path(os.getenv("PYRL_DATA_DIR", self.project_root / "data"))
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Models directory
+        self.models_dir = Path(os.getenv("PYRL_MODELS_DIR", self.project_root / "models"))
+        self.models_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Examples directory
+        self.examples_dir = Path(os.getenv("PYRL_EXAMPLES_DIR", self.project_root / "examples"))
+        self.examples_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Logs directory
+        self.logs_dir = Path(os.getenv("PYRL_LOGS_DIR", self.project_root / "logs"))
+        self.logs_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Cache directory
+        self.cache_dir = Path(os.getenv("PYRL_CACHE_DIR", self.project_root / "cache"))
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Database path
+        self.database_path = Path(os.getenv("PYRL_DATABASE_PATH", self.data_dir / "pyrl.db"))
+        
+        # Model path
+        self.model_path = self.models_dir / "pyrl-model"
+    
+    @property
+    def debug(self) -> bool:
+        """Get debug mode from environment."""
+        return os.getenv("PYRL_DEBUG", "false").lower() in ("true", "1", "yes")
+    
+    @property
+    def log_level(self) -> str:
+        """Get log level from environment."""
+        return os.getenv("PYRL_LOG_LEVEL", "INFO").upper()
+    
+    @property
+    def server_host(self) -> str:
+        """Get server host from environment."""
+        return os.getenv("PYRL_SERVER_HOST", "0.0.0.0")
+    
+    @property
+    def server_port(self) -> int:
+        """Get server port from environment."""
+        return int(os.getenv("PYRL_SERVER_PORT", "8000"))
+    
+    @property
+    def max_examples(self) -> int:
+        """Get max examples count from environment."""
+        return int(os.getenv("PYRL_MAX_EXAMPLES", "10000"))
+    
+    def get_model_config(self) -> dict:
+        """Get model configuration."""
+        config_path = self.model_path / "config.json"
+        if config_path.exists():
+            import json
+            with open(config_path, "r") as f:
+                return json.load(f)
+        return {
+            "model_type": "pyrl-transformer",
+            "vocab_size": 32000,
+            "hidden_size": 768,
+            "num_layers": 12,
+            "num_attention_heads": 12,
+        }
+    
+    def __repr__(self) -> str:
+        return (
+            f"Config("
+            f"data_dir={self.data_dir}, "
+            f"models_dir={self.models_dir}, "
+            f"debug={self.debug}"
+            f")"
+        )
+
+
+# Global config instance
+_config: Optional[Config] = None
+
+
+def get_config(env_file: Optional[str] = None) -> Config:
+    """
+    Get or create the global configuration instance.
+    
+    Args:
+        env_file: Path to .env file (optional)
+        
+    Returns:
+        Config instance
+    """
+    global _config
+    if _config is None:
+        _config = Config(env_file)
+    return _config
+
+
+def reset_config() -> None:
+    """Reset the global configuration instance."""
+    global _config
+    _config = None

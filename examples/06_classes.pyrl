@@ -1,0 +1,196 @@
+# Classes in Pyrl
+# Demonstrates object-oriented programming
+
+# ===========================================
+# BASIC CLASS DEFINITION
+# ===========================================
+
+class Person:
+    def __init__($self, $name, $age):
+        $self.name = $name
+        $self.age = $age
+    
+    def greet($self):
+        return "Hello, I'm " + $self.name
+    
+    def get_info($self):
+        return $self.name + " is " + str($self.age) + " years old"
+
+# Create instances
+$alice = Person("Alice", 30)
+$bob = Person("Bob", 25)
+
+print($alice.greet())
+print($bob.get_info())
+
+# ===========================================
+# CLASS WITH METHODS
+# ===========================================
+
+class Counter:
+    def __init__($self, $start):
+        $self.count = $start
+    
+    def increment($self):
+        $self.count = $self.count + 1
+        return $self.count
+    
+    def decrement($self):
+        $self.count = $self.count - 1
+        return $self.count
+    
+    def get($self):
+        return $self.count
+    
+    def reset($self, $value):
+        $self.count = $value
+
+$counter = Counter(0)
+print("Initial: " + str($counter.get()))
+print("After increment: " + str($counter.increment()))
+print("After increment: " + str($counter.increment()))
+print("After decrement: " + str($counter.decrement()))
+$counter.reset(100)
+print("After reset: " + str($counter.get()))
+
+# ===========================================
+# CLASS WITH CALCULATION
+# ===========================================
+
+class Rectangle:
+    def __init__($self, $width, $height):
+        $self.width = $width
+        $self.height = $height
+    
+    def area($self):
+        return $self.width * $self.height
+    
+    def perimeter($self):
+        return 2 * ($self.width + $self.height)
+    
+    def is_square($self):
+        return $self.width == $self.height
+    
+    def scale($self, $factor):
+        $self.width = $self.width * $factor
+        $self.height = $self.height * $factor
+
+$rect = Rectangle(10, 20)
+print("Area: " + str($rect.area()))
+print("Perimeter: " + str($rect.perimeter()))
+print("Is square: " + str($rect.is_square()))
+
+$square = Rectangle(5, 5)
+print("Square area: " + str($square.area()))
+print("Is square: " + str($square.is_square()))
+
+# ===========================================
+# CLASS WITH COLLECTION
+# ===========================================
+
+class ShoppingCart:
+    def __init__($self):
+        @self.items = []
+        $self.total = 0
+    
+    def add_item($self, $name, $price):
+        append(@self.items, {name: $name, price: $price})
+        $self.total = $self.total + $price
+        return $self.total
+    
+    def remove_item($self, $name):
+        @new_items = []
+        $self.total = 0
+        for $item in @self.items:
+            if $item["name"] != $name:
+                append(@new_items, $item)
+                $self.total = $self.total + $item["price"]
+        @self.items = @new_items
+    
+    def get_total($self):
+        return $self.total
+    
+    def get_item_count($self):
+        return len(@self.items)
+    
+    def list_items($self):
+        return @self.items
+
+$cart = ShoppingCart()
+$cart.add_item("Apple", 1.50)
+$cart.add_item("Banana", 0.75)
+$cart.add_item("Orange", 2.00)
+
+print("Items: " + str($cart.get_item_count()))
+print("Total: $" + str($cart.get_total()))
+
+# ===========================================
+# CLASS FOR DATA MODELING
+# ===========================================
+
+class BankAccount:
+    def __init__($self, $owner, $balance):
+        $self.owner = $owner
+        $self.balance = $balance
+    
+    def deposit($self, $amount):
+        if $amount > 0:
+            $self.balance = $self.balance + $amount
+            return True
+        return False
+    
+    def withdraw($self, $amount):
+        if $amount > 0 and $amount <= $self.balance:
+            $self.balance = $self.balance - $amount
+            return True
+        return False
+    
+    def get_balance($self):
+        return $self.balance
+    
+    def transfer($self, $other, $amount):
+        if $self.withdraw($amount):
+            $other.deposit($amount)
+            return True
+        return False
+
+$account1 = BankAccount("Alice", 1000)
+$account2 = BankAccount("Bob", 500)
+
+print("Alice balance: $" + str($account1.get_balance()))
+print("Bob balance: $" + str($account2.get_balance()))
+
+$account1.deposit(200)
+print("After deposit, Alice: $" + str($account1.get_balance()))
+
+$account1.transfer($account2, 300)
+print("After transfer, Alice: $" + str($account1.get_balance()))
+print("After transfer, Bob: $" + str($account2.get_balance()))
+
+# ===========================================
+# UTILITY CLASS
+# ===========================================
+
+class StringUtils:
+    def reverse($self, $s):
+        @chars = []
+        for $i in range(len($s) - 1, -1, -1):
+            append(@chars, $s[$i])
+        return join("", @chars)
+    
+    def is_palindrome($self, $s):
+        $reversed = $self.reverse($s)
+        return $s == $reversed
+    
+    def count_vowels($self, $s):
+        $count = 0
+        @vowels = ["a", "e", "i", "o", "u"]
+        for $char in lower($s):
+            if $char in @vowels:
+                $count = $count + 1
+        return $count
+
+$str_util = StringUtils()
+print("Reversed 'hello': " + $str_util.reverse("hello"))
+print("Is 'radar' palindrome: " + str($str_util.is_palindrome("radar")))
+print("Vowels in 'hello world': " + str($str_util.count_vowels("hello world")))

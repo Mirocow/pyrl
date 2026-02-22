@@ -1,0 +1,39 @@
+# Pyrl Examples Index
+# This file lists all available examples
+
+# ============================================
+# PYRL LANGUAGE EXAMPLES
+# ============================================
+#
+# This directory contains comprehensive examples
+# demonstrating the Pyrl programming language.
+#
+# Files:
+# -------
+#
+# 01_hello_world.pyrl    - Basic output and variables
+# 02_variables.pyrl      - Data types and sigils ($, @, %, &)
+# 03_control_flow.pyrl   - if/else, while, for loops
+# 04_functions.pyrl      - Function definitions and calls
+# 05_arrays_hashes.pyrl  - Collection operations
+# 06_classes.pyrl        - Object-oriented programming
+# 07_exceptions.pyrl     - Error handling
+# 08_builtins.pyrl       - Built-in functions reference
+# 09_algorithms.pyrl     - Common algorithms
+# 10_http_client.pyrl    - HTTP client patterns
+#
+# Quick Start:
+# ------------
+# Run a single file:
+#   python pyrl_cli.py examples/01_hello_world.pyrl
+#
+# Start interactive REPL:
+#   python pyrl_cli.py
+#
+# Execute code from string:
+#   python pyrl_cli.py -c '$x = 10; print($x)'
+#
+# ============================================
+
+print("Pyrl Examples - See files in examples/ directory")
+print("Run: python pyrl_cli.py examples/<filename>.pyrl")

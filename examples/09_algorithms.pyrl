@@ -1,0 +1,261 @@
+# Algorithms in Pyrl
+# Common algorithms implemented in Pyrl
+
+# ===========================================
+# SORTING ALGORITHMS
+# ===========================================
+
+# Bubble Sort
+def bubble_sort(@arr):
+    @result = copy(@arr)
+    $n = len(@result)
+    
+    for $i in range($n):
+        $swapped = False
+        for $j in range($n - $i - 1):
+            if @result[$j] > @result[$j + 1]:
+                $temp = @result[$j]
+                @result[$j] = @result[$j + 1]
+                @result[$j + 1] = $temp
+                $swapped = True
+        if not $swapped:
+            break
+    
+    return @result
+
+@unsorted = [64, 34, 25, 12, 22, 11, 90]
+print("Bubble sort:")
+print("  Input: " + str(@unsorted))
+print("  Output: " + str(bubble_sort(@unsorted)))
+
+# Selection Sort
+def selection_sort(@arr):
+    @result = copy(@arr)
+    $n = len(@result)
+    
+    for $i in range($n):
+        $min_idx = $i
+        for $j in range($i + 1, $n):
+            if @result[$j] < @result[$min_idx]:
+                $min_idx = $j
+        
+        $temp = @result[$i]
+        @result[$i] = @result[$min_idx]
+        @result[$min_idx] = $temp
+    
+    return @result
+
+print("\nSelection sort:")
+print("  Output: " + str(selection_sort(@unsorted)))
+
+# ===========================================
+# SEARCHING ALGORITHMS
+# ===========================================
+
+# Linear Search
+def linear_search(@arr, $target):
+    for $i in range(len(@arr)):
+        if @arr[$i] == $target:
+            return $i
+    return -1
+
+@search_data = [10, 20, 30, 40, 50]
+print("\nLinear search for 30:")
+print("  Index: " + str(linear_search(@search_data, 30)))
+
+# Binary Search (requires sorted array)
+def binary_search(@arr, $target):
+    $left = 0
+    $right = len(@arr) - 1
+    
+    while $left <= $right:
+        $mid = ($left + $right) // 2
+        
+        if @arr[$mid] == $target:
+            return $mid
+        elif @arr[$mid] < $target:
+            $left = $mid + 1
+        else:
+            $right = $mid - 1
+    
+    return -1
+
+@sorted_data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+print("\nBinary search for 7:")
+print("  Index: " + str(binary_search(@sorted_data, 7)))
+
+# ===========================================
+# RECURSIVE ALGORITHMS
+# ===========================================
+
+# Quick Sort
+def quick_sort(@arr):
+    if len(@arr) <= 1:
+        return @arr
+    
+    $pivot = @arr[len(@arr) // 2]
+    @left = []
+    @middle = []
+    @right = []
+    
+    for $x in @arr:
+        if $x < $pivot:
+            append(@left, $x)
+        elif $x == $pivot:
+            append(@middle, $x)
+        else:
+            append(@right, $x)
+    
+    @sorted_left = quick_sort(@left)
+    @sorted_right = quick_sort(@right)
+    
+    @result = []
+    extend(@result, @sorted_left)
+    extend(@result, @middle)
+    extend(@result, @sorted_right)
+    
+    return @result
+
+print("\nQuick sort:")
+@quick_test = [3, 6, 8, 10, 1, 2, 1]
+print("  Input: " + str(@quick_test))
+print("  Output: " + str(quick_sort(@quick_test)))
+
+# Merge Sort
+def merge(@left, @right):
+    @result = []
+    $i = 0
+    $j = 0
+    
+    while $i < len(@left) and $j < len(@right):
+        if @left[$i] <= @right[$j]:
+            append(@result, @left[$i])
+            $i = $i + 1
+        else:
+            append(@result, @right[$j])
+            $j = $j + 1
+    
+    while $i < len(@left):
+        append(@result, @left[$i])
+        $i = $i + 1
+    
+    while $j < len(@right):
+        append(@result, @right[$j])
+        $j = $j + 1
+    
+    return @result
+
+def merge_sort(@arr):
+    if len(@arr) <= 1:
+        return @arr
+    
+    $mid = len(@arr) // 2
+    @left = []
+    @right = []
+    
+    for $i in range($mid):
+        append(@left, @arr[$i])
+    for $i in range($mid, len(@arr)):
+        append(@right, @arr[$i])
+    
+    @sorted_left = merge_sort(@left)
+    @sorted_right = merge_sort(@right)
+    
+    return merge(@sorted_left, @sorted_right)
+
+print("\nMerge sort:")
+@merge_test = [38, 27, 43, 3, 9, 82, 10]
+print("  Input: " + str(@merge_test))
+print("  Output: " + str(merge_sort(@merge_test)))
+
+# ===========================================
+# MATHEMATICAL ALGORITHMS
+# ===========================================
+
+# GCD (Greatest Common Divisor)
+def gcd($a, $b):
+    while $b != 0:
+        $temp = $b
+        $b = $a % $b
+        $a = $temp
+    return $a
+
+print("\nGCD(48, 18) = " + str(gcd(48, 18)))
+
+# LCM (Least Common Multiple)
+def lcm($a, $b):
+    return abs($a * $b) // gcd($a, $b)
+
+print("LCM(12, 18) = " + str(lcm(12, 18)))
+
+# Prime check
+def is_prime($n):
+    if $n < 2:
+        return False
+    if $n == 2:
+        return True
+    if $n % 2 == 0:
+        return False
+    
+    $i = 3
+    while $i * $i <= $n:
+        if $n % $i == 0:
+            return False
+        $i = $i + 2
+    
+    return True
+
+print("\nPrime numbers up to 20:")
+@primes = []
+for $n in range(2, 21):
+    if is_prime($n):
+        append(@primes, $n)
+print("  " + str(@primes))
+
+# ===========================================
+# DYNAMIC PROGRAMMING
+# ===========================================
+
+# Fibonacci with memoization
+%fib_cache = {}
+
+def fib_memo($n):
+    if $n in keys(%fib_cache):
+        return %fib_cache[$n]
+    
+    if $n <= 1:
+        %fib_cache[$n] = $n
+        return $n
+    
+    $result = fib_memo($n - 1) + fib_memo($n - 2)
+    %fib_cache[$n] = $result
+    return $result
+
+print("\nFibonacci(20) = " + str(fib_memo(20)))
+
+# ===========================================
+# STRING ALGORITHMS
+# ===========================================
+
+# Palindrome check
+def is_palindrome($s):
+    $s = lower($s)
+    $reversed = ""
+    for $i in range(len($s) - 1, -1, -1):
+        $reversed = $reversed + $s[$i]
+    return $s == $reversed
+
+print("\nPalindrome check:")
+print("  'radar': " + str(is_palindrome("radar")))
+print("  'hello': " + str(is_palindrome("hello")))
+
+# Count character frequency
+def char_frequency($s):
+    %freq = {}
+    for $char in $s:
+        $current = get(%freq, $char, 0)
+        %freq[$char] = $current + 1
+    return %freq
+
+print("\nCharacter frequency of 'hello world':")
+print("  " + str(char_frequency("hello world")))

@@ -1,0 +1,35 @@
+# Pyrl Console/CLI Dockerfile
+# Interactive REPL environment
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies for better terminal experience
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    readline-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install additional CLI dependencies
+RUN pip install --no-cache-dir \
+    prompt-toolkit \
+    pygments
+
+# Copy application code
+COPY src/ ./src/
+COPY pyrl_cli.py .
+COPY .env .
+
+# Create examples directory
+RUN mkdir -p /app/examples
+
+# Make CLI executable
+RUN chmod +x pyrl_cli.py
+
+# Set up entry point
+ENTRYPOINT ["python", "pyrl_cli.py"]
+CMD []

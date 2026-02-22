@@ -1,0 +1,155 @@
+# Pyrl Docker Compose
+# Multi-service configuration for Pyrl language platform
+
+version: '3.8'
+
+services:
+  # Main API Server
+  server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.server
+    container_name: pyrl-server
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../data:/app/data
+      - ../logs:/app/logs
+      - ../models:/app/models
+    environment:
+      - PYRL_DEBUG=${PYRL_DEBUG:-false}
+      - PYRL_SERVER_HOST=0.0.0.0
+      - PYRL_SERVER_PORT=8000
+      - PYRL_DATA_DIR=/app/data
+      - PYRL_MODELS_DIR=/app/models
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - pyrl-network
+
+  # Interactive Console
+  console:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.console
+    container_name: pyrl-console
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../examples:/app/examples
+      - console-history:/root/.pyrl
+    environment:
+      - PYRL_DEBUG=${PYRL_DEBUG:-false}
+    depends_on:
+      - server
+    networks:
+      - pyrl-network
+
+  # Model Generator
+  model-generator:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.model-generator
+    container_name: pyrl-model-generator
+    volumes:
+      - ../models:/models
+      - ../scripts:/app/scripts
+    environment:
+      - PYRL_MODELS_DIR=/models
+    profiles:
+      - training
+
+  # Model Inference Server
+  model-inference:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.model-inference
+    container_name: pyrl-model-inference
+    ports:
+      - "8001:8001"
+    volumes:
+      - ../models:/app/models:ro
+    environment:
+      - PYRL_SERVER_PORT=8001
+      - PYRL_MODELS_DIR=/app/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    profiles:
+      - inference
+    networks:
+      - pyrl-network
+
+  # Training Service
+  training:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.training
+    container_name: pyrl-training
+    volumes:
+      - ../examples:/app/examples
+      - ../scripts:/app/scripts
+      - training-checkpoints:/app/checkpoints
+      - training-logs:/app/logs
+      - training-output:/app/output
+    environment:
+      - PYRL_DATA_DIR=/app/examples
+      - PYRL_MODELS_DIR=/app/output
+      - WANDB_API_KEY=${WANDB_API_KEY:-}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    profiles:
+      - training
+    networks:
+      - pyrl-network
+
+  # Development Environment
+  dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: pyrl-dev
+    ports:
+      - "8000:8000"
+      - "8888:8888"
+    volumes:
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../scripts:/app/scripts
+      - ../examples:/app/examples
+      - ../data:/app/data
+      - ../logs:/app/logs
+      - ../models:/app/models
+    environment:
+      - PYRL_DEBUG=true
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    profiles:
+      - dev
+    networks:
+      - pyrl-network
+
+networks:
+  pyrl-network:
+    driver: bridge
+
+volumes:
+  console-history:
+  training-checkpoints:
+  training-logs:
+  training-output:

@@ -1,0 +1,193 @@
+# Built-in Functions in Pyrl
+# Demonstrates available built-in functions
+
+# ===========================================
+# TYPE FUNCTIONS
+# ===========================================
+
+print("=== TYPE FUNCTIONS ===")
+
+# type() - get type of value
+print("type(42) = " + type(42))
+print("type('hello') = " + type("hello"))
+print("type([1,2,3]) = " + type([1, 2, 3]))
+
+# Type conversion functions
+$x = int("42")
+print("int('42') = " + str($x))
+
+$y = float("3.14")
+print("float('3.14') = " + str($y))
+
+$z = str(123)
+print("str(123) = " + $z)
+
+$b = bool(1)
+print("bool(1) = " + str($b))
+
+# ===========================================
+# MATH FUNCTIONS
+# ===========================================
+
+print("\n=== MATH FUNCTIONS ===")
+
+# Basic math
+print("abs(-15) = " + str(abs(-15)))
+print("round(3.7) = " + str(round(3.7)))
+print("round(3.14159, 2) = " + str(round(3.14159, 2)))
+
+# Min/Max
+print("min(5, 3, 8, 1) = " + str(min(5, 3, 8, 1)))
+print("max(5, 3, 8, 1) = " + str(max(5, 3, 8, 1)))
+
+@nums = [10, 20, 30, 40, 50]
+print("sum([10,20,30,40,50]) = " + str(sum(@nums)))
+
+# Power
+print("pow(2, 8) = " + str(pow(2, 8)))
+print("2 ** 10 = " + str(2 ** 10))
+
+# Square root
+print("sqrt(16) = " + str(sqrt(16)))
+
+# Trigonometry
+print("sin(0) = " + str(sin(0)))
+print("cos(0) = " + str(cos(0)))
+
+# Floor and ceil
+print("floor(3.9) = " + str(floor(3.9)))
+print("ceil(3.1) = " + str(ceil(3.1)))
+
+# ===========================================
+# STRING FUNCTIONS
+# ===========================================
+
+print("\n=== STRING FUNCTIONS ===")
+
+$s = "Hello World"
+
+print("lower('Hello World') = " + lower($s))
+print("upper('Hello World') = " + upper($s))
+print("len('Hello World') = " + str(len($s)))
+
+# Strip
+$padded = "  spaces  "
+print("strip('  spaces  ') = '" + strip($padded) + "'")
+
+# Split and join
+@parts = split("a,b,c", ",")
+print("split('a,b,c', ',') = " + str(@parts))
+
+$joined = join("-", @parts)
+print("join('-', parts) = " + $joined)
+
+# Find and replace
+$text = "Hello World World"
+print("find('Hello World World', 'World') = " + str(find($text, "World")))
+print("replace('Hello World', 'World', 'Pyrl') = " + replace($text, "World", "Pyrl"))
+
+# ===========================================
+# ARRAY FUNCTIONS
+# ===========================================
+
+print("\n=== ARRAY FUNCTIONS ===")
+
+@arr = [3, 1, 4, 1, 5, 9, 2, 6]
+
+print("len([3,1,4,1,5,9,2,6]) = " + str(len(@arr)))
+print("sorted(array) = " + str(sorted(@arr)))
+print("reversed(array) = " + str(reversed(@arr)))
+
+# Append and extend
+@list = [1, 2, 3]
+append(@list, 4)
+print("After append: " + str(@list))
+
+extend(@list, [5, 6])
+print("After extend: " + str(@list))
+
+# Insert and remove
+insert(@list, 0, 0)
+print("After insert(0, 0): " + str(@list))
+
+remove(@list, 0)
+print("After remove(0): " + str(@list))
+
+# Pop
+$popped = pop(@list)
+print("Popped: " + str($popped))
+print("After pop: " + str(@list))
+
+# Count and index
+@dupes = [1, 2, 3, 2, 2, 4]
+print("count([1,2,3,2,2,4], 2) = " + str(count(@dupes, 2)))
+
+# ===========================================
+# DICT FUNCTIONS
+# ===========================================
+
+print("\n=== DICT FUNCTIONS ===")
+
+%person = {name: "Alice", age: 30, city: "NYC"}
+
+print("keys(person) = " + str(keys(%person)))
+print("values(person) = " + str(values(%person)))
+print("items(person) = " + str(items(%person)))
+print("get(person, 'name') = " + get(%person, "name"))
+print("get(person, 'email', 'N/A') = " + get(%person, "email", "N/A"))
+
+# ===========================================
+# UTILITY FUNCTIONS
+# ===========================================
+
+print("\n=== UTILITY FUNCTIONS ===")
+
+# Range
+@range_list = range(5)
+print("range(5) = " + str(@range_list))
+
+@range_step = range(0, 10, 2)
+print("range(0, 10, 2) = " + str(@range_step))
+
+# Enumerate
+@items = ["a", "b", "c"]
+print("enumerate(['a','b','c']) = " + str(enumerate(@items)))
+
+# Zip
+@names = ["Alice", "Bob", "Charlie"]
+@ages = [25, 30, 35]
+print("zip(names, ages) = " + str(zip(@names, @ages)))
+
+# Any and all
+@bools = [True, True, False]
+print("any([True, True, False]) = " + str(any(@bools)))
+print("all([True, True, False]) = " + str(all(@bools)))
+
+# ===========================================
+# RANDOM FUNCTIONS
+# ===========================================
+
+print("\n=== RANDOM FUNCTIONS ===")
+
+seed(42)
+print("random() = " + str(random()))
+print("randint(1, 100) = " + str(randint(1, 100)))
+
+@choices = ["rock", "paper", "scissors"]
+print("choice(['rock','paper','scissors']) = " + choice(@choices))
+
+@shuffle_test = [1, 2, 3, 4, 5]
+shuffle(@shuffle_test)
+print("shuffled = " + str(@shuffle_test))
+
+# ===========================================
+# CONSTANTS
+# ===========================================
+
+print("\n=== CONSTANTS ===")
+
+print("PI = " + str(PI))
+print("E = " + str(E))
+print("True = " + str(True))
+print("False = " + str(False))
+print("None = " + str(None))

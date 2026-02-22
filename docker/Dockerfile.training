@@ -1,0 +1,45 @@
+# Pyrl Training Dockerfile
+# Training environment for Pyrl language model
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies for ML
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install ML and training dependencies
+RUN pip install --no-cache-dir \
+    torch \
+    transformers \
+    datasets \
+    accelerate \
+    wandb \
+    tensorboard \
+    numpy \
+    pandas
+
+# Copy source code
+COPY src/ ./src/
+
+# Copy training scripts
+COPY scripts/ ./scripts/
+
+# Copy examples for training data
+COPY examples/ ./examples/
+
+# Create directories for outputs
+RUN mkdir -p /app/checkpoints /app/logs /app/output
+
+# Environment variables
+ENV PYRL_DATA_DIR=/app/examples
+ENV PYRL_MODELS_DIR=/app/output
+
+# Volumes for persistence
+VOLUME ["/app/checkpoints", "/app/logs", "/app/output"]
+
+# Default training command
+CMD ["python", "scripts/train_model.py"]

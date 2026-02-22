@@ -1,0 +1,66 @@
+# Pyrl Development Dockerfile
+# Full development environment with all tools
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    vim \
+    nano \
+    curl \
+    htop \
+    tree \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install all Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install development dependencies
+RUN pip install --no-cache-dir \
+    ipython \
+    jupyter \
+    jupyterlab \
+    notebook \
+    pytest \
+    pytest-cov \
+    pytest-asyncio \
+    black \
+    isort \
+    flake8 \
+    pylint \
+    mypy \
+    pre-commit \
+    prompt-toolkit \
+    pygments
+
+# Copy application code
+COPY src/ ./src/
+COPY tests/ ./tests/
+COPY scripts/ ./scripts/
+COPY examples/ ./examples/
+COPY pyrl_server.py .
+COPY pyrl_cli.py .
+COPY .env .
+
+# Create necessary directories
+RUN mkdir -p /app/data /app/logs /app/models /app/checkpoints
+
+# Set up git for development
+RUN git config --global --add safe.directory /app
+
+# Environment variables
+ENV PYRL_DEBUG=true
+ENV PYTHONUNBUFFERED=1
+
+# Expose ports
+# 8000 - API server
+# 8888 - Jupyter
+# 3000 - Any frontend
+EXPOSE 8000 8888 3000
+
+# Default to bash shell
+CMD ["bash"]

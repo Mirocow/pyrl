@@ -1,0 +1,31 @@
+# Pyrl Model Generator Dockerfile
+# Generates model files for Pyrl language model
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install ML dependencies
+RUN pip install --no-cache-dir \
+    torch \
+    transformers \
+    numpy \
+    accelerate
+
+# Copy source code
+COPY src/ ./src/
+
+# Copy scripts
+COPY scripts/ ./scripts/
+
+# Create models output directory
+RUN mkdir -p /models
+
+# Set environment variables
+ENV PYRL_MODELS_DIR=/models
+
+# Volume for output models
+VOLUME ["/models"]
+
+# Run model generation
+CMD ["python", "scripts/generate_model.py"]

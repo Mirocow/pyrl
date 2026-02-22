@@ -19,9 +19,10 @@
 10. [Classes and Objects](#classes-and-objects)
 11. [Built-in Functions](#built-in-functions)
 12. [Plugin System](#plugin-system)
-13. [API Server](#api-server)
-14. [Docker](#docker)
-15. [Examples](#examples)
+13. [Model Training](#model-training)
+14. [API Server](#api-server)
+15. [Docker](#docker)
+16. [Examples](#examples)
 
 ---
 
@@ -37,6 +38,7 @@ Pyrl is a hybrid programming language inspired by Python and Perl. It combines t
 - **Rich Standard Library**: Math, strings, lists, hashes
 - **Plugin System**: Extensible architecture
 - **HTTP/JSON**: Built-in web request support
+- **Model Training**: Train models on Pyrl code examples
 
 ---
 
@@ -145,7 +147,7 @@ if True:
 
 # Incorrect (mixed indentation)
 if True:
-	print("Tab")
+        print("Tab")
     print("Spaces")  # Error!
 ```
 
@@ -567,6 +569,123 @@ python pyrl_cli.py
 
 ---
 
+## Model Training
+
+Pyrl includes a language model training system that learns from code examples. The model learns Pyrl syntax and patterns.
+
+### Model Structure
+
+```
+models/pyrl-model/
+├── config.json           # Model configuration (768 hidden, 12 layers)
+├── pytorch_model.bin     # Model weights
+├── vocab.json           # Token vocabulary (1778 tokens)
+├── tokenizer_config.json # Tokenizer configuration
+├── special_tokens_map.json
+└── training_stats.json  # Training statistics
+```
+
+### Training via CLI
+
+In the interactive REPL:
+
+```
+pyrl> train                          # Train with default settings
+pyrl> train --epochs 20 --batch-size 64
+pyrl> train --examples path/to/examples.pyrl
+```
+
+### Training via Makefile
+
+```bash
+make train          # Train model (10 epochs)
+make train-full     # Full training (20 epochs, batch 64)
+make train-quick    # Quick training (3 epochs)
+make train-custom EXAMPLES=path EPOCHS=20
+```
+
+### Training via Script
+
+```bash
+# Basic training
+python scripts/train_model.py --examples examples/10000_examples.pyrl
+
+# With parameters
+python scripts/train_model.py \
+    --examples examples/10000_examples.pyrl \
+    --epochs 20 \
+    --batch-size 64 \
+    --learning-rate 0.0001 \
+    --hidden-size 768 \
+    --layers 12
+
+# From examples directory
+python scripts/train_model.py --examples-dir examples/
+```
+
+### Training Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `--examples` | - | Path to examples file |
+| `--examples-dir` | - | Path to examples directory |
+| `--output` | models/pyrl-model | Output model directory |
+| `--epochs` | 10 | Number of training epochs |
+| `--batch-size` | 32 | Batch size |
+| `--learning-rate` | 0.0001 | Learning rate |
+| `--max-length` | 512 | Maximum sequence length |
+| `--hidden-size` | 768 | Hidden layer size |
+| `--layers` | 12 | Number of transformer layers |
+| `--heads` | 12 | Number of attention heads |
+
+### Pyrl Tokenizer
+
+Pyrl uses a specialized tokenizer with support for:
+
+**Special Tokens:**
+- `<pad>`, `<unk>`, `<bos>`, `<eos>`, `<mask>`
+- `<newline>`, `<indent>`, `<dedent>`
+
+**Sigils:**
+- `$` (scalar), `@` (array), `%` (hash), `&` (function)
+
+**Keywords:**
+- `if`, `elif`, `else`, `while`, `for`, `in`, `def`, `return`, `class`, `lambda`, etc.
+
+**Operators:**
+- `+`, `-`, `*`, `/`, `**`, `//`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `=`, etc.
+
+**Built-in Functions:**
+- `print`, `len`, `range`, `str`, `int`, `float`, `list`, `dict`, etc.
+
+### Training Results
+
+| Metric | Value |
+|--------|-------|
+| Examples | 334 |
+| Tokens | 13,898 |
+| Vocabulary | 1,778 |
+| Val Loss | 0.70 |
+
+### Checkpoints
+
+During training, checkpoints are saved:
+
+```
+checkpoints/
+├── checkpoint_epoch_1.json
+├── checkpoint_epoch_2.json
+└── ...
+```
+
+Each checkpoint contains:
+- Epoch number
+- Validation loss
+- Vocabulary size
+- Timestamp
+
+---
+
 ## API Server
 
 ### Starting the Server
@@ -590,7 +709,10 @@ uvicorn pyrl_server:app --host 0.0.0.0 --port 8000
 | POST | `/parse` | Parse to AST |
 | POST | `/reset` | Reset VM |
 | GET | `/variables` | Get variables |
+| GET | `/plugins` | Loaded plugins |
+| POST | `/plugins/load` | Load a plugin |
 | GET | `/config` | Configuration |
+| GET | `/stats` | Server statistics |
 
 ### Request Examples
 

@@ -1,0 +1,10 @@
+{
+    "name": "math_extended",
+    "version": "1.0.0",
+    "description": "Extended mathematical functions for Pyrl",
+    "author": "Pyrl Ecosystem Team",
+    "main": "plugin.py",
+    "dependencies": [],
+    "hooks": ["before_execute"],
+    "functions": ["sqrt", "pow", "log", "sin", "cos", "tan", "pi", "e", "floor", "ceil"]
+}

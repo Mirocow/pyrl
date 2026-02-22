@@ -1,0 +1,33 @@
+# Pyrl Ecosystem Dependencies
+
+# Core interpreter
+lark>=1.1.9
+
+# HTTP server support
+aiohttp>=3.9.0
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.0.0
+
+# ML Training (optional)
+torch>=2.0.0
+transformers>=4.35.0
+datasets>=2.14.0
+accelerate>=0.24.0
+peft>=0.7.0
+bitsandbytes>=0.41.0
+trl>=0.7.0
+tensorboard>=2.15.0
+
+# Development tools
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.1.0
+mypy>=1.6.0
+jupyter>=1.0.0
+
+# Documentation
+sphinx>=7.2.0
+sphinx-rtd-theme>=2.0.0
+myst-parser>=2.0.0

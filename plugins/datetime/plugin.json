@@ -1,0 +1,10 @@
+{
+    "name": "datetime",
+    "version": "1.0.0",
+    "description": "Date and time manipulation functions",
+    "author": "Pyrl Ecosystem Team",
+    "main": "plugin.py",
+    "dependencies": [],
+    "hooks": [],
+    "functions": ["now", "today", "format_date", "parse_date", "date_add", "date_diff", "timestamp", "strftime"]
+}

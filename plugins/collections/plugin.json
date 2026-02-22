@@ -1,0 +1,10 @@
+{
+    "name": "collections",
+    "version": "1.0.0",
+    "description": "Advanced collection manipulation functions",
+    "author": "Pyrl Ecosystem Team",
+    "main": "plugin.py",
+    "dependencies": [],
+    "hooks": [],
+    "functions": ["flatten", "unique", "intersection", "difference", "zip", "chunk", "group_by", "count_by", "find", "find_index", "every", "some"]
+}

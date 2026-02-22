@@ -1,0 +1,71 @@
+{
+    "name": "pyrl-language",
+    "displayName": "Pyrl Language Support",
+    "description": "Syntax highlighting and language support for Pyrl - a hybrid Python-Perl inspired language",
+    "version": "1.0.0",
+    "publisher": "pyrl-ecosystem",
+    "engines": {
+        "vscode": "^1.50.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "icon": "images/icon.png",
+    "contributes": {
+        "languages": [
+            {
+                "id": "pyrl",
+                "aliases": ["Pyrl", "pyrl"],
+                "extensions": [".pyrl"],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./images/pyrl-icon-light.png",
+                    "dark": "./images/pyrl-icon-dark.png"
+                }
+            }
+        ],
+        "grammars": [
+            {
+                "language": "pyrl",
+                "scopeName": "source.pyrl",
+                "path": "./syntaxes/pyrl.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "pyrl",
+                "path": "./snippets/pyrl-snippets.json"
+            }
+        ],
+        "configuration": {
+            "title": "Pyrl",
+            "properties": {
+                "pyrl.interpreterPath": {
+                    "type": "string",
+                    "default": "python",
+                    "description": "Path to Python interpreter for running Pyrl VM"
+                },
+                "pyrl.vmPath": {
+                    "type": "string",
+                    "default": "pyrl_vm.py",
+                    "description": "Path to Pyrl VM script"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "echo 'No build required'"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pyrl-ecosystem/pyrl-vscode"
+    },
+    "keywords": [
+        "pyrl",
+        "python",
+        "perl",
+        "hybrid language",
+        "interpreter"
+    ],
+    "license": "MIT"
+}

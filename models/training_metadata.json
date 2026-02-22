@@ -1,0 +1,49 @@
+{
+    "model_name": "pyrl-assistant-v1",
+    "base_model": "gpt2",
+    "version": "1.0.0",
+    "created_at": "2024-02-22T00:00:00",
+    "dataset_size": 32,
+    "train_samples": 28,
+    "val_samples": 4,
+    "epochs": 3,
+    "batch_size": 4,
+    "learning_rate": 2e-4,
+    "lora_r": 8,
+    "lora_alpha": 32,
+    "pyrl_version": "2.0.0",
+    "capabilities": [
+        "code_generation",
+        "code_explanation",
+        "plugin_detection",
+        "test_generation"
+    ],
+    "categories": [
+        "variables",
+        "arrays",
+        "hashes",
+        "functions",
+        "conditionals",
+        "loops",
+        "regex",
+        "vue",
+        "testing",
+        "plugins",
+        "algorithms",
+        "web_app"
+    ],
+    "example_prompts": [
+        {
+            "prompt": "Create a function to add two numbers",
+            "output": "&add($a, $b) = { return $a + $b }"
+        },
+        {
+            "prompt": "Generate a Vue component for a user",
+            "output": "vue \"UserCard\" { name: \"\", email: \"\" }"
+        },
+        {
+            "prompt": "Write a test for string operations",
+            "output": "test \"String Tests\" { assert &upper(\"hello\") == \"HELLO\" }"
+        }
+    ]
+}

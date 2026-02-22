@@ -1,0 +1,10 @@
+{
+    "name": "http_client",
+    "version": "1.0.0",
+    "description": "HTTP client functions for API calls",
+    "author": "Pyrl Ecosystem Team",
+    "main": "plugin.py",
+    "dependencies": [],
+    "hooks": [],
+    "functions": ["http_get", "http_post", "http_put", "http_delete", "json_parse", "json_stringify", "url_encode", "url_decode"]
+}

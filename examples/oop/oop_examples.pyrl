@@ -1,0 +1,355 @@
+# OOP Examples in Pyrl
+# Demonstrates the new Object-Oriented Programming features
+
+# ============================================================================
+# 1. SIMPLE CLASS
+# ============================================================================
+
+class Counter {
+    prop count = 0
+    
+    init($start) = {
+        @self.count = $start
+    }
+    
+    method increment($amount) = {
+        @self.count = @self.count + $amount
+        return @self.count
+    }
+    
+    method decrement($amount) = {
+        @self.count = @self.count - $amount
+        return @self.count
+    }
+    
+    method get() = {
+        return @self.count
+    }
+    
+    method reset() = {
+        @self.count = 0
+        return @self.count
+    }
+}
+
+# Usage:
+# $counter = Counter(10)
+# print($counter.get())      # 10
+# $counter.increment(5)
+# print($counter.get())      # 15
+
+# ============================================================================
+# 2. CLASS WITH COMPUTED PROPERTIES
+# ============================================================================
+
+class Rectangle {
+    prop width = 0
+    prop height = 0
+    
+    init($w, $h) = {
+        @self.width = $w
+        @self.height = $h
+    }
+    
+    method area() = {
+        return @self.width * @self.height
+    }
+    
+    method perimeter() = {
+        return 2 * (@self.width + @self.height)
+    }
+    
+    method is_square() = {
+        return @self.width == @self.height
+    }
+}
+
+# Usage:
+# $rect = Rectangle(5, 3)
+# print($rect.area())        # 15
+# print($rect.perimeter())   # 16
+# print($rect.is_square())   # false
+
+# ============================================================================
+# 3. INHERITANCE
+# ============================================================================
+
+class Animal {
+    prop name = ""
+    prop age = 0
+    
+    init($name, $age) = {
+        @self.name = $name
+        @self.age = $age
+    }
+    
+    method speak() = {
+        return "..."
+    }
+    
+    method info() = {
+        return @self.name + " (" + &str(@self.age) + " years old)"
+    }
+}
+
+class Dog extends Animal {
+    prop breed = "unknown"
+    
+    init($name, $age, $breed) = {
+        @self.name = $name
+        @self.age = $age
+        @self.breed = $breed
+    }
+    
+    method speak() = {
+        return "Woof!"
+    }
+    
+    method fetch() = {
+        return @self.name + " is fetching!"
+    }
+}
+
+class Cat extends Animal {
+    method speak() = {
+        return "Meow!"
+    }
+    
+    method purr() = {
+        return @self.name + " is purring..."
+    }
+}
+
+# Usage:
+# $dog = Dog("Buddy", 3, "Golden Retriever")
+# print($dog.speak())    # Woof!
+# print($dog.fetch())    # Buddy is fetching!
+# print($dog.info())     # Buddy (3 years old) - inherited method!
+
+# ============================================================================
+# 4. USER MANAGEMENT SYSTEM
+# ============================================================================
+
+class User {
+    prop name = ""
+    prop email = ""
+    prop active = true
+    
+    init($name, $email) = {
+        @self.name = $name
+        @self.email = $email
+    }
+    
+    method greet() = {
+        return "Hello, I'm " + @self.name
+    }
+    
+    method activate() = {
+        @self.active = true
+    }
+    
+    method deactivate() = {
+        @self.active = false
+    }
+    
+    method is_active() = {
+        return @self.active
+    }
+}
+
+class Admin extends User {
+    prop role = "admin"
+    prop permissions = []
+    
+    init($name, $email, $role) = {
+        @self.name = $name
+        @self.email = $email
+        @self.role = $role
+    }
+    
+    method add_permission($perm) = {
+        &push(@self.permissions, $perm)
+        return true
+    }
+    
+    method remove_permission($perm) = {
+        # Would need array filtering
+        return true
+    }
+    
+    method has_permission($perm) = {
+        for $p in @self.permissions {
+            if $p == $perm {
+                return true
+            }
+        }
+        return false
+    }
+    
+    method get_info() = {
+        return @self.name + " (" + @self.role + ")"
+    }
+}
+
+# ============================================================================
+# 5. SHOPPING CART
+# ============================================================================
+
+class CartItem {
+    prop name = ""
+    prop price = 0
+    prop quantity = 1
+    
+    init($name, $price, $quantity) = {
+        @self.name = $name
+        @self.price = $price
+        @self.quantity = $quantity
+    }
+    
+    method total() = {
+        return @self.price * @self.quantity
+    }
+}
+
+class ShoppingCart {
+    prop items = []
+    
+    init() = {
+        @self.items = []
+    }
+    
+    method add_item($name, $price, $quantity) = {
+        $item = CartItem($name, $price, $quantity)
+        &push(@self.items, $item)
+    }
+    
+    method total() = {
+        $sum = 0
+        for $item in @self.items {
+            $sum = $sum + $item.total()
+        }
+        return $sum
+    }
+    
+    method item_count() = {
+        return &len(@self.items)
+    }
+    
+    method clear() = {
+        @self.items = []
+    }
+}
+
+# ============================================================================
+# 6. STACK DATA STRUCTURE
+# ============================================================================
+
+class Stack {
+    prop items = []
+    
+    init() = {
+        @self.items = []
+    }
+    
+    method push($item) = {
+        &push(@self.items, $item)
+        return @self.items
+    }
+    
+    method pop() = {
+        return &pop(@self.items)
+    }
+    
+    method peek() = {
+        $len = &len(@self.items)
+        if $len > 0 {
+            return @self.items[$len - 1]
+        }
+        return none
+    }
+    
+    method is_empty() = {
+        return &len(@self.items) == 0
+    }
+    
+    method size() = {
+        return &len(@self.items)
+    }
+}
+
+# ============================================================================
+# 7. BANK ACCOUNT
+# ============================================================================
+
+class BankAccount {
+    prop account_number = ""
+    prop balance = 0
+    prop owner = ""
+    
+    init($owner, $account_number, $initial_balance) = {
+        @self.owner = $owner
+        @self.account_number = $account_number
+        @self.balance = $initial_balance
+    }
+    
+    method deposit($amount) = {
+        @self.balance = @self.balance + $amount
+        return @self.balance
+    }
+    
+    method withdraw($amount) = {
+        if @self.balance >= $amount {
+            @self.balance = @self.balance - $amount
+            return true
+        }
+        return false
+    }
+    
+    method get_balance() = {
+        return @self.balance
+    }
+    
+    method transfer($to_account, $amount) = {
+        if @self.withdraw($amount) {
+            $to_account.deposit($amount)
+            return true
+        }
+        return false
+    }
+}
+
+# ============================================================================
+# TESTS
+# ============================================================================
+
+test "Counter Tests" {
+    $c = Counter(5)
+    assert $c.get() == 5
+    
+    $c.increment(10)
+    assert $c.get() == 15
+    
+    $c.decrement(3)
+    assert $c.get() == 12
+    
+    $c.reset()
+    assert $c.get() == 0
+}
+
+test "Rectangle Tests" {
+    $r = Rectangle(4, 5)
+    assert $r.area() == 20
+    assert $r.perimeter() == 18
+    assert $r.is_square() == false
+    
+    $square = Rectangle(5, 5)
+    assert $square.is_square() == true
+}
+
+test "Animal Inheritance Tests" {
+    $dog = Dog("Rex", 5, "German Shepherd")
+    assert $dog.speak() == "Woof!"
+    assert $dog.info() == "Rex (5 years old)"
+}
+
+print("OOP Examples loaded successfully!")

@@ -1,0 +1,118 @@
+# FILE: auth_app.pyrl
+# Pyrl Authorization Application
+
+%users = {"admin": {"password": "Admin123!", "role": "administrator", "email": "admin@example.com"}, "john": {"password": "JohnPass456", "role": "user", "email": "john@example.com"}, "alice": {"password": "Alice!789", "role": "moderator", "email": "alice@example.com"}}
+
+%sessions = {}
+
+$password_pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*]{8,}$"
+
+&validate_password($password) = {
+    if $password =~ $password_pattern { return true } else { return false }
+}
+
+&validate_email($email) = {
+    $email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    if $email =~ $email_pattern { return true } else { return false }
+}
+
+&create_user($username, $password, $email, $role) = {
+    $existing = %users[$username]
+    if $existing != none { return "Error: User already exists" }
+    if &validate_password($password) == false { return "Error: Invalid password format" }
+    if &validate_email($email) == false { return "Error: Invalid email format" }
+    %users[$username] = {"password": $password, "role": $role, "email": $email}
+    return "User created successfully"
+}
+
+&get_user($username) = {
+    return %users[$username]
+}
+
+&check_credentials($username, $password) = {
+    $user = %users[$username]
+    if $user == none { return false }
+    $stored = $user["password"]
+    if $stored == $password { return true } else { return false }
+}
+
+&login($username, $password) = {
+    if &check_credentials($username, $password) == true {
+        $user = %users[$username]
+        $session_token = "session_" + $username
+        $role = $user["role"]
+        %sessions[$session_token] = {"username": $username, "role": $role, "authenticated": true}
+        return $session_token
+    } else { return "Authentication failed" }
+}
+
+&logout($session_token) = {
+    $session = %sessions[$session_token]
+    if $session != none { %sessions[$session_token] = none } else { return "Session not found" }
+    return "Logged out successfully"
+}
+
+&is_authenticated($session_token) = {
+    $session = %sessions[$session_token]
+    if $session == none { return false }
+    return $session["authenticated"]
+}
+
+&get_user_role($session_token) = {
+    $session = %sessions[$session_token]
+    if $session == none { return "guest" }
+    return $session["role"]
+}
+
+@roles_hierarchy = ["guest", "user", "moderator", "administrator"]
+
+&check_permission($session_token, $required_role) = {
+    $user_role = &get_user_role($session_token)
+    if $user_role == $required_role { return true }
+    if $user_role == "administrator" { return true }
+    if $user_role == "moderator" {
+        if $required_role != "administrator" { return true } else { return false }
+    }
+    return false
+}
+
+vue "LoginForm" { title: "User Authentication", username_label: "Username", password_label: "Password", submit_text: "Sign In" }
+
+vue "UserDashboard" { title: "Dashboard", welcome_text: "Welcome back!", logout_text: "Sign Out" }
+
+test "Password validation tests" {
+    $valid_pass = "SecurePass123"
+    $invalid_pass1 = "short"
+    $invalid_pass2 = "alllowercase1"
+    $invalid_pass3 = "NOLOWERCASE1"
+    assert &validate_password($valid_pass) == true
+    assert &validate_password($invalid_pass1) == false
+    assert &validate_password($invalid_pass2) == false
+    assert &validate_password($invalid_pass3) == false
+}
+
+test "User authentication flow" {
+    $result = &login("admin", "Admin123!")
+    assert $result == "session_admin"
+    $is_auth = &is_authenticated("session_admin")
+    assert $is_auth == true
+    $role = &get_user_role("session_admin")
+    assert $role == "administrator"
+}
+
+test "Failed authentication" {
+    $result = &login("admin", "wrongpassword")
+    assert $result == "Authentication failed"
+    $result2 = &login("nonexistent", "password")
+    assert $result2 == "Authentication failed"
+}
+
+test "User creation and management" {
+    $create_result = &create_user("newuser", "NewUser123", "new@example.com", "user")
+    assert $create_result == "User created successfully"
+    $user = &get_user("newuser")
+    assert $user["email"] == "new@example.com"
+    assert $user["role"] == "user"
+    $duplicate = &create_user("newuser", "AnotherPass1", "another@example.com", "user")
+    assert $duplicate == "Error: User already exists"
+}

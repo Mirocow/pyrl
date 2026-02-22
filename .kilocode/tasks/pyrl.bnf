@@ -1,0 +1,123 @@
+# ============================================
+# PYRL LANGUAGE SPECIFICATION (BNF)
+# ============================================
+
+<program>           ::= <statement>*
+
+<statement>         ::= <assignment>
+                      | <function_definition>
+                      | <conditional>
+                      | <loop>
+                      | <block>
+                      | <test_block>
+                      | <expression_statement>
+                      | <vue_component_gen>
+                      | <print_statement>
+                      | <return_statement>
+                      | <assertion_statement>
+
+# --- Переменные и Сигилы ---
+<variable>          ::= <scalar_var> | <array_var> | <hash_var> | <function_var>
+<scalar_var>        ::= "$" <identifier>      # Скаляр: $name, $count
+<array_var>         ::= "@" <identifier>      # Массив: @items, @users
+<hash_var>          ::= "%" <identifier>      # Хеш: %config, %user
+<function_var>      ::= "&" <identifier>      # Функция: &handler, &calc
+
+<identifier>        ::= <letter> (<letter> | <digit> | "_")*
+
+# --- Присваивания ---
+<assignment>        ::= <lvalue> "=" <expression>
+<lvalue>            ::= <variable> | <hash_access>
+
+# --- Выражения ---
+<expression>        ::= <or_expr>
+<or_expr>           ::= <and_expr> ("||" <and_expr>)*
+<and_expr>          ::= <comparison_expr> ("&&" <comparison_expr>)*
+<comparison_expr>   ::= <additive_expr> (<comparison_op> <additive_expr>)*
+<additive_expr>     ::= <multiplicative_expr> (("+" | "-") <multiplicative_expr>)*
+<multiplicative_expr> ::= <unary_expr> (("*" | "/" | "%") <unary_expr>)*
+<unary_expr>        ::= ("!" | "-")* <primary_expr>
+
+<comparison_op>     ::= "==" | "!=" | "<" | ">" | "<=" | ">=" | "=~" | "!~"
+
+<primary_expr>      ::= <literal>
+                      | <variable>
+                      | <hash_access>
+                      | <array_access>
+                      | <function_call>
+                      | <regex_literal>
+                      | "(" <expression> ")"
+
+# --- Хеш и Массив доступ ---
+<hash_access>       ::= <hash_var> "{" <expression> "}"
+<array_access>      ::= <array_var> "[" <expression> "]"
+
+# --- Литералы ---
+<literal>           ::= <string_literal>
+                      | <number_literal>
+                      | <boolean_literal>
+                      | <hash_literal>
+                      | <array_literal>
+                      | <none_literal>
+
+<string_literal>    ::= <double_quoted_string> | <single_quoted_string>
+<double_quoted_string> ::= '"' (<escaped_char> | <interpolation> | [^"\]*)* '"'
+<single_quoted_string> ::= "'" [^']* "'"
+<interpolation>     ::= "${" <expression> "}"
+
+<number_literal>    ::= <integer> | <float>
+<integer>           ::= <digit>+ | "0x" <hex_digit>+ | "0b" <bin_digit>+
+<float>             ::= <digit>+ "." <digit>+ ("e" ["+"|"-"] <digit>+)?
+
+<boolean_literal>   ::= "true" | "false"
+<none_literal>      ::= "none" | "null"
+
+<hash_literal>      ::= "{" [<hash_item> ("," <hash_item>)*] "}"
+<hash_item>         ::= (<string_literal> | <identifier>) ":" <expression>
+
+<array_literal>     ::= "[" [<expression> ("," <expression>)*] "]"
+
+# --- Regex литералы ---
+<regex_literal>     ::= "r" <string_literal>
+                      | "/" <regex_body> "/" <regex_flags>?
+<regex_body>        ::= [^/\\] | <escaped_char>*
+<regex_flags>       ::= "i" | "m" | "s" | "x" | <regex_flags>+
+
+# --- Условные конструкции ---
+<conditional>       ::= "if" <expression> <block>
+                      | "if" <expression> <block> "else" <block>
+                      | "if" <expression> <block> "elif" <expression> <block>* ["else" <block>]
+
+# --- Циклы ---
+<loop>              ::= <for_loop> | <while_loop> | <foreach_loop>
+<for_loop>          ::= "for" <variable> "in" <expression> <block>
+<while_loop>        ::= "while" <expression> <block>
+<foreach_loop>      ::= "foreach" <variable> "(" <expression> ")" <block>
+
+# --- Блоки ---
+<block>             ::= "{" <statement>* "}"
+
+# --- Функции ---
+<function_definition> ::= <function_var> "(" [<param_list> ")" "=" <block>
+<param_list>        ::= <variable> ("," <variable>)*
+<function_call>     ::= <function_var> "(" [<arg_list>] ")"
+<arg_list>          ::= <expression> ("," <expression>)*
+<return_statement>  ::= "return" <expression>?
+
+# --- Тестирование ---
+<test_block>        ::= "test" <test_name>? <block>
+<test_name>         ::= <string_literal>
+<assertion_statement> ::= "assert" <expression>
+                         | "assert" <expression> <assert_op> <expression>
+<assert_op>         ::= "==" | "!=" | ">" | "<" | ">=" | "<="
+
+# --- Vue генерация ---
+<vue_component_gen> ::= "vue" <string_literal> "{" <vue_prop_list> "}"
+<vue_prop_list>     ::= <vue_property> ("," <vue_property>)*
+<vue_property>      ::= <identifier> ":" <expression>
+
+# --- Вывод ---
+<print_statement>   ::= "print" "(" <expression> ")"
+
+# --- Комментарии ---
+<comment>           ::= "#" [^\n]*

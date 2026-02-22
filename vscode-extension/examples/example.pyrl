@@ -1,0 +1,154 @@
+# FILE: example.pyrl
+# Pyrl Language Example - Demonstrates all syntax features
+
+# ============================================================================
+# VARIABLES - Different Sigils
+# ============================================================================
+
+# Scalar variables ($)
+$name = "Alice"
+$age = 30
+$active = true
+
+# Array variables (@)
+@numbers = [1, 2, 3, 4, 5]
+@names = ["John", "Jane", "Bob"]
+
+# Hash variables (%)
+%user = {
+    "name": "Alice",
+    "age": 30,
+    "active": true
+}
+
+# Function variables (&)
+&greet = {
+    return "Hello, World!"
+}
+
+# ============================================================================
+# OPERATORS
+# ============================================================================
+
+# Arithmetic
+$sum = 10 + 5
+$difference = 10 - 5
+$product = 10 * 5
+$quotient = 10 / 5
+$modulo = 10 % 3
+
+# Comparison
+$is_equal = 10 == 10
+$is_not_equal = 10 != 5
+$is_greater = 10 > 5
+$is_less = 5 < 10
+$is_gte = 10 >= 10
+$is_lte = 5 <= 10
+
+# Logical
+$and_result = true && false
+$or_result = true || false
+$not_result = !false
+
+# ============================================================================
+# REGEX
+# ============================================================================
+
+$email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+$phone_pattern = r"^\+?[0-9]{10,15}$"
+
+$email = "test@example.com"
+if $email =~ $email_pattern {
+    $valid_email = true
+}
+
+# ============================================================================
+# CONTROL FLOW
+# ============================================================================
+
+# If-Else
+if $age >= 18 {
+    $status = "adult"
+} else {
+    $status = "minor"
+}
+
+# For Loop
+for $item in @numbers {
+    print($item)
+}
+
+# While Loop
+$count = 0
+while $count < 5 {
+    $count = $count + 1
+}
+
+# ============================================================================
+# FUNCTIONS
+# ============================================================================
+
+&add($x, $y) = {
+    return $x + $y
+}
+
+&factorial($n) = {
+    if $n <= 1 {
+        return 1
+    }
+    return $n * &factorial($n - 1)
+}
+
+$result = &add(10, 20)
+$fact = &factorial(5)
+
+# ============================================================================
+# HASH AND ARRAY ACCESS
+# ============================================================================
+
+# Hash access
+$user_name = %user["name"]
+$user_age = %user["age"]
+
+# Hash modification
+%user["city"] = "Moscow"
+
+# Array access
+$first = @numbers[0]
+$second = @numbers[1]
+
+# ============================================================================
+# TESTS
+# ============================================================================
+
+test "Basic arithmetic" {
+    assert 2 + 2 == 4
+    assert 10 - 5 == 5
+    assert 3 * 3 == 9
+}
+
+test "String operations" {
+    $greeting = "Hello"
+    assert $greeting == "Hello"
+}
+
+test "Hash operations" {
+    %test = {"key": "value"}
+    assert %test["key"] == "value"
+}
+
+# ============================================================================
+# VUE COMPONENT GENERATION
+# ============================================================================
+
+vue "UserCard" {
+    title: "User Profile",
+    subtitle: "Personal Information",
+    showAvatar: true
+}
+
+vue "LoginForm" {
+    title: "Sign In",
+    username: "Username",
+    password: "Password"
+}

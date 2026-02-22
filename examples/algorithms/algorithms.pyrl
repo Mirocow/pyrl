@@ -1,0 +1,219 @@
+# Examples: Algorithms in Pyrl
+
+# ============================================================================
+# 1. Sorting Algorithms
+# ============================================================================
+
+# Bubble Sort
+&bubble_sort(@arr) = {
+    $n = &len(@arr)
+    for $i in &range($n) {
+        for $j in &range($n - $i - 1) {
+            if @arr[$j] > @arr[$j + 1] {
+                $temp = @arr[$j]
+                @arr[$j] = @arr[$j + 1]
+                @arr[$j + 1] = $temp
+            }
+        }
+    }
+    return @arr
+}
+
+# ============================================================================
+# 2. Search Algorithms
+# ============================================================================
+
+# Linear Search
+&linear_search(@arr, $target) = {
+    $i = 0
+    for $item in @arr {
+        if $item == $target {
+            return $i
+        }
+        $i = $i + 1
+    }
+    return -1
+}
+
+# Binary Search (requires sorted array)
+&binary_search(@arr, $target) = {
+    $left = 0
+    $right = &len(@arr) - 1
+    
+    while $left <= $right {
+        $mid = &floor(($left + $right) / 2)
+        $mid_val = @arr[$mid]
+        
+        if $mid_val == $target {
+            return $mid
+        }
+        if $mid_val < $target {
+            $left = $mid + 1
+        }
+        if $mid_val > $target {
+            $right = $mid - 1
+        }
+    }
+    
+    return -1
+}
+
+# ============================================================================
+# 3. Math Algorithms
+# ============================================================================
+
+# Factorial (iterative)
+&factorial_iter($n) = {
+    $result = 1
+    for $i in &range($n + 1) {
+        if $i > 0 {
+            $result = $result * $i
+        }
+    }
+    return $result
+}
+
+# Factorial (recursive)
+&factorial($n) = {
+    if $n <= 1 {
+        return 1
+    }
+    return $n * &factorial($n - 1)
+}
+
+# Fibonacci
+&fibonacci($n) = {
+    if $n <= 0 {
+        return 0
+    }
+    if $n == 1 {
+        return 1
+    }
+    return &fibonacci($n - 1) + &fibonacci($n - 2)
+}
+
+# GCD (Greatest Common Divisor)
+&gcd($a, $b) = {
+    while $b != 0 {
+        $temp = $b
+        $b = $a % $b
+        $a = $temp
+    }
+    return $a
+}
+
+# ============================================================================
+# 4. String Algorithms
+# ============================================================================
+
+# Reverse string
+&reverse_string($s) = {
+    @chars = &split($s, "")
+    @reversed = &reversed(@chars)
+    return &join(@reversed, "")
+}
+
+# Palindrome check
+&is_palindrome($s) = {
+    $lower = &lower($s)
+    $reversed = &reverse_string($lower)
+    return $lower == $reversed
+}
+
+# Count occurrences
+&count_occurrences($str, $substr) = {
+    $count = 0
+    $len_str = &len($str)
+    $len_sub = &len($substr)
+    
+    if $len_sub == 0 {
+        return 0
+    }
+    
+    $i = 0
+    while $i <= $len_str - $len_sub {
+        $slice = ""
+        for $j in &range($len_sub) {
+            $char = &split($str, "")[$i + $j]
+            $slice = $slice + $char
+        }
+        if $slice == $substr {
+            $count = $count + 1
+        }
+        $i = $i + 1
+    }
+    
+    return $count
+}
+
+# ============================================================================
+# 5. Data Structures
+# ============================================================================
+
+# Stack implementation
+&stack_create() = {
+    return []
+}
+
+&stack_push($stack, $item) = {
+    &push($stack, $item)
+    return $stack
+}
+
+&stack_pop($stack) = {
+    return &pop($stack)
+}
+
+&stack_peek($stack) = {
+    $len = &len($stack)
+    if $len == 0 {
+        return none
+    }
+    return $stack[$len - 1]
+}
+
+# Queue implementation (using array operations)
+&queue_create() = {
+    return []
+}
+
+&queue_enqueue($queue, $item) = {
+    &push($queue, $item)
+    return $queue
+}
+
+&queue_dequeue($queue) = {
+    $item = $queue[0]
+    # Remove first element by rebuilding
+    @new_queue = []
+    $i = 0
+    for $elem in $queue {
+        if $i > 0 {
+            &push(@new_queue, $elem)
+        }
+        $i = $i + 1
+    }
+    return $item
+}
+
+# ============================================================================
+# TESTS
+# ============================================================================
+
+test "Algorithm Tests" {
+    # Test factorial
+    assert &factorial(5) == 120
+    assert &factorial_iter(5) == 120
+    
+    # Test fibonacci
+    assert &fibonacci(10) == 55
+    
+    # Test GCD
+    assert &gcd(48, 18) == 6
+    
+    # Test palindrome
+    assert &is_palindrome("racecar") == true
+    assert &is_palindrome("hello") == false
+}
+
+print("Algorithms loaded successfully!")

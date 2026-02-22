@@ -1,0 +1,427 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Pyrl",
+    "scopeName": "source.pyrl",
+    "fileTypes": [".pyrl"],
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#variables"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#regex"
+        },
+        {
+            "include": "#numbers"
+        },
+        {
+            "include": "#operators"
+        },
+        {
+            "include": "#functions"
+        },
+        {
+            "include": "#vue"
+        },
+        {
+            "include": "#punctuation"
+        }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.line.number-sign.pyrl",
+                    "match": "#.*$",
+                    "captures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.pyrl"
+                        }
+                    }
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.conditional.pyrl",
+                    "match": "\\b(if|else|elif)\\b"
+                },
+                {
+                    "name": "keyword.control.loop.pyrl",
+                    "match": "\\b(for|in|while|foreach)\\b"
+                },
+                {
+                    "name": "keyword.control.flow.pyrl",
+                    "match": "\\b(return|break|continue)\\b"
+                },
+                {
+                    "name": "keyword.other.test.pyrl",
+                    "match": "\\b(test|assert)\\b"
+                },
+                {
+                    "name": "keyword.other.vue.pyrl",
+                    "match": "\\bvue\\b"
+                },
+                {
+                    "name": "keyword.other.print.pyrl",
+                    "match": "\\bprint\\b"
+                },
+                {
+                    "name": "constant.language.boolean.pyrl",
+                    "match": "\\b(true|false)\\b"
+                },
+                {
+                    "name": "constant.language.null.pyrl",
+                    "match": "\\b(none|null)\\b"
+                }
+            ]
+        },
+        "variables": {
+            "patterns": [
+                {
+                    "name": "variable.other.scalar.pyrl",
+                    "match": "(\\$)([a-zA-Z_][a-zA-Z0-9_]*)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.variable.scalar.pyrl"
+                        },
+                        "2": {
+                            "name": "variable.other.readwrite.pyrl"
+                        }
+                    }
+                },
+                {
+                    "name": "variable.other.array.pyrl",
+                    "match": "(@)([a-zA-Z_][a-zA-Z0-9_]*)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.variable.array.pyrl"
+                        },
+                        "2": {
+                            "name": "variable.other.readwrite.pyrl"
+                        }
+                    }
+                },
+                {
+                    "name": "variable.other.hash.pyrl",
+                    "match": "(%)([a-zA-Z_][a-zA-Z0-9_]*)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.variable.hash.pyrl"
+                        },
+                        "2": {
+                            "name": "variable.other.readwrite.pyrl"
+                        }
+                    }
+                },
+                {
+                    "name": "entity.name.function.pyrl",
+                    "match": "(&)([a-zA-Z_][a-zA-Z0-9_]*)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.variable.function.pyrl"
+                        },
+                        "2": {
+                            "name": "entity.name.function.pyrl"
+                        }
+                    }
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.pyrl",
+                    "begin": "\"",
+                    "end": "\"",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.pyrl"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.pyrl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.pyrl",
+                            "match": "\\\\."
+                        },
+                        {
+                            "name": "variable.interpolation.pyrl",
+                            "match": "\\$\\{[^}]+\\}"
+                        }
+                    ]
+                },
+                {
+                    "name": "string.quoted.single.pyrl",
+                    "begin": "'",
+                    "end": "'",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.pyrl"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.pyrl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.pyrl",
+                            "match": "\\\\."
+                        }
+                    ]
+                }
+            ]
+        },
+        "regex": {
+            "patterns": [
+                {
+                    "name": "string.regexp.pyrl",
+                    "begin": "r\"",
+                    "end": "\"",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.pyrl"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.pyrl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.regexp.pyrl",
+                            "match": "\\\\."
+                        },
+                        {
+                            "name": "keyword.control.anchor.regexp.pyrl",
+                            "match": "[\\^$]"
+                        },
+                        {
+                            "name": "keyword.operator.quantifier.regexp.pyrl",
+                            "match": "[*+?]"
+                        },
+                        {
+                            "name": "keyword.operator.or.regexp.pyrl",
+                            "match": "\\|"
+                        },
+                        {
+                            "name": "support.constant.character-class.regexp.pyrl",
+                            "match": "\\\\w|\\\\d|\\\\s|\\\\W|\\\\D|\\\\S"
+                        },
+                        {
+                            "name": "support.constant.character-class.regexp.pyrl",
+                            "match": "\\[([^\\]]+)\\]",
+                            "captures": {
+                                "1": {
+                                    "name": "constant.other.character-class.set.regexp.pyrl"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "string.regexp.pyrl",
+                    "begin": "r'",
+                    "end": "'",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.pyrl"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.pyrl"
+                        }
+                    }
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.float.pyrl",
+                    "match": "\\b[0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?\\b"
+                },
+                {
+                    "name": "constant.numeric.integer.pyrl",
+                    "match": "\\b[0-9]+\\b"
+                },
+                {
+                    "name": "constant.numeric.hex.pyrl",
+                    "match": "\\b0x[0-9a-fA-F]+\\b"
+                },
+                {
+                    "name": "constant.numeric.binary.pyrl",
+                    "match": "\\b0b[01]+\\b"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "name": "keyword.operator.comparison.pyrl",
+                    "match": "(==|!=|<=|>=|<|>)"
+                },
+                {
+                    "name": "keyword.operator.regex.pyrl",
+                    "match": "(=~|!~)"
+                },
+                {
+                    "name": "keyword.operator.logical.pyrl",
+                    "match": "(&&|\\|\\||!)"
+                },
+                {
+                    "name": "keyword.operator.arithmetic.pyrl",
+                    "match": "(\\+|-|\\*|/|%)"
+                },
+                {
+                    "name": "keyword.operator.assignment.pyrl",
+                    "match": "="
+                }
+            ]
+        },
+        "functions": {
+            "patterns": [
+                {
+                    "name": "meta.function.definition.pyrl",
+                    "begin": "(&)([a-zA-Z_][a-zA-Z0-9_]*)\\s*(\\()",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.function.pyrl"
+                        },
+                        "2": {
+                            "name": "entity.name.function.pyrl"
+                        },
+                        "3": {
+                            "name": "punctuation.definition.parameters.begin.pyrl"
+                        }
+                    },
+                    "end": "\\)",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.parameters.end.pyrl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#variables"
+                        },
+                        {
+                            "name": "punctuation.separator.parameters.pyrl",
+                            "match": ","
+                        }
+                    ]
+                },
+                {
+                    "name": "meta.function.call.pyrl",
+                    "match": "(&)([a-zA-Z_][a-zA-Z0-9_]*)\\s*(\\()",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.function.pyrl"
+                        },
+                        "2": {
+                            "name": "entity.name.function.pyrl"
+                        },
+                        "3": {
+                            "name": "punctuation.definition.parameters.begin.pyrl"
+                        }
+                    }
+                }
+            ]
+        },
+        "vue": {
+            "patterns": [
+                {
+                    "name": "meta.vue.component.pyrl",
+                    "begin": "\\b(vue)\\s+(\")([^\"]+)(\")\\s*(\\{)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword.other.vue.pyrl"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.string.begin.pyrl"
+                        },
+                        "3": {
+                            "name": "entity.name.class.vue.pyrl"
+                        },
+                        "4": {
+                            "name": "punctuation.definition.string.end.pyrl"
+                        },
+                        "5": {
+                            "name": "punctuation.section.block.begin.pyrl"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.section.block.end.pyrl"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#strings"
+                        },
+                        {
+                            "include": "#numbers"
+                        },
+                        {
+                            "include": "#variables"
+                        }
+                    ]
+                }
+            ]
+        },
+        "punctuation": {
+            "patterns": [
+                {
+                    "name": "punctuation.section.block.begin.pyrl",
+                    "match": "\\{"
+                },
+                {
+                    "name": "punctuation.section.block.end.pyrl",
+                    "match": "\\}"
+                },
+                {
+                    "name": "punctuation.section.brackets.begin.pyrl",
+                    "match": "\\["
+                },
+                {
+                    "name": "punctuation.section.brackets.end.pyrl",
+                    "match": "\\]"
+                },
+                {
+                    "name": "punctuation.section.parens.begin.pyrl",
+                    "match": "\\("
+                },
+                {
+                    "name": "punctuation.section.parens.end.pyrl",
+                    "match": "\\)"
+                },
+                {
+                    "name": "punctuation.separator.colon.pyrl",
+                    "match": ":"
+                },
+                {
+                    "name": "punctuation.separator.comma.pyrl",
+                    "match": ","
+                }
+            ]
+        }
+    }
+}

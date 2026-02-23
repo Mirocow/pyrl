@@ -88,20 +88,24 @@ for $score in @scores:
     print("Score " + str($score) + " -> Grade " + str($grade))
 
 # ===========================================
-# HIGHER-ORDER FUNCTIONS
+# FUNCTION REFERENCES (using & sigil)
 # ===========================================
 
-def multiply($a, $b):
+&multiply($a, $b) = {
     return $a * $b
+}
 
-def subtract($a, $b):
+&subtract($a, $b) = {
     return $a - $b
+}
 
-def apply_operation($x, $y, $func):
-    return $func($x, $y)
+# Store function references
+$mult_func = &multiply
+$sub_func = &subtract
 
-print("Apply multiply: " + str(apply_operation(10, 5, multiply)))
-print("Apply subtract: " + str(apply_operation(10, 5, subtract)))
+# Call functions directly
+print("Multiply 10 * 5: " + str(&multiply(10, 5)))
+print("Subtract 10 - 5: " + str(&subtract(10, 5)))
 
 # ===========================================
 # UTILITY FUNCTIONS

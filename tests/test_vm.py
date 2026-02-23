@@ -313,8 +313,9 @@ class TestVMUtility:
         vm.run("$x = 1")
         vm.run("$y = 2")
         globals_dict = vm.get_globals()
-        assert "x" in globals_dict
-        assert "y" in globals_dict
+        # Variables are stored with sigils
+        assert "$x" in globals_dict
+        assert "$y" in globals_dict
 
 
 @pytest.mark.vm

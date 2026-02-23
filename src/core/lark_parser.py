@@ -25,6 +25,12 @@ simple_stmt: return_statement
            | print_statement
            | assertion_statement
            | expression_statement
+           | func_var_definition
+
+// Special case: &name(...) = { } or &name(...): indented body
+// This needs to be simple_stmt to avoid conflict with expression_statement
+func_var_definition: FUNC_VAR "(" [arg_list] ")" "=" block
+                  | FUNC_VAR "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
 
 assertion_statement: "assert" expression comparison_op expression
                    | "assert" expression
@@ -34,19 +40,49 @@ comparison_op: COMP_OP
 expression_statement: expression
 
 compound_stmt: function_definition
+             | class_definition
              | conditional
              | loop
              | test_block
              | vue_component_gen
 
-function_definition: FUNC_VAR "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
-                   | "def" IDENT "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
+// Function definitions - only with "def" keyword
+function_definition: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
+
+// Block syntax for anonymous functions
+// Use block_stmt to avoid conflicts with hash_literal
+block: "{" block_stmts "}"
+block_stmts: [block_stmt (";" block_stmt)* [";"]]
+block_stmt: assignment
+          | return_statement
+          | expression_statement
+          | block_if
+          | block_while
+          | block_for
+
+// Control flow inside blocks (no indentation)
+block_if: "if" expression block ["else" block]
+block_while: "while" expression block
+block_for: "for" SCALAR_VAR "in" expression block
+
+// OOP: Class definition
+class_definition: "class" IDENT ["extends" IDENT] "{" class_member* "}"
+class_member: method_def
+            | property_def
+
+// Method definitions
+method_def: "method" IDENT "(" [arg_list] ")" "=" block
+          | "init" "(" [arg_list] ")" "=" block
+
+// Property definition
+property_def: "prop" IDENT ["=" expression]
 
 assignment: assign_target "=" expression
 
 assign_target: SCALAR_VAR
              | ARRAY_VAR
              | HASH_VAR
+             | FUNC_VAR
              | index_access
 
 ?expression: or_expr
@@ -69,6 +105,7 @@ multiplicative_expr: unary_expr (MUL_OP unary_expr)*
              | "(" expression ")"
              | regex_literal
              | function_call
+             | method_call
              | index_access
              | var_ref
 
@@ -113,6 +150,9 @@ vue_property: IDENT ":" expression _NL
 
 function_call: primary_expr "(" [arg_list] ")"
 
+// Method call on object: $obj.method(args)
+method_call: primary_expr "." IDENT "(" [arg_list] ")"
+
 arg_list: expression ("," expression)*
 
 return_statement: "return" expression?
@@ -137,6 +177,11 @@ NONE: "None" | "none" | "null"
 AND: "and"
 OR: "or"
 NOT: "not"
+CLASS: "class"
+EXTENDS: "extends"
+METHOD: "method"
+INIT: "init"
+PROP: "prop"
 
 // IDENT last (least specific)
 IDENT: /[a-zA-Z_][a-zA-Z0-9_]*/
@@ -365,6 +410,56 @@ class VueComponent:
     """Vue component generation."""
     name: str
     properties: Dict[str, Any] = field(default_factory=dict)
+
+
+# ===========================================
+# OOP AST Nodes
+# ===========================================
+
+@dataclass
+class Block:
+    """Block of statements { stmt1; stmt2; ... }"""
+    statements: List[Any] = field(default_factory=list)
+
+
+@dataclass
+class AnonymousFuncDef:
+    """Anonymous function definition: &name($params) = { body }"""
+    name: str
+    params: List[str] = field(default_factory=list)
+    body: List[Any] = field(default_factory=list)
+
+
+@dataclass
+class ClassDef:
+    """Class definition."""
+    name: str
+    extends: Optional[str] = None
+    methods: Dict[str, Any] = field(default_factory=dict)
+    properties: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class MethodDef:
+    """Method definition."""
+    name: str  # 'init' for constructor, otherwise method name
+    params: List[str] = field(default_factory=list)
+    body: List[Any] = field(default_factory=list)
+
+
+@dataclass
+class PropertyDef:
+    """Property definition."""
+    name: str
+    value: Optional[Any] = None
+
+
+@dataclass
+class MethodCall:
+    """Method call on object: $obj.method(args)"""
+    obj: Any
+    method: str
+    args: List[Any] = field(default_factory=list)
 
 
 # ===========================================
@@ -918,6 +1013,230 @@ class PyrlTransformer(Transformer):
             return (key, children[1])
         return None
 
+    # ===========================================
+    # OOP and Anonymous Functions Transformers
+    # ===========================================
+
+    def block(self, children):
+        """Transform block { stmts } into Block node."""
+        statements = []
+        for child in children:
+            if isinstance(child, list):
+                statements.extend(self._filter_tokens(child))
+            elif isinstance(child, Block):
+                statements.extend(child.statements)
+            elif child is not None and not isinstance(child, Token):
+                statements.append(child)
+        return Block(statements=statements)
+
+    def block_stmts(self, children):
+        """Transform block_stmts into list of statements."""
+        return [c for c in children if c is not None and not isinstance(c, Token)]
+
+    def block_stmt(self, children):
+        """Transform block_stmt."""
+        return children[0] if children else None
+
+    def block_if(self, children):
+        """Transform block if statement."""
+        condition = None
+        then_body = []
+        else_body = None
+
+        for child in children:
+            if isinstance(child, Token):
+                continue
+            elif condition is None:
+                condition = child
+            elif isinstance(child, Block):
+                if not then_body:
+                    then_body = child.statements
+                else:
+                    else_body = child.statements
+
+        return IfStatement(condition=condition, then_body=then_body, else_body=else_body)
+
+    def block_while(self, children):
+        """Transform block while statement."""
+        condition = None
+        body = []
+
+        for child in children:
+            if isinstance(child, Token):
+                continue
+            elif condition is None:
+                condition = child
+            elif isinstance(child, Block):
+                body = child.statements
+
+        return WhileLoop(condition=condition, body=body)
+
+    def block_for(self, children):
+        """Transform block for statement."""
+        var = None
+        iterable = None
+        body = []
+
+        for child in children:
+            if isinstance(child, Token):
+                continue
+            elif isinstance(child, ScalarVar):
+                var = child.name
+            elif iterable is None:
+                iterable = child
+            elif isinstance(child, Block):
+                body = child.statements
+
+        return ForLoop(var=var or '_i', iterable=iterable, body=body)
+
+    def func_var_definition(self, children):
+        """Transform function variable definition: &name($params) = { body } or &name($params): indented body"""
+        name = None
+        params = []
+        body = []
+
+        for child in children:
+            if isinstance(child, FuncVar):
+                name = child.name
+            elif isinstance(child, list):
+                # Could be params or body
+                if all(isinstance(p, ScalarVar) for p in child if p is not None):
+                    params = [p.name for p in child if isinstance(p, ScalarVar)]
+                else:
+                    body.extend(self._filter_tokens(child))
+            elif isinstance(child, Block):
+                body.extend(child.statements)
+            elif isinstance(child, Token):
+                continue
+            elif child is not None:
+                # Check if it's a param list
+                if isinstance(child, ScalarVar):
+                    params.append(child.name)
+                else:
+                    # It's a body statement
+                    body.append(child)
+
+        return AnonymousFuncDef(name=name or '<anonymous>', params=params, body=body)
+
+    # Keep for backward compatibility
+    def anonymous_func_def(self, children):
+        return self.func_var_definition(children)
+
+    def class_definition(self, children):
+        """Transform class definition."""
+        name = None
+        extends = None
+        methods = {}
+        properties = {}
+
+        for child in children:
+            if isinstance(child, Token):
+                if child.type == 'IDENT' and name is None:
+                    name = child.value
+                elif child.type == 'EXTENDS':
+                    continue
+            elif isinstance(child, IdentRef):
+                if name is None:
+                    name = child.name
+                else:
+                    extends = child.name
+            elif isinstance(child, str):
+                # Could be class name or parent class name
+                if name is None:
+                    name = child
+                elif extends is None:
+                    extends = child
+            elif isinstance(child, MethodDef):
+                methods[child.name] = child
+            elif isinstance(child, PropertyDef):
+                properties[child.name] = child
+            elif isinstance(child, dict):
+                # Could be methods or properties dict
+                if child:
+                    first_value = list(child.values())[0]
+                    if isinstance(first_value, MethodDef):
+                        methods.update(child)
+                    else:
+                        properties.update(child)
+
+        return ClassDef(name=name or '<anonymous>', extends=extends, methods=methods, properties=properties)
+
+    def class_body(self, children):
+        """Transform class body."""
+        return [c for c in children if c is not None and not isinstance(c, Token)]
+
+    def class_member(self, children):
+        """Transform class member."""
+        return children[0] if children else None
+
+    def method_def(self, children):
+        """Transform method definition."""
+        name = None
+        params = []
+        body = []
+
+        for child in children:
+            if isinstance(child, Token):
+                if child.type in ('IDENT', 'INIT', 'METHOD'):
+                    if child.value in ('method', 'init'):
+                        continue
+                    name = child.value
+            elif isinstance(child, IdentRef):
+                name = child.name
+            elif isinstance(child, list):
+                if all(isinstance(p, ScalarVar) for p in child if p is not None):
+                    params = [p.name for p in child if isinstance(p, ScalarVar)]
+                else:
+                    body = self._filter_tokens(child)
+            elif isinstance(child, Block):
+                body = child.statements
+            elif isinstance(child, ScalarVar):
+                params.append(child.name)
+            elif child is not None and not isinstance(child, Token):
+                body.append(child)
+
+        return MethodDef(name=name or 'init', params=params, body=body)
+
+    def property_def(self, children):
+        """Transform property definition."""
+        name = None
+        value = None
+
+        for child in children:
+            if isinstance(child, Token):
+                if child.type == 'IDENT':
+                    name = child.value
+                elif child.type == 'PROP':
+                    continue
+            elif isinstance(child, IdentRef):
+                name = child.name
+            elif child is not None:
+                value = child
+
+        return PropertyDef(name=name or '', value=value)
+
+    def method_call(self, children):
+        """Transform method call: $obj.method(args)"""
+        obj = None
+        method = None
+        args = []
+
+        for child in children:
+            if isinstance(child, Token):
+                if child.type == 'IDENT':
+                    method = child.value
+            elif isinstance(child, IdentRef):
+                method = child.name
+            elif isinstance(child, list):
+                args = [c for c in child if c is not None and not isinstance(c, Token)]
+            elif child is not None:
+                if obj is None:
+                    obj = child
+                elif method is None:
+                    method = child
+
+        return MethodCall(obj=obj, method=method or '', args=args)
+
 
 # ===========================================
 # Parser Class
@@ -1041,6 +1360,33 @@ def print_ast(node, indent: int = 0) -> None:
     elif isinstance(node, VueComponent):
         print(f"{pfx}VueComponent: {node.name}")
         for k, v in node.properties.items(): print(f"{pfx}  {k}:"); print_ast(v, indent + 2)
+    # OOP and Anonymous Functions
+    elif isinstance(node, Block):
+        print(f"{pfx}Block:")
+        for stmt in node.statements: print_ast(stmt, indent + 1)
+    elif isinstance(node, AnonymousFuncDef):
+        print(f"{pfx}AnonymousFuncDef: &{node.name}({', '.join(node.params)})")
+        for stmt in node.body: print_ast(stmt, indent + 1)
+    elif isinstance(node, ClassDef):
+        print(f"{pfx}Class: {node.name}" + (f" extends {node.extends}" if node.extends else ""))
+        if node.properties:
+            print(f"{pfx}  properties:")
+            for k, v in node.properties.items(): print(f"{pfx}    {k}:"); print_ast(v, indent + 4) if v else print(f"{pfx}    {k}: None")
+        if node.methods:
+            print(f"{pfx}  methods:")
+            for k, v in node.methods.items(): print_ast(v, indent + 4)
+    elif isinstance(node, MethodDef):
+        print(f"{pfx}MethodDef: {node.name}({', '.join(node.params)})")
+        for stmt in node.body: print_ast(stmt, indent + 1)
+    elif isinstance(node, PropertyDef):
+        print(f"{pfx}Property: {node.name}")
+        if node.value: print_ast(node.value, indent + 1)
+    elif isinstance(node, MethodCall):
+        print(f"{pfx}MethodCall: .{node.method}")
+        print_ast(node.obj, indent + 1)
+        if node.args:
+            print(f"{pfx}  args:")
+            for arg in node.args: print_ast(arg, indent + 2)
     elif isinstance(node, Token): print(f"{pfx}Token: {node.type} = {node.value!r}")
     else: print(f"{pfx}{type(node).__name__}: {node}")
 

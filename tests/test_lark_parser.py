@@ -35,6 +35,13 @@ from src.core.lark_parser import (
     AssertStatement,
     TestBlock,
     VueComponent,
+    # OOP and Anonymous Functions
+    Block,
+    AnonymousFuncDef,
+    ClassDef,
+    MethodDef,
+    PropertyDef,
+    MethodCall,
     parse_lark,
     parse_file_lark,
     get_parser,
@@ -438,7 +445,8 @@ class TestFunctionDefinition:
         ast = parser.parse("""&greet():
     return "Hello"
 """)
-        assert isinstance(ast.statements[0], FunctionDef)
+        # & sigil creates an anonymous function definition
+        assert isinstance(ast.statements[0], (FunctionDef, AnonymousFuncDef))
         assert ast.statements[0].name == "greet"
 
 

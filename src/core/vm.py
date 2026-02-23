@@ -41,6 +41,13 @@ from .lark_parser import (
     AssertStatement,
     TestBlock,
     VueComponent,
+    # OOP and Anonymous Functions
+    Block,
+    AnonymousFuncDef,
+    ClassDef,
+    MethodDef,
+    PropertyDef,
+    MethodCall,
 )
 
 
@@ -645,13 +652,16 @@ class PyrlFunction:
     def __call__(self, *args):
         # Create new environment with closure
         local_env = Environment(parent=self.closure)
+        # Ensure local_env has vm reference
+        if self.closure and self.closure.vm:
+            local_env.vm = self.closure.vm
 
-        # Bind parameters
+        # Bind parameters with $ prefix
         for i, param in enumerate(self.params):
             if i < len(args):
-                local_env.define(param, args[i])
+                local_env.define('$' + param, args[i])
             else:
-                local_env.define(param, None)
+                local_env.define('$' + param, None)
 
         # Execute body
         try:
@@ -660,6 +670,155 @@ class PyrlFunction:
                 result = self.closure.vm.execute(stmt, local_env)
             return result
         except ReturnValue as ret:
+            return ret.value
+
+
+# ===========================================
+# OOP Classes
+# ===========================================
+
+class PyrlClass:
+    """Pyrl class definition."""
+    
+    def __init__(self, name: str, extends: Optional[str] = None,
+                 methods: Dict[str, Any] = None, properties: Dict[str, Any] = None,
+                 closure: 'Environment' = None):
+        self.name = name
+        self.extends = extends
+        self.methods = methods or {}
+        self.properties = properties or {}
+        self.closure = closure
+    
+    def __call__(self, *args, **kwargs):
+        """Create a new instance of the class."""
+        instance = PyrlInstance(self)
+        
+        # Call init method if it exists
+        if 'init' in self.methods:
+            init_method = self.methods['init']
+            if isinstance(init_method, MethodDef):
+                # Create bound method
+                bound_init = PyrlMethod(
+                    name='init',
+                    params=init_method.params,
+                    body=init_method.body,
+                    instance=instance,
+                    closure=self.closure
+                )
+                bound_init(*args)
+        
+        return instance
+    
+    def get_method(self, name: str) -> Optional['PyrlMethod']:
+        """Get a method by name."""
+        if name in self.methods:
+            method_def = self.methods[name]
+            if isinstance(method_def, MethodDef):
+                return PyrlMethod(
+                    name=name,
+                    params=method_def.params,
+                    body=method_def.body,
+                    instance=None,
+                    closure=self.closure
+                )
+        return None
+    
+    def __repr__(self):
+        return f"<class {self.name}>"
+
+
+class PyrlInstance:
+    """Instance of a Pyrl class."""
+    
+    def __init__(self, cls: PyrlClass):
+        self._class = cls
+        self._properties = {}
+        
+        # Initialize properties from class definition
+        for name, prop_def in cls.properties.items():
+            if prop_def is not None:
+                if isinstance(prop_def, PropertyDef):
+                    self._properties[name] = prop_def.value
+                else:
+                    self._properties[name] = prop_def
+    
+    def get_property(self, name: str) -> Any:
+        """Get a property value."""
+        if name in self._properties:
+            return self._properties[name]
+        raise PyrlRuntimeError(f"Property '{name}' not found on {self._class.name}")
+    
+    def set_property(self, name: str, value: Any) -> None:
+        """Set a property value."""
+        self._properties[name] = value
+    
+    def get_method(self, name: str) -> 'PyrlMethod':
+        """Get a bound method."""
+        if name in self._class.methods:
+            method_def = self._class.methods[name]
+            if isinstance(method_def, MethodDef):
+                return PyrlMethod(
+                    name=name,
+                    params=method_def.params,
+                    body=method_def.body,
+                    instance=self,
+                    closure=self._class.closure
+                )
+        raise PyrlRuntimeError(f"Method '{name}' not found on {self._class.name}")
+    
+    def __repr__(self):
+        return f"<{self._class.name} instance>"
+
+
+class PyrlMethod:
+    """Bound method on a Pyrl instance."""
+    
+    def __init__(self, name: str, params: List[str], body: List[Any],
+                 instance: Optional[PyrlInstance], closure: 'Environment'):
+        self.name = name
+        self.params = params
+        self.body = body
+        self.instance = instance
+        self.closure = closure
+    
+    def __call__(self, *args):
+        """Execute the method."""
+        local_env = Environment(parent=self.closure)
+        
+        # Bind 'self' or '$self' if instance exists
+        if self.instance:
+            local_env.define('self', self.instance)
+            local_env.define('$self', self.instance)
+            # Also bind the instance's properties to the local environment
+            for prop_name, prop_value in self.instance._properties.items():
+                local_env.define('$' + prop_name, prop_value)
+        
+        # Bind parameters with $ prefix
+        for i, param in enumerate(self.params):
+            if i < len(args):
+                local_env.define('$' + param, args[i])
+            else:
+                local_env.define('$' + param, None)
+        
+        # Execute body
+        try:
+            result = None
+            for stmt in self.body:
+                result = self.closure.vm.execute(stmt, local_env)
+                # Update instance properties after each statement
+                if self.instance:
+                    for prop_name in self.instance._class.properties.keys():
+                        var_name = '$' + prop_name
+                        if local_env.has(var_name):
+                            self.instance._properties[prop_name] = local_env.get(var_name)
+            return result
+        except ReturnValue as ret:
+            # Update instance properties before returning
+            if self.instance:
+                for prop_name in self.instance._class.properties.keys():
+                    var_name = '$' + prop_name
+                    if local_env.has(var_name):
+                        self.instance._properties[prop_name] = local_env.get(var_name)
             return ret.value
 
 
@@ -806,17 +965,17 @@ class PyrlVM:
 
     # Variables
     def exec_ScalarVar(self, node: ScalarVar, env: Environment) -> Any:
-        return env.get(node.name)
+        return env.get('$' + node.name)
 
     def exec_ArrayVar(self, node: ArrayVar, env: Environment) -> Any:
-        return env.get(node.name)
+        return env.get('@' + node.name)
 
     def exec_HashVar(self, node: HashVar, env: Environment) -> Any:
-        return env.get(node.name)
+        return env.get('%' + node.name)
 
     def exec_FuncVar(self, node: FuncVar, env: Environment) -> Any:
         """Handle function variable (&name)."""
-        return env.get(node.name)
+        return env.get('&' + node.name)
 
     def exec_IdentRef(self, node: IdentRef, env: Environment) -> Any:
         """Handle identifier reference (built-in functions)."""
@@ -915,11 +1074,12 @@ class PyrlVM:
         target = node.target
 
         if isinstance(target, ScalarVar):
-            env.set(target.name, value)
+            # Use $-prefixed name to avoid shadowing builtins
+            env.set('$' + target.name, value)
         elif isinstance(target, ArrayVar):
-            env.set(target.name, value)
+            env.set('@' + target.name, value)
         elif isinstance(target, HashVar):
-            env.set(target.name, value)
+            env.set('%' + target.name, value)
         elif isinstance(target, HashAccess):
             obj = self.execute(target.obj, env)
             key = self.execute(target.key, env)
@@ -935,7 +1095,12 @@ class PyrlVM:
 
     # Function call
     def exec_FunctionCall(self, node: FunctionCall, env: Environment) -> Any:
-        func = env.get(node.name)
+        # First try with & prefix (for user-defined functions)
+        # Then try without prefix (for builtins)
+        try:
+            func = env.get('&' + node.name)
+        except PyrlRuntimeError:
+            func = env.get(node.name)
         args = [self.execute(arg, env) for arg in node.args]
 
         if callable(func):
@@ -951,7 +1116,8 @@ class PyrlVM:
             body=node.body,
             closure=env
         )
-        env.define(node.name, func)
+        # Store function with & prefix
+        env.define('&' + node.name, func)
         return func
 
     # Control flow
@@ -985,12 +1151,14 @@ class PyrlVM:
         iterable = self.execute(node.iterable, env)
         result = None
 
+        # Use $-prefixed name for loop variable
+        var_name = '$' + node.var
         for item in iterable:
             # Use set() to update existing variable, or define if it doesn't exist
-            if env.has(node.var):
-                env.set(node.var, item)
+            if env.has(var_name):
+                env.set(var_name, item)
             else:
-                env.define(node.var, item)
+                env.define(var_name, item)
             try:
                 for stmt in node.body:
                     result = self.execute(stmt, env)
@@ -1091,6 +1259,110 @@ class PyrlVM:
 
         return component
 
+    # ===========================================
+    # OOP and Anonymous Functions Execution
+    # ===========================================
+
+    def exec_Block(self, node: Block, env: Environment) -> Any:
+        """Execute a block of statements."""
+        # Make sure env has vm reference
+        if env.vm is None:
+            env.vm = self
+        result = None
+        for stmt in node.statements:
+            result = self.execute(stmt, env)
+        return result
+
+    def exec_AnonymousFuncDef(self, node: AnonymousFuncDef, env: Environment) -> Any:
+        """Execute anonymous function definition: &name($params) = { body }"""
+        # Ensure the closure env has a vm reference
+        if env.vm is None:
+            env.vm = self
+        func = PyrlFunction(
+            name=node.name,
+            params=node.params,
+            body=node.body,
+            closure=env
+        )
+        # Store function with & prefix
+        env.define('&' + node.name, func)
+        return func
+
+    def exec_ClassDef(self, node: ClassDef, env: Environment) -> Any:
+        """Execute class definition."""
+        cls = PyrlClass(
+            name=node.name,
+            extends=node.extends,
+            methods=node.methods,
+            properties=node.properties,
+            closure=env
+        )
+        env.define(node.name, cls)
+        return cls
+
+    def exec_MethodDef(self, node: MethodDef, env: Environment) -> Any:
+        """Execute method definition (usually inside a class)."""
+        return node  # Return the definition itself, used by class definition
+
+    def exec_PropertyDef(self, node: PropertyDef, env: Environment) -> Any:
+        """Execute property definition."""
+        if node.value:
+            return self.execute(node.value, env)
+        return None
+
+    def exec_MethodCall(self, node: MethodCall, env: Environment) -> Any:
+        """Execute method call: $obj.method(args)"""
+        obj = self.execute(node.obj, env)
+        args = [self.execute(arg, env) for arg in node.args]
+
+        # Check if it's a PyrlInstance
+        if isinstance(obj, PyrlInstance):
+            method = obj.get_method(node.method)
+            return method(*args)
+        
+        # Check if it's a PyrlClass (static method call)
+        if isinstance(obj, PyrlClass):
+            method = obj.get_method(node.method)
+            if method:
+                return method(*args)
+
+        # Check if obj is a dict with a method-like property
+        if isinstance(obj, dict) and node.method in obj:
+            prop = obj[node.method]
+            if callable(prop):
+                return prop(*args)
+
+        # Check if it's a string method
+        if isinstance(obj, str):
+            string_methods = {
+                'lower': lambda s: s.lower(),
+                'upper': lambda s: s.upper(),
+                'strip': lambda s: s.strip(),
+                'split': lambda s, sep=None: s.split(sep),
+                'replace': lambda s, old, new: s.replace(old, new),
+                'find': lambda s, sub: s.find(sub),
+                'startswith': lambda s, prefix: s.startswith(prefix),
+                'endswith': lambda s, suffix: s.endswith(suffix),
+            }
+            if node.method in string_methods:
+                return string_methods[node.method](obj, *args)
+
+        # Check if it's a list method
+        if isinstance(obj, list):
+            list_methods = {
+                'append': lambda l, x: l.append(x) or l,
+                'extend': lambda l, x: l.extend(x) or l,
+                'pop': lambda l, i=-1: l.pop(i),
+                'insert': lambda l, i, x: l.insert(i, x) or l,
+                'remove': lambda l, x: l.remove(x) or l,
+                'reverse': lambda l: l.reverse() or l,
+                'sort': lambda l: l.sort() or l,
+            }
+            if node.method in list_methods:
+                return list_methods[node.method](obj, *args)
+
+        raise PyrlRuntimeError(f"Cannot call method '{node.method}' on {type(obj).__name__}")
+
     # Utility methods
     def get_globals(self) -> Dict[str, Any]:
         """Get all global variables."""
@@ -1105,15 +1377,40 @@ class PyrlVM:
 
     def get_variable(self, name: str) -> Any:
         """Get a variable value by name."""
+        # Try with sigils first
+        if '$' + name in self.env.variables:
+            return self.env.get('$' + name)
+        elif '@' + name in self.env.variables:
+            return self.env.get('@' + name)
+        elif '%' + name in self.env.variables:
+            return self.env.get('%' + name)
+        elif '&' + name in self.env.variables:
+            return self.env.get('&' + name)
+        # Fallback to direct lookup
         return self.env.get(name)
 
     def set_variable(self, name: str, value: Any) -> None:
         """Set a variable value by name."""
-        self.env.set(name, value)
+        # Determine sigil from value type or use default
+        if name.startswith(('$', '@', '%', '&')):
+            self.env.set(name, value)
+        elif isinstance(value, list):
+            self.env.set('@' + name, value)
+        elif isinstance(value, dict):
+            self.env.set('%' + name, value)
+        elif callable(value) and not isinstance(value, type):
+            self.env.set('&' + name, value)
+        else:
+            self.env.set('$' + name, value)
 
     def has_variable(self, name: str) -> bool:
         """Check if a variable exists."""
-        return self.env.has(name)
+        # Check with all sigils
+        return (self.env.has('$' + name) or
+                self.env.has('@' + name) or
+                self.env.has('%' + name) or
+                self.env.has('&' + name) or
+                self.env.has(name))
 
 
 # ===========================================

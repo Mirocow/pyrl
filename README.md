@@ -1,11 +1,13 @@
 # Pyrl Language
 
-**Pyrl** — это гибридный язык программирования, вдохновлённый Python и Perl. Он сочетает чистый синтаксис Python с мощной системой сигилов Perl.
+**Pyrl** — гибридный язык программирования, вдохновлённый Python и Perl. Сочетает чистый синтаксис Python с мощной системой сигилов Perl.
 
 ## Ключевые особенности
 
 - **Сигилы переменных**: `$scalar`, `@array`, `%hash`, `&function`
 - **Python-синтаксис**: отступы вместо фигурных скобок
+- **Анонимные функции**: `&name($params) = { body }`
+- **ООП**: классы, методы, свойства
 - **Динамическая типизация**: типы проверяются во время выполнения
 - **Богатая стандартная библиотека**: математика, строки, списки, хеши
 - **HTTP/JSON**: встроенная поддержка веб-запросов
@@ -42,10 +44,76 @@ $age = 30
 ### Функции
 
 ```pyrl
+# Традиционный синтаксис
 def greet($name):
     print("Привет, " + $name + "!")
 
 greet("Мир")
+
+# Анонимные функции
+&double($x) = {
+    return $x * 2
+}
+
+print(&double(5))  # 10
+
+# Ссылка на функцию
+$func = &double
+print($func(7))  # 14
+```
+
+### Анонимные функции с блоками
+
+```pyrl
+&reverse_string($str) = {
+    $reversed = "";
+    $len = len($str);
+    $i = $len - 1;
+    while $i >= 0 {
+        $reversed = $reversed + $str[$i];
+        $i = $i - 1
+    };
+    return $reversed
+}
+
+print(&reverse_string("hello"))  # "olleh"
+
+# Проверка палиндрома
+&is_palindrome($str) = {
+    $clean = lower($str);
+    $rev = &reverse_string($clean);
+    return $clean == $rev
+}
+
+print(&is_palindrome("racecar"))  # True
+print(&is_palindrome("hello"))    # False
+```
+
+### ООП - Классы
+
+```pyrl
+class Person {
+    prop name = "Unknown"
+    prop age = 0
+    
+    init($name, $age) = {
+        $name = $name;
+        $age = $age
+    }
+    
+    method get_name() = {
+        return $name
+    }
+    
+    method greet() = {
+        return "Привет, я " + $name
+    }
+}
+
+# Создание экземпляра
+$p = Person("Alice", 30)
+print($p.get_name())  # "Alice"
+print($p.greet())     # "Привет, я Alice"
 ```
 
 ### Циклы
@@ -53,6 +121,17 @@ greet("Мир")
 ```pyrl
 for $i in range(5):
     print($i)
+
+# Цикл внутри блока
+&print_numbers($n) = {
+    $i = 0;
+    while $i < $n {
+        print($i);
+        $i = $i + 1
+    }
+}
+
+&print_numbers(5)
 ```
 
 ## Синтаксис
@@ -87,16 +166,25 @@ else:
     print("Ноль")
 ```
 
-### Циклы
+### Блочный синтаксис
 
 ```pyrl
-# For loop
-for $item in @items:
-    print($item)
+# Условия внутри блоков
+&abs($x) = {
+    if $x < 0 {
+        return -$x
+    };
+    return $x
+}
 
-# While loop
-while $x < 10:
-    $x = $x + 1
+# Циклы внутри блоков
+&sum_to($n) = {
+    $sum = 0;
+    for $i in range($n + 1) {
+        $sum = $sum + $i
+    };
+    return $sum
+}
 ```
 
 ## CLI
@@ -107,6 +195,15 @@ python pyrl_cli.py examples/01_hello_world.pyrl
 
 # Интерактивный REPL
 python pyrl_cli.py
+
+# Выполнение кода из строки
+python pyrl_cli.py -c '$x = 10; print($x)'
+
+# Показать AST
+python pyrl_cli.py -p script.pyrl
+
+# Режим отладки
+python pyrl_cli.py -d script.pyrl
 
 # Запуск сервера
 python pyrl_server.py
@@ -124,6 +221,49 @@ curl -X POST http://localhost:8000/execute \
     -d '{"code": "$x = 10\nprint($x)"}'
 ```
 
+## Примеры
+
+### Факториал
+
+```pyrl
+def factorial($n):
+    if $n <= 1:
+        return 1
+    return $n * factorial($n - 1)
+
+print(factorial(5))  # 120
+```
+
+### Числа Фибоначчи
+
+```pyrl
+def fibonacci($n):
+    if $n <= 1:
+        return $n
+    return fibonacci($n - 1) + fibonacci($n - 2)
+
+for $i in range(10):
+    print(fibonacci($i))
+```
+
+### Фильтрация списка
+
+```pyrl
+&filter_positive(@numbers) = {
+    @result = [];
+    for $n in @numbers {
+        if $n > 0 {
+            append(@result, $n)
+        }
+    };
+    return @result
+}
+
+@nums = [-2, 5, -1, 8, 0, 3]
+@positive = &filter_positive(@nums)
+print(@positive)  # [5, 8, 3]
+```
+
 ## Структура проекта
 
 ```
@@ -131,11 +271,9 @@ pyrl/
 ├── src/core/
 │   ├── lark_parser.py    # Lark-парсер с грамматикой
 │   ├── vm.py             # Виртуальная машина
-│   ├── builtins.py       # Встроенные функции
-│   ├── lexer.py          # Лексер (legacy)
-│   └── parser.py         # Парсер (legacy)
+│   └── exceptions.py     # Исключения
 ├── examples/             # Примеры кода
-├── tests/                # Тесты pytest
+├── tests/                # Тесты pytest (321 тест)
 ├── models/               # ML модель
 ├── docker/               # Docker конфигурации
 └── documents/            # Документация
@@ -144,8 +282,19 @@ pyrl/
 ## Запуск тестов
 
 ```bash
+# Все тесты
 pytest tests/ -v
+
+# С покрытием кода
+pytest tests/ --cov=src --cov-report=term-missing
 ```
+
+## Новое в версии 2.0.0
+
+- **Анонимные функции**: `&name($params) = { body }`
+- **ООП**: классы с методами и свойствами
+- **Блочный синтаксис**: `{ stmt; stmt }`
+- **Исправлено затенение переменных**: переменные не затеняют встроенные функции
 
 ## Лицензия
 

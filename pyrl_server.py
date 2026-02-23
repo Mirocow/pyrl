@@ -4,7 +4,6 @@ FastAPI-based server for the Pyrl language interpreter.
 
 Provides REST API endpoints for:
 - Code execution
-- Tokenization
 - AST parsing
 - Variable management
 - Health monitoring
@@ -20,7 +19,6 @@ Endpoints:
     GET  /              - Server info
     GET  /health        - Health check
     POST /execute       - Execute Pyrl code
-    POST /tokenize      - Tokenize code
     POST /parse         - Parse code to AST
     POST /reset         - Reset VM state
     GET  /variables     - Get all variables
@@ -43,8 +41,7 @@ from pydantic import BaseModel, Field
 sys.path.insert(0, str(Path(__file__).parent))
 
 from src.core.vm import PyrlVM
-from src.core.lexer import tokenize
-from src.core.parser import parse
+from src.core.lark_parser import PyrlLarkParser, print_ast
 from src.core.exceptions import PyrlError
 from src.config import get_config
 
@@ -74,9 +71,24 @@ A hybrid Python-Perl inspired language interpreter server.
 
 ## Features
 - **Sigil Variables**: $scalar, @array, %hash, &function
+- **Anonymous Functions**: &name($params) = { body }
+- **OOP**: Classes with methods and properties
 - **Python-style Syntax**: Indentation-based blocks
 - **Dynamic Typing**: Runtime type checking
 - **Built-in Functions**: Rich standard library
+
+## New in v2.0
+```pyrl
+# Anonymous functions
+&double($x) = { return $x * 2 }
+
+# Classes
+class Person {
+    prop name = "Unknown"
+    init($name) = { $name = $name }
+    method greet() = { return "Hello, " + $name }
+}
+```
 
 ## Quick Start
 ```python
@@ -86,14 +98,14 @@ POST /execute
     "code": "$x = 10\\nprint($x)"
 }
 
-# Tokenize code
-POST /tokenize
+# Parse code
+POST /parse
 {
     "code": "$x = 10"
 }
 ```
     """,
-    version="1.0.0",
+    version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -130,17 +142,6 @@ class ExecuteResponse(BaseModel):
     execution_time_ms: float = Field(0, description="Execution time in milliseconds")
 
 
-class TokenizeRequest(BaseModel):
-    """Request model for tokenization."""
-    code: str = Field(..., description="Pyrl source code to tokenize")
-
-
-class TokenizeResponse(BaseModel):
-    """Response model for tokenization."""
-    tokens: List[Dict[str, Any]] = Field(..., description="List of tokens")
-    count: int = Field(..., description="Number of tokens")
-
-
 class ParseRequest(BaseModel):
     """Request model for parsing."""
     code: str = Field(..., description="Pyrl source code to parse")
@@ -148,7 +149,7 @@ class ParseRequest(BaseModel):
 
 class ParseResponse(BaseModel):
     """Response model for parsing."""
-    ast: Dict[str, Any] = Field(..., description="AST representation")
+    ast: str = Field(..., description="AST representation")
     statements_count: int = Field(..., description="Number of statements")
 
 
@@ -175,6 +176,7 @@ class VMManager:
     
     def __init__(self):
         self.vm = PyrlVM(debug=config.debug)
+        self.parser = PyrlLarkParser(debug=config.debug)
         self.start_time = datetime.now()
         self.request_count = 0
     
@@ -241,7 +243,7 @@ async def root():
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pyrl Language Server</title>
+    <title>Pyrl Language Server v2.0</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -276,23 +278,30 @@ async def root():
             color: #00d4ff;
         }
         a { color: #00d4ff; }
+        .new { color: #ff6b6b; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>🚀 Pyrl Language Server</h1>
+    <h1>🚀 Pyrl Language Server v2.0</h1>
     <p>A hybrid Python-Perl inspired language interpreter.</p>
+    
+    <h2>What's New <span class="new">v2.0</span></h2>
+    <ul>
+        <li><strong>Anonymous Functions</strong>: <code>&name($x) = { return $x * 2 }</code></li>
+        <li><strong>OOP Support</strong>: Classes with methods and properties</li>
+        <li><strong>Block Syntax</strong>: <code>{ stmt; stmt }</code></li>
+    </ul>
     
     <h2>Quick Start</h2>
     <pre>
 curl -X POST http://localhost:8000/execute \\
     -H "Content-Type: application/json" \\
-    -d '{"code": "$x = 10\\nprint($x)"}'
+    -d '{"code": "&double($x) = { return $x * 2 }\\nprint(&double(5))"}'
     </pre>
     
     <h2>API Endpoints</h2>
     <div class="endpoint"><span class="method">GET</span> /health - Health check</div>
     <div class="endpoint"><span class="method">POST</span> /execute - Execute Pyrl code</div>
-    <div class="endpoint"><span class="method">POST</span> /tokenize - Tokenize code</div>
     <div class="endpoint"><span class="method">POST</span> /parse - Parse code to AST</div>
     <div class="endpoint"><span class="method">POST</span> /reset - Reset VM state</div>
     <div class="endpoint"><span class="method">GET</span> /variables - Get all variables</div>
@@ -320,7 +329,7 @@ async def health():
     return HealthResponse(
         status="healthy",
         timestamp=datetime.now().isoformat(),
-        version="1.0.0",
+        version="2.0.0",
         uptime=vm_manager.uptime()
     )
 
@@ -386,35 +395,6 @@ async def execute(request: ExecuteRequest):
         )
 
 
-@app.post("/tokenize", response_model=TokenizeResponse)
-async def tokenize_code(request: TokenizeRequest):
-    """
-    Tokenize Pyrl code.
-    
-    Returns a list of tokens with their types, values, and positions.
-    """
-    try:
-        tokens = tokenize(request.code)
-        
-        token_list = [
-            {
-                "type": t.type.value,
-                "value": t.value,
-                "line": t.line,
-                "column": t.column
-            }
-            for t in tokens
-        ]
-        
-        return TokenizeResponse(
-            tokens=token_list,
-            count=len(token_list)
-        )
-        
-    except PyrlError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
 @app.post("/parse", response_model=ParseResponse)
 async def parse_code(request: ParseRequest):
     """
@@ -423,28 +403,156 @@ async def parse_code(request: ParseRequest):
     Returns the abstract syntax tree representation.
     """
     try:
-        tokens = tokenize(request.code)
-        ast = parse(tokens)
+        parser = vm_manager.parser
+        ast = parser.parse(request.code)
         
-        # Convert AST to dict
-        def ast_to_dict(node):
-            if hasattr(node, '__dataclass_fields__'):
-                result = {"type": type(node).__name__}
-                for field in node.__dataclass_fields__:
-                    value = getattr(node, field)
-                    if isinstance(value, list):
-                        result[field] = [ast_to_dict(item) for item in value]
-                    elif hasattr(value, '__dataclass_fields__'):
-                        result[field] = ast_to_dict(value)
-                    else:
-                        result[field] = value
-                return result
-            return str(node)
+        # Convert AST to string representation
+        import io
+        output = io.StringIO()
         
-        ast_dict = ast_to_dict(ast)
+        def capture_print_ast(node, indent=0, file=output):
+            pfx = "  " * indent
+            from src.core.lark_parser import (
+                Program, ScalarVar, ArrayVar, HashVar, FuncVar, IdentRef,
+                NumberLiteral, StringLiteral, BooleanLiteral, NoneLiteral,
+                ArrayLiteral, HashLiteral, BinaryOp, UnaryOp, Assignment,
+                HashAccess, ArrayAccess, FunctionCall, FunctionDef, IfStatement,
+                ForLoop, WhileLoop, ReturnStatement, PrintStatement, AssertStatement,
+                Block, AnonymousFuncDef, ClassDef, MethodDef, PropertyDef, MethodCall
+            )
+            if isinstance(node, Program):
+                print(f"{pfx}Program:", file=file)
+                for stmt in node.statements: 
+                    capture_print_ast(stmt, indent + 1, file)
+            elif isinstance(node, ScalarVar): 
+                print(f"{pfx}ScalarVar: ${node.name}", file=file)
+            elif isinstance(node, ArrayVar): 
+                print(f"{pfx}ArrayVar: @{node.name}", file=file)
+            elif isinstance(node, HashVar): 
+                print(f"{pfx}HashVar: %{node.name}", file=file)
+            elif isinstance(node, FuncVar): 
+                print(f"{pfx}FuncVar: &{node.name}", file=file)
+            elif isinstance(node, IdentRef): 
+                print(f"{pfx}IdentRef: {node.name}", file=file)
+            elif isinstance(node, NumberLiteral): 
+                print(f"{pfx}Number: {node.value}", file=file)
+            elif isinstance(node, StringLiteral): 
+                print(f"{pfx}String: {repr(node.value)}", file=file)
+            elif isinstance(node, BooleanLiteral): 
+                print(f"{pfx}Boolean: {node.value}", file=file)
+            elif isinstance(node, NoneLiteral): 
+                print(f"{pfx}None", file=file)
+            elif isinstance(node, ArrayLiteral):
+                print(f"{pfx}Array:", file=file)
+                for elem in node.elements: 
+                    capture_print_ast(elem, indent + 1, file)
+            elif isinstance(node, HashLiteral):
+                print(f"{pfx}Hash:", file=file)
+                for k, v in node.pairs.items(): 
+                    print(f"{pfx}  {k}:", file=file)
+                    capture_print_ast(v, indent + 2, file)
+            elif isinstance(node, BinaryOp):
+                print(f"{pfx}BinaryOp: {node.operator}", file=file)
+                capture_print_ast(node.left, indent + 2, file)
+                capture_print_ast(node.right, indent + 2, file)
+            elif isinstance(node, UnaryOp): 
+                print(f"{pfx}UnaryOp: {node.operator}", file=file)
+                capture_print_ast(node.operand, indent + 1, file)
+            elif isinstance(node, Assignment):
+                print(f"{pfx}Assignment:", file=file)
+                capture_print_ast(node.target, indent + 2, file)
+                capture_print_ast(node.value, indent + 2, file)
+            elif isinstance(node, HashAccess): 
+                print(f"{pfx}HashAccess {{}}:", file=file)
+                capture_print_ast(node.obj, indent + 2, file)
+                capture_print_ast(node.key, indent + 2, file)
+            elif isinstance(node, ArrayAccess): 
+                print(f"{pfx}ArrayAccess []:", file=file)
+                capture_print_ast(node.obj, indent + 2, file)
+                capture_print_ast(node.index, indent + 2, file)
+            elif isinstance(node, FunctionCall):
+                print(f"{pfx}FunctionCall: {node.name}", file=file)
+                for arg in node.args: 
+                    capture_print_ast(arg, indent + 1, file)
+            elif isinstance(node, FunctionDef):
+                print(f"{pfx}FunctionDef: {node.name}({', '.join(node.params)})", file=file)
+                for stmt in node.body: 
+                    capture_print_ast(stmt, indent + 1, file)
+            elif isinstance(node, IfStatement):
+                print(f"{pfx}If:", file=file)
+                capture_print_ast(node.condition, indent + 2, file)
+                print(f"{pfx}  then:", file=file)
+                [capture_print_ast(s, indent + 2, file) for s in node.then_body]
+                for cond, body in node.elif_clauses: 
+                    print(f"{pfx}  elif:", file=file)
+                    capture_print_ast(cond, indent + 2, file)
+                    [capture_print_ast(s, indent + 2, file) for s in body]
+                if node.else_body: 
+                    print(f"{pfx}  else:", file=file)
+                    [capture_print_ast(s, indent + 2, file) for s in node.else_body]
+            elif isinstance(node, ForLoop):
+                print(f"{pfx}For: {node.var}", file=file)
+                capture_print_ast(node.iterable, indent + 2, file)
+                print(f"{pfx}  body:", file=file)
+                [capture_print_ast(s, indent + 2, file) for s in node.body]
+            elif isinstance(node, WhileLoop):
+                print(f"{pfx}While:", file=file)
+                capture_print_ast(node.condition, indent + 2, file)
+                print(f"{pfx}  body:", file=file)
+                [capture_print_ast(s, indent + 2, file) for s in node.body]
+            elif isinstance(node, ReturnStatement):
+                print(f"{pfx}Return:", file=file)
+                capture_print_ast(node.value, indent + 1, file) if node.value else None
+            elif isinstance(node, PrintStatement): 
+                print(f"{pfx}Print:", file=file)
+                capture_print_ast(node.value, indent + 1, file)
+            elif isinstance(node, AssertStatement):
+                print(f"{pfx}Assert:", file=file)
+                capture_print_ast(node.left, indent + 1, file)
+                if node.right: 
+                    print(f"{pfx}  {node.operator}", file=file)
+                    capture_print_ast(node.right, indent + 1, file)
+            elif isinstance(node, Block):
+                print(f"{pfx}Block:", file=file)
+                for stmt in node.statements: 
+                    capture_print_ast(stmt, indent + 1, file)
+            elif isinstance(node, AnonymousFuncDef):
+                print(f"{pfx}AnonymousFuncDef: &{node.name}({', '.join(node.params)})", file=file)
+                for stmt in node.body: 
+                    capture_print_ast(stmt, indent + 1, file)
+            elif isinstance(node, ClassDef):
+                print(f"{pfx}Class: {node.name}" + (f" extends {node.extends}" if node.extends else ""), file=file)
+                if node.properties:
+                    print(f"{pfx}  properties:", file=file)
+                    for k, v in node.properties.items(): 
+                        print(f"{pfx}    {k}:", file=file)
+                        capture_print_ast(v, indent + 4, file) if v else print(f"{pfx}    {k}: None", file=file)
+                if node.methods:
+                    print(f"{pfx}  methods:", file=file)
+                    for k, v in node.methods.items(): 
+                        capture_print_ast(v, indent + 4, file)
+            elif isinstance(node, MethodDef):
+                print(f"{pfx}MethodDef: {node.name}({', '.join(node.params)})", file=file)
+                for stmt in node.body: 
+                    capture_print_ast(stmt, indent + 1, file)
+            elif isinstance(node, PropertyDef):
+                print(f"{pfx}Property: {node.name}", file=file)
+                capture_print_ast(node.value, indent + 1, file) if node.value else None
+            elif isinstance(node, MethodCall):
+                print(f"{pfx}MethodCall: .{node.method}", file=file)
+                capture_print_ast(node.obj, indent + 1, file)
+                if node.args:
+                    print(f"{pfx}  args:", file=file)
+                    for arg in node.args: 
+                        capture_print_ast(arg, indent + 2, file)
+            else: 
+                print(f"{pfx}{type(node).__name__}: {node}", file=file)
+        
+        capture_print_ast(ast)
+        ast_str = output.getvalue()
         
         return ParseResponse(
-            ast=ast_dict,
+            ast=ast_str,
             statements_count=len(ast.statements)
         )
         
@@ -482,6 +590,7 @@ async def get_variables():
 async def get_config_endpoint():
     """Get server configuration."""
     return {
+        "version": "2.0.0",
         "debug": config.debug,
         "log_level": config.log_level,
         "data_dir": str(config.data_dir),
@@ -511,7 +620,7 @@ async def get_stats():
 @app.on_event("startup")
 async def startup_event():
     """Run on server startup."""
-    logger.info(f"Pyrl Server starting on {config.server_host}:{config.server_port}")
+    logger.info(f"Pyrl Server v2.0.0 starting on {config.server_host}:{config.server_port}")
     logger.info(f"Debug mode: {config.debug}")
 
 

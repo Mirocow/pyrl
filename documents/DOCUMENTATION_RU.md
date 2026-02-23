@@ -1,7 +1,7 @@
 # Документация языка Pyrl
 
-**Версия:** 1.0.0  
-**Последнее обновление:** 2024
+**Версия:** 2.0.0  
+**Последнее обновление:** 2025-01-10
 
 ---
 
@@ -16,13 +16,12 @@
 7. [Операторы](#операторы)
 8. [Управляющие конструкции](#управляющие-конструкции)
 9. [Функции](#функции)
-10. [Классы и объекты](#классы-и-объекты)
-11. [Встроенные функции](#встроенные-функции)
-12. [Система плагинов](#система-плагинов)
-13. [Обучение модели](#обучение-модели)
-14. [API сервер](#api-сервер)
-15. [Docker](#docker)
-16. [Примеры](#примеры)
+10. [Анонимные функции](#анонимные-функции) *(NEW v2.0)*
+11. [Классы и объекты](#классы-и-объекты) *(NEW v2.0)*
+12. [Встроенные функции](#встроенные-функции)
+13. [API сервер](#api-сервер)
+14. [Docker](#docker)
+15. [Примеры](#примеры)
 
 ---
 
@@ -367,73 +366,235 @@ def add($a, $b):
 $result = add(5, 3)  # 8
 ```
 
-### Аргументы по умолчанию
+### Функциональные ссылки
 
 ```pyrl
-def greet($name, $greeting = "Привет"):
-    print($greeting + ", " + $name + "!")
+def double($x):
+    return $x * 2
 
-greet("Alice")              # Привет, Alice!
-greet("Bob", "Здравствуйте") # Здравствуйте, Bob!
-```
-
-### *args и **kwargs
-
-```pyrl
-def sum_all(*$numbers):
-    $total = 0
-    for $n in $numbers:
-        $total = $total + $n
-    return $total
-
-$result = sum_all(1, 2, 3, 4, 5)  # 15
-```
-
-### Лямбда-функции
-
-```pyrl
-$square = lambda $x: $x * $x
-$result = $square(5)  # 25
-
-# С map
-@doubled = map(lambda $x: $x * 2, [1, 2, 3])
+&func = &double
+$result = &func(5)  # 10
 ```
 
 ---
 
-## Классы и объекты
+## Анонимные функции *(NEW v2.0)*
+
+### Основной синтаксис
+
+Анонимные функции определяются с помощью блочного синтаксиса:
+
+```pyrl
+&double($x) = {
+    return $x * 2
+}
+
+print(&double(5))  # 10
+```
+
+### Блочный синтаксис
+
+Тело функции заключается в фигурные скобки, операторы разделяются точкой с запятой:
+
+```pyrl
+&reverse_string($str) = {
+    $reversed = "";
+    $len = len($str);
+    $i = $len - 1;
+    while $i >= 0 {
+        $reversed = $reversed + $str[$i];
+        $i = $i - 1
+    };
+    return $reversed
+}
+
+print(&reverse_string("hello"))  # "olleh"
+```
+
+### Управляющие конструкции в блоках
+
+Внутри блоков можно использовать `if`, `while`, `for`:
+
+```pyrl
+&abs($x) = {
+    if $x < 0 {
+        return -$x
+    };
+    return $x
+}
+
+&sum_to($n) = {
+    $sum = 0;
+    for $i in range($n + 1) {
+        $sum = $sum + $i
+    };
+    return $sum
+}
+
+print(&abs(-5))      # 5
+print(&sum_to(10))   # 55
+```
+
+### Ссылки на функции
+
+Функции можно сохранять в переменные и передавать:
+
+```pyrl
+&greet($name) = {
+    return "Hello, " + $name + "!"
+}
+
+$greeter = &greet
+print($greeter("World"))  # "Hello, World!"
+```
+
+### Вложенные вызовы
+
+Функции могут вызывать другие функции:
+
+```pyrl
+&is_palindrome($str) = {
+    $clean = lower($str);
+    $rev = &reverse_string($clean);
+    return $clean == $rev
+}
+
+print(&is_palindrome("racecar"))  # True
+print(&is_palindrome("hello"))    # False
+```
+
+---
+
+## Классы и объекты *(NEW v2.0)*
 
 ### Определение класса
 
-```pyrl
-class Person:
-    def __init__($self, $name, $age):
-        $self.name = $name
-        $self.age = $age
-    
-    def greet($self):
-        print("Привет, я " + $self.name)
-    
-    def get_age($self):
-        return $self.age
+Pyrl поддерживает ООП с синтаксисом классов:
 
-# Создание экземпляра
-$alice = Person("Alice", 30)
-$alice.greet()
-$age = $alice.get_age()
+```pyrl
+class Person {
+    prop name = "Unknown"
+    prop age = 0
+    
+    init($name, $age) = {
+        $name = $name;
+        $age = $age
+    }
+    
+    method get_name() = {
+        return $name
+    }
+    
+    method greet() = {
+        return "Привет, я " + $name
+    }
+}
 ```
 
-### Наследование
+### Создание экземпляра
 
 ```pyrl
-class Student(Person):
-    def __init__($self, $name, $age, $grade):
-        $self.name = $name
-        $self.age = $age
-        $self.grade = $grade
+$p = Person("Alice", 30)
+print($p.get_name())  # "Alice"
+print($p.greet())     # "Привет, я Alice"
+```
+
+### Свойства (prop)
+
+Свойства определяются с ключевым словом `prop`:
+
+```pyrl
+class Rectangle {
+    prop width = 0
+    prop height = 0
+    prop area = 0
     
-    def study($self):
-        print($self.name + " учится в " + $self.grade + " классе")
+    init($w, $h) = {
+        $width = $w;
+        $height = $h;
+        $area = $width * $height
+    }
+}
+
+$rect = Rectangle(5, 3)
+print($rect.area)  # 15
+```
+
+### Методы (method)
+
+Методы определяются с ключевым словом `method`:
+
+```pyrl
+class Counter {
+    prop count = 0
+    
+    method increment() = {
+        $count = $count + 1
+    }
+    
+    method get() = {
+        return $count
+    }
+}
+
+$c = Counter()
+$c.increment()
+$c.increment()
+print($c.get())  # 2
+```
+
+### Конструктор (init)
+
+Конструктор определяется с ключевым словом `init`:
+
+```pyrl
+class Point {
+    prop x = 0
+    prop y = 0
+    
+    init($x, $y) = {
+        $x = $x;
+        $y = $y
+    }
+    
+    method distance() = {
+        return sqrt($x * $x + $y * $y)
+    }
+}
+
+$p = Point(3, 4)
+print($p.distance())  # 5.0
+```
+
+### Пример: Стек
+
+```pyrl
+class Stack {
+    prop items = []
+    
+    init() = {
+        $items = []
+    }
+    
+    method push($item) = {
+        append($items, $item)
+    }
+    
+    method pop() = {
+        return pop($items)
+    }
+    
+    method is_empty() = {
+        return len($items) == 0
+    }
+}
+
+$stack = Stack()
+$stack.push(1)
+$stack.push(2)
+$stack.push(3)
+print($stack.pop())       # 3
+print($stack.is_empty())  # False
 ```
 
 ---

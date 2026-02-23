@@ -7,7 +7,6 @@ Usage:
     pyrl                    - Start interactive REPL
     pyrl <file.pyrl>        - Execute a Pyrl file
     pyrl -c "code"          - Execute code from string
-    pyrl -t <file.pyrl>     - Tokenize file and show tokens
     pyrl -p <file.pyrl>     - Parse file and show AST
     pyrl --version          - Show version
     pyrl --help             - Show help
@@ -22,11 +21,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from src.core.vm import PyrlVM, PyrlRuntimeError
-from src.core.lark_parser import print_ast as lark_print_ast, ParseErrorInfo
-from src.core.lexer import tokenize
-from src.core.parser import parse
+from src.core.lark_parser import print_ast as lark_print_ast, PyrlLarkParser
 from src.core.exceptions import PyrlError
-from src.core.builtins import load_builtin_plugins, get_loaded_plugins
 
 
 __version__ = "2.0.0"
@@ -36,18 +32,15 @@ __author__ = "Pyrl Team"
 class PyrlCLI:
     """Command Line Interface for Pyrl."""
 
-    def __init__(self, debug: bool = False, use_lark: bool = True):
+    def __init__(self, debug: bool = False):
         self.debug = debug
-        self.use_lark = use_lark
         self.vm = PyrlVM(debug=debug)
         self.env = self.vm.env
-        load_builtin_plugins(self.vm.env)
         if debug:
             print("\033[90mUsing Lark-based parser with debug mode\033[0m")
 
     def _format_error_type(self, error_type: str) -> str:
         """Format error type with spaces (e.g., 'PyrlRuntimeError' -> 'PYRL RUNTIME ERROR')."""
-        # Insert spaces before capital letters (except the first one)
         formatted = re.sub(r'(?<!^)(?=[A-Z])', ' ', error_type)
         return formatted.upper()
 
@@ -92,20 +85,19 @@ class PyrlCLI:
                 print("\n\nInterrupted. Press Ctrl+C again to exit or type 'exit' to quit.")
 
             except PyrlRuntimeError as e:
-                self._print_debug_error(f"\033[91mRuntime Error:\033[0m {e}", e)
+                self._print_debug_error("Runtime Error", e)
 
             except SyntaxError as e:
-                self._print_debug_error(print(str(e), file=sys.stderr), e)
+                print(str(e), file=sys.stderr)
 
             except PyrlError as e:
-                self._print_debug_error(f"\033[91mPyrl Error:\033[0m {e}", e)
+                self._print_debug_error("Pyrl Error", e)
 
             except Exception as e:
-                self._print_debug_error(f"\033[91mError:\033[0m {e}", e)
+                self._print_debug_error("Error", e)
 
     def _print_banner(self) -> None:
         """Print REPL banner with PYRL logo."""
-
         banner = f"""
 \033[96m╔═══════════════════════════════════════════════════════════════╗
 ║                                                               ║
@@ -116,7 +108,7 @@ class PyrlCLI:
 ║   \033[92m██████╔╝╚██████╔╝██║  ██║██║  ██╗\033[96m                           ║
 ║   \033[92m╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝\033[96m                           ║
 ║                                                               ║
-║   \033[93mHybrid Python-Perl Language Interpreter v{__version__}\033[96m              ║
+║   \033[93mHybrid Python-Perl Language v{__version__}\033[96m              ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝\033[0m
 """
@@ -191,20 +183,6 @@ class PyrlCLI:
             filepath = cmd[5:].strip()
             self._load_file(filepath)
             return True
-        if cmd == 'plugins':
-            self._print_plugins()
-            return True
-        if cmd.startswith('plugin '):
-            plugin_name = cmd[7:].strip()
-            self._load_plugin(plugin_name)
-            return True
-        if cmd == 'train':
-            self._train_model()
-            return True
-        if cmd.startswith('train '):
-            args = cmd[6:].strip()
-            self._train_model_with_args(args)
-            return True
         return False
 
     def _print_help(self) -> None:
@@ -218,6 +196,17 @@ class PyrlCLI:
     @array  - Array (list)
     %hash   - Hash/dictionary
     &func   - Function reference
+
+\033[93mAnonymous Functions (v2.0):\033[0m
+    &name($params) = { body }
+    &double($x) = { return $x * 2 }
+
+\033[93mClasses (v2.0):\033[0m
+    class Name {
+        prop name = value
+        init($args) = { body }
+        method name() = { body }
+    }
 
 \033[93mREPL Commands:\033[0m
     help     - Show this help
@@ -240,26 +229,45 @@ class PyrlCLI:
         print("\n\033[93mVariables:\033[0m")
         print("─" * 40)
         for name, value in sorted(variables.items()):
+            # Skip builtins and internal variables
             if name.startswith('_') or name in ('True', 'False', 'None', 'PI', 'E', 'INF', 'NAN'):
                 continue
-            if isinstance(value, list):
+            
+            # Determine sigil based on name prefix or value type
+            if name.startswith('$'):
+                sigil = ''
+                display_name = name[1:]
+            elif name.startswith('@'):
+                sigil = '';
+                display_name = name[1:]
+            elif name.startswith('%'):
+                sigil = ''
+                display_name = name[1:]
+            elif name.startswith('&'):
+                sigil = ''
+                display_name = name[1:]
+            elif isinstance(value, list):
                 sigil = '@'
+                display_name = name
             elif isinstance(value, dict):
                 sigil = '%'
+                display_name = name
             elif callable(value):
                 sigil = '&'
+                display_name = name
             else:
                 sigil = '$'
+                display_name = name
+            
             if isinstance(value, (list, dict)):
                 value_str = str(value)
                 if len(value_str) > 50:
                     value_str = value_str[:47] + "..."
             elif callable(value):
-                value_str = f"<function {name}>"
-                sigil = ''
+                value_str = f"<function>"
             else:
                 value_str = repr(value)
-            print(f"  {sigil}\033[92m{name}\033[0m = {value_str}")
+            print(f"  {sigil}\033[92m{display_name}\033[0m = {value_str}")
         print()
 
     def _print_result(self, result) -> None:
@@ -297,86 +305,6 @@ class PyrlCLI:
                 self._print_debug_error(type(e).__name__, e)
             else:
                 print(f"\033[91mError loading file: {e}\033[0m")
-
-    def _print_plugins(self) -> None:
-        plugins = get_loaded_plugins()
-        if not plugins:
-            print("\033[90mNo plugins loaded.\033[0m")
-            return
-        print("\n\033[93mLoaded Plugins:\033[0m")
-        print("─" * 40)
-        for plugin_name, exports in sorted(plugins.items()):
-            print(f"  \033[92m{plugin_name}\033[0m")
-            for func_name in exports.keys():
-                print(f"    └─ {func_name}")
-        print()
-
-    def _load_plugin(self, plugin_name: str) -> None:
-        try:
-            from src.core.builtins import _plugin_loader
-            exports = _plugin_loader.load_plugin(plugin_name)
-            for name, value in exports.items():
-                full_name = f"{plugin_name}_{name}"
-                if hasattr(self.env, 'define'):
-                    self.env.define(full_name, value)
-                else:
-                    self.env[full_name] = value
-            print(f"\033[92mPlugin '{plugin_name}' loaded successfully.\033[0m")
-        except Exception as e:
-            if self.debug:
-                self._print_debug_error(type(e).__name__, e)
-            else:
-                print(f"\033[91mError loading plugin: {e}\033[0m")
-
-    def _train_model(self) -> None:
-        self._train_model_with_args("")
-
-    def _train_model_with_args(self, args: str) -> None:
-        import subprocess
-        import shlex
-        print("\033[96m" + "═" * 50)
-        print("   Pyrl Model Training")
-        print("═" * 50 + "\033[0m")
-        cmd = [sys.executable, "scripts/train_model.py"]
-        examples_path = None
-        if args:
-            try:
-                parts = shlex.split(args)
-            except:
-                parts = args.split()
-            i = 0
-            while i < len(parts):
-                part = parts[i]
-                if part.startswith("--example=") or part.startswith("--examples="):
-                    examples_path = part.split("=", 1)[1]
-                elif part in ("--example", "--examples") and i + 1 < len(parts):
-                    examples_path = parts[i + 1]
-                    i += 1
-                elif part.startswith("--"):
-                    cmd.append(part)
-                i += 1
-        if examples_path:
-            examples_file = Path(examples_path)
-            if not examples_file.is_absolute():
-                examples_file = Path(__file__).parent / examples_path
-            if examples_file.exists():
-                cmd.extend(["--examples", str(examples_file)])
-        else:
-            default_examples = Path(__file__).parent / "examples/10000_examples.pyrl"
-            if default_examples.exists():
-                cmd.extend(["--examples", str(default_examples)])
-        print(f"\n\033[90mRunning: {' '.join(cmd)}\033[0m\n")
-        try:
-            result = subprocess.run(cmd, cwd=str(Path(__file__).parent))
-            if result.returncode == 0:
-                print(f"\n\033[92mTraining completed successfully!\033[0m")
-            else:
-                print(f"\n\033[91mTraining failed with code {result.returncode}\033[0m")
-        except Exception as e:
-            if self.debug:
-                self._print_debug_error(type(e).__name__, e)
-            else:
-                print(f"\033[91mError running training: {e}\033[0m")
 
     def run_file(self, filepath: str) -> int:
         try:
@@ -436,30 +364,6 @@ class PyrlCLI:
             self._print_debug_error(type(e).__name__, e)
             return 1
 
-    def tokenize_file(self, filepath: str) -> int:
-        try:
-            path = Path(filepath)
-            if not path.exists():
-                print(f"Error: File not found: {filepath}", file=sys.stderr)
-                return 1
-            source = path.read_text()
-            tokens = tokenize(source)
-            print(f"\n\033[96mTokens from {filepath}:\033[0m")
-            print("─" * 60)
-            for token in tokens:
-                if token.type.name == 'EOF':
-                    continue
-                value_str = f" \033[93m{repr(token.value)}\033[0m" if token.value is not None else ""
-                print(f"  \033[92m{token.type.name:15}\033[0m {value_str}")
-            print(f"\n\033[90mTotal tokens: {len(tokens)}\033[0m")
-            return 0
-        except Exception as e:
-            if self.debug:
-                self._print_debug_error(type(e).__name__, e)
-            else:
-                print(f"Error: {e}", file=sys.stderr)
-            return 1
-
     def parse_file(self, filepath: str) -> int:
         try:
             path = Path(filepath)
@@ -467,18 +371,13 @@ class PyrlCLI:
                 print(f"Error: File not found: {filepath}", file=sys.stderr)
                 return 1
             source = path.read_text()
-            if self.use_lark:
-                from src.core.lark_parser import parse_lark
-                ast = parse_lark(source, debug=self.debug)
-                print(f"\n\033[96mAST from {filepath} (Lark parser):\033[0m")
-                print("─" * 60)
-                lark_print_ast(ast)
-            else:
-                tokens = tokenize(source)
-                ast = parse(tokens)
-                print(f"\n\033[96mAST from {filepath} (Legacy parser):\033[0m")
-                print("─" * 60)
-                self._print_ast(ast, indent=0)
+            
+            parser = PyrlLarkParser(debug=self.debug)
+            ast = parser.parse(source)
+            
+            print(f"\n\033[96mAST from {filepath}:\033[0m")
+            print("─" * 60)
+            lark_print_ast(ast)
             return 0
         except SyntaxError as e:
             if self.debug:
@@ -489,28 +388,6 @@ class PyrlCLI:
         except Exception as e:
             self._print_debug_error(type(e).__name__, e)
             return 1
-
-    def _print_ast(self, node, indent: int = 0) -> None:
-        prefix = "  " * indent
-        node_type = type(node).__name__
-        if hasattr(node, '__dataclass_fields__'):
-            print(f"{prefix}\033[92m{node_type}\033[0m")
-            for field_name in node.__dataclass_fields__:
-                value = getattr(node, field_name)
-                if field_name in ('line', 'column'):
-                    continue
-                if isinstance(value, list):
-                    if value:
-                        print(f"{prefix}  \033[94m{field_name}:\033[0m")
-                        for item in value:
-                            self._print_ast(item, indent + 2)
-                elif hasattr(value, '__dataclass_fields__'):
-                    print(f"{prefix}  \033[94m{field_name}:\033[0m")
-                    self._print_ast(value, indent + 2)
-                else:
-                    print(f"{prefix}  \033[94m{field_name}:\033[0m {value}")
-        else:
-            print(f"{prefix}{node}")
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -523,18 +400,20 @@ Examples:
     pyrl                      Start interactive REPL
     pyrl script.pyrl          Execute a script file
     pyrl -c '$x = 10'         Execute code from command line
-    pyrl -t script.pyrl       Show tokens
     pyrl -p script.pyrl       Show AST
+
+New in v2.0:
+    - Anonymous functions: &name($x) = { return $x * 2 }
+    - Classes with methods and properties
+    - Block syntax: { stmt; stmt }
 
 For more information, visit: https://github.com/pyrl-lang/pyrl
 """
     )
     parser.add_argument('file', nargs='?', help='Pyrl script file to execute')
     parser.add_argument('-c', '--code', metavar='CODE', help='Execute code from command line')
-    parser.add_argument('-t', '--tokenize', action='store_true', help='Tokenize file and show tokens')
     parser.add_argument('-p', '--parse', action='store_true', help='Parse file and show AST')
     parser.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
-    parser.add_argument('--legacy', action='store_true', help='Use legacy parser')
     parser.add_argument('-v', '--version', action='version', version=f'Pyrl {__version__}')
     parser.add_argument('--no-color', action='store_true', help='Disable colored output')
     return parser
@@ -543,18 +422,19 @@ For more information, visit: https://github.com/pyrl-lang/pyrl
 def main() -> int:
     parser = create_parser()
     args = parser.parse_args()
+    
     if args.no_color:
         os.environ['NO_COLOR'] = '1'
-    use_lark = not args.legacy
-    cli = PyrlCLI(debug=args.debug, use_lark=use_lark)
+    
+    cli = PyrlCLI(debug=args.debug)
+    
     if args.code:
         return cli.run_code(args.code)
-    if args.tokenize and args.file:
-        return cli.tokenize_file(args.file)
     if args.parse and args.file:
         return cli.parse_file(args.file)
     if args.file:
         return cli.run_file(args.file)
+    
     try:
         cli.run_repl()
         return 0

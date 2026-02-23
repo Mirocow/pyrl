@@ -5,6 +5,103 @@ All notable changes to the Pyrl language will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-01-10
+
+### Added
+
+#### Anonymous Functions
+- **NEW**: Anonymous function syntax with block body: `&name($params) = { body }`
+- Block syntax for function bodies with semicolon-separated statements
+- Control flow inside blocks: `if/while/for` with block syntax
+- Function references can be stored in variables: `$func = &my_function`
+- Nested function calls work correctly
+
+```pyrl
+&reverse_string($str) = {
+    $reversed = "";
+    $len = len($str);
+    $i = $len - 1;
+    while $i >= 0 {
+        $reversed = $reversed + $str[$i];
+        $i = $i - 1
+    };
+    return $reversed
+}
+
+$func = &reverse_string
+print($func("hello"))  # "olleh"
+```
+
+#### OOP Support
+- **NEW**: Class definition syntax: `class Name [extends Parent] { members }`
+- **NEW**: Method definition: `method name(params) = { body }`
+- **NEW**: Constructor: `init(params) = { body }`
+- **NEW**: Property definition: `prop name [= value]`
+- **NEW**: Method calls on instances: `$obj.method(args)`
+
+```pyrl
+class Person {
+    prop name = "Unknown"
+    prop age = 0
+    
+    init($name, $age) = {
+        $name = $name;
+        $age = $age
+    }
+    
+    method get_name() = {
+        return $name
+    }
+}
+
+$p = Person("Alice", 30)
+print($p.get_name())  # "Alice"
+```
+
+#### Block Syntax
+- Block statements enclosed in `{ }`
+- Statements separated by `;`
+- Control flow inside blocks: `if expr { }`, `while expr { }`, `for $var in expr { }`
+
+### Fixed
+
+#### Variable Shadowing
+- Variables are now stored with sigil prefixes (`$`, `@`, `%`, `&`)
+- Prevents shadowing of built-in functions like `len`, `lower`, `type`, etc.
+
+```pyrl
+# Before: this would break len()
+$len = 5
+
+# Now: $len stored as '$len', 'len' function still works
+print(len("hello"))  # 5
+```
+
+#### Function Parameter Binding
+- Function parameters are properly prefixed with `$`
+- Nested function calls work correctly
+- Recursive functions work correctly
+
+### Changed
+
+#### Internal Architecture
+- Variable storage uses prefixed names internally
+- `get_variable()` and `has_variable()` methods handle prefix lookup
+- Function calls try `&` prefix for user-defined functions first
+
+#### Parser
+- Added `func_var_definition` rule for `&name():` and `&name() = {}` syntax
+- Added `block`, `block_stmts`, `block_stmt` rules
+- Added `block_if`, `block_while`, `block_for` rules
+- Added `class_definition`, `class_body`, `class_member` rules
+- Added `method_def`, `property_def`, `method_call` rules
+
+### Tests
+- All 321 tests passing
+- Added tests for anonymous functions
+- Added tests for OOP features
+- Updated tests for new variable storage format
+
 ## [1.1.0] - 2025-01-09
 
 ### Changed

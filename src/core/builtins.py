@@ -3,6 +3,7 @@ Pyrl Builtins Module
 Built-in functions for the Pyrl language.
 """
 from typing import Any, List, Dict, Callable
+from pathlib import Path
 import math
 import random
 import re
@@ -556,6 +557,16 @@ def get_builtins() -> Dict[str, PyrlBuiltin]:
     builtins['re_sub'] = PyrlBuiltin('re_sub', pyrl_re_sub, 3, 5)
     builtins['re_split'] = PyrlBuiltin('re_split', pyrl_re_split, 2, 4)
     
+    # HTTP and JSON
+    builtins['http_get'] = PyrlBuiltin('http_get', pyrl_http_get, 1, 2)
+    builtins['http_post'] = PyrlBuiltin('http_post', pyrl_http_post, 1, 3)
+    builtins['json_parse'] = PyrlBuiltin('json_parse', pyrl_json_parse, 1, 1)
+    builtins['json_stringify'] = PyrlBuiltin('json_stringify', pyrl_json_stringify, 1, 2)
+    
+    # Time
+    builtins['time'] = PyrlBuiltin('time', pyrl_time, 0, 0)
+    builtins['sleep'] = PyrlBuiltin('sleep', pyrl_sleep, 1, 1)
+    
     return builtins
 
 
@@ -569,3 +580,170 @@ BUILTIN_CONSTANTS = {
     'INF': float('inf'),
     'NAN': float('nan'),
 }
+
+
+# ===========================================
+# Plugin System
+# ===========================================
+
+# Global storage for loaded plugins
+_LOADED_PLUGINS: Dict[str, Dict[str, Any]] = {}
+
+
+class PluginLoader:
+    """Plugin loader for Pyrl."""
+    
+    def __init__(self):
+        self.plugin_paths = []
+        self._load_env_paths()
+    
+    def _load_env_paths(self):
+        """Load plugin paths from environment variable."""
+        import os
+        paths = os.environ.get('PYRL_PLUGINS_PATH', '')
+        if paths:
+            self.plugin_paths.extend(paths.split(':'))
+    
+    def load_plugin(self, name: str) -> Dict[str, Any]:
+        """Load a plugin by name."""
+        if name in _LOADED_PLUGINS:
+            return _LOADED_PLUGINS[name]
+        
+        # Try to load from plugin paths
+        for path in self.plugin_paths:
+            plugin_file = Path(path) / f"{name}.py"
+            if plugin_file.exists():
+                return self._load_from_file(name, plugin_file)
+        
+        raise ImportError(f"Plugin '{name}' not found")
+    
+    def _load_from_file(self, name: str, filepath: Path) -> Dict[str, Any]:
+        """Load plugin from file."""
+        import importlib.util
+        
+        spec = importlib.util.spec_from_file_location(name, filepath)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        
+        exports = {}
+        for attr_name in dir(module):
+            if not attr_name.startswith('_'):
+                exports[attr_name] = getattr(module, attr_name)
+        
+        _LOADED_PLUGINS[name] = exports
+        return exports
+
+
+# Global plugin loader instance
+_plugin_loader = PluginLoader()
+
+
+def register_plugin(name: str, exports: Dict[str, Any]) -> None:
+    """Register a plugin programmatically."""
+    _LOADED_PLUGINS[name] = exports
+
+
+def get_loaded_plugins() -> Dict[str, Dict[str, Any]]:
+    """Get all loaded plugins."""
+    return _LOADED_PLUGINS.copy()
+
+
+def load_builtin_plugins(env=None) -> Dict[str, Any]:
+    """
+    Load all built-in functions and return them as a dictionary.
+    If env is provided, also register them in the environment.
+    """
+    builtins = get_builtins()
+    plugins = {}
+    
+    # Convert PyrlBuiltin objects to regular callables
+    for name, builtin in builtins.items():
+        plugins[name] = builtin
+    
+    # Add constants
+    plugins.update(BUILTIN_CONSTANTS)
+    
+    # Register in environment if provided
+    if env is not None:
+        for name, value in plugins.items():
+            if hasattr(env, 'define'):
+                env.define(name, value)
+            elif hasattr(env, '__setitem__'):
+                env[name] = value
+    
+    # Mark as built-in plugin
+    _LOADED_PLUGINS['builtin'] = plugins
+    
+    return plugins
+
+
+# ===========================================
+# HTTP Functions (optional, require requests)
+# ===========================================
+
+def pyrl_http_get(url: str, timeout: int = 30) -> Dict[str, Any]:
+    """Perform HTTP GET request."""
+    try:
+        import requests
+        response = requests.get(url, timeout=timeout)
+        return {
+            'status': response.status_code,
+            'data': response.text,
+            'headers': dict(response.headers),
+            'ok': response.ok
+        }
+    except ImportError:
+        raise RuntimeError("HTTP functions require 'requests' library. Install with: pip install requests")
+    except Exception as e:
+        return {
+            'status': 0,
+            'error': str(e),
+            'ok': False
+        }
+
+
+def pyrl_http_post(url: str, data: Any = None, timeout: int = 30) -> Dict[str, Any]:
+    """Perform HTTP POST request."""
+    try:
+        import requests
+        response = requests.post(url, data=data, timeout=timeout)
+        return {
+            'status': response.status_code,
+            'data': response.text,
+            'headers': dict(response.headers),
+            'ok': response.ok
+        }
+    except ImportError:
+        raise RuntimeError("HTTP functions require 'requests' library. Install with: pip install requests")
+    except Exception as e:
+        return {
+            'status': 0,
+            'error': str(e),
+            'ok': False
+        }
+
+
+def pyrl_json_parse(s: str) -> Any:
+    """Parse JSON string to Python object."""
+    import json
+    return json.loads(s)
+
+
+def pyrl_json_stringify(obj: Any, indent: int = None) -> str:
+    """Convert Python object to JSON string."""
+    import json
+    return json.dumps(obj, indent=indent, default=str)
+
+
+# Time functions
+def pyrl_time():
+    """Return current time in seconds since epoch."""
+    import time
+    return time.time()
+
+
+def pyrl_sleep(seconds: float):
+    """Sleep for specified seconds."""
+    import time
+    time.sleep(seconds)
+    return None

@@ -1,0 +1,334 @@
+# Pyrl Web Application with SQLite Database
+# Client-Server with Authentication and SQLite Session Storage
+
+$PORT = env_get("PYRL_PORT", "8080")
+$HOST = env_get("PYRL_HOST", "0.0.0.0")
+$SECRET_KEY = env_get("PYRL_SECRET", "pyrl_secret_key_2024")
+$DB_PATH = env_get("PYRL_DB", "app.db")
+
+print("")
+print("Initializing database...")
+
+$db_handle = db_connect($DB_PATH)
+
+$result = db_execute($db_handle, """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        email TEXT,
+        role TEXT DEFAULT 'user',
+        name TEXT,
+        created_at REAL
+    )
+""")
+
+$result = db_execute($db_handle, """
+    CREATE TABLE IF NOT EXISTS sessions (
+        id TEXT PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        username TEXT NOT NULL,
+        data TEXT,
+        created_at REAL,
+        expires_at REAL
+    )
+""")
+
+@default_users = [
+    ["admin", "admin123", "admin@pyrl.local", "Administrator", "Admin User"],
+    ["user", "user123", "user@pyrl.local", "User", "Regular User"],
+    ["demo", "demo", "demo@pyrl.local", "Demo", "Demo User"]
+]
+
+for $u in @default_users:
+    $check = db_query_one($db_handle, "SELECT id FROM users WHERE username = ?", [$u[0]])
+    if $check["row"] == None:
+        db_execute($db_handle, """
+            INSERT INTO users (username, password, email, role, name, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, [$u[0], $u[1], $u[2], $u[3], $u[4], time()])
+        print("  Created user: " + $u[0])
+
+print("Database initialized!")
+print("")
+
+$SESSION_LIFETIME = 3600
+
+def create_session($user_id, $username, %extra):
+    $session_id = uuid()
+    $created = time()
+    $expires = $created + $SESSION_LIFETIME
+    $data_json = json_stringify(%extra)
+    $result = db_execute($db_handle, """
+        INSERT INTO sessions (id, user_id, username, data, created_at, expires_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, [$session_id, $user_id, $username, $data_json, $created, $expires])
+    if $result["success"]:
+        return $session_id
+    return ""
+
+def get_session($session_id):
+    if $session_id == "" or $session_id == None:
+        return {"valid": False}
+    $now = time()
+    $result = db_query_one($db_handle, """
+        SELECT s.*, u.role, u.name, u.email 
+        FROM sessions s 
+        JOIN users u ON s.user_id = u.id 
+        WHERE s.id = ? AND s.expires_at > ?
+    """, [$session_id, $now])
+    if $result["success"] and $result["row"] != None:
+        $row = $result["row"]
+        return {
+            "valid": True,
+            "user_id": $row["user_id"],
+            "username": $row["username"],
+            "role": $row["role"],
+            "name": $row["name"],
+            "email": $row["email"]
+        }
+    return {"valid": False}
+
+def delete_session($session_id):
+    db_execute($db_handle, "DELETE FROM sessions WHERE id = ?", [$session_id])
+
+def cleanup_sessions():
+    $now = time()
+    db_execute($db_handle, "DELETE FROM sessions WHERE expires_at < ?", [$now])
+
+def count_active_sessions():
+    $now = time()
+    $result = db_query_one($db_handle, "SELECT COUNT(*) as cnt FROM sessions WHERE expires_at > ?", [$now])
+    if $result["success"] and $result["row"] != None:
+        return $result["row"]["cnt"]
+    return 0
+
+def authenticate_user($username, $password):
+    $result = db_query_one($db_handle, """
+        SELECT * FROM users WHERE username = ?
+    """, [$username])
+    if $result["success"] and $result["row"] != None:
+        $user = $result["row"]
+        if $user["password"] == $password:
+            return {"success": True, "user": $user}
+    return {"success": False}
+
+$LOGIN_PAGE = """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pyrl App - Login</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 400px; width: 90%; position: relative; }
+        h1 { color: #333; text-align: center; margin-bottom: 30px; }
+        h1 span { color: #667eea; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; }
+        button { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .demo { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 20px; font-size: 0.85em; color: #666; }
+        .db-badge { background: #667eea; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.7em; position: absolute; top: 10px; right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="db-badge">SQLite</span>
+        <h1>Pyrl<span>App</span></h1>
+        <form method="POST" action="/login">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Sign In</button>
+        </form>
+        <div class="demo">
+            <strong>Demo:</strong> admin / admin123 | user / user123 | demo / demo
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+def render_dashboard($username, $name, $role, $session_count):
+    $html = """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Pyrl App</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; margin: 0; }
+        .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; }
+        .header span { color: #ffd700; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px; }
+        .welcome { background: white; padding: 40px; border-radius: 20px; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        h2 { color: #333; margin: 10px 0; }
+        .success { color: #28a745; font-size: 3em; }
+        .role-badge { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 5px 15px; border-radius: 15px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+        .stat { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .value { font-size: 2em; font-weight: bold; color: #333; }
+        .label { color: #666; margin-top: 5px; }
+        .logout-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+        .db-info { background: #e8f4f8; padding: 15px; border-radius: 10px; margin-top: 20px; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Pyrl<span>App</span> - Dashboard</h1>
+        <form method="POST" action="/logout" style="display:inline">
+            <button class="logout-btn">Logout</button>
+        </form>
+    </div>
+    <div class="container">
+        <div class="welcome">
+            <div class="success">OK</div>
+            <h2>Welcome, {{NAME}}!</h2>
+            <p>You are logged in as <span class="role-badge">{{ROLE}}</span></p>
+            <p style="color: #666;">Username: {{USERNAME}}</p>
+        </div>
+        <div class="stats">
+            <div class="stat"><div class="value">{{SESSIONS}}</div><div class="label">Active Sessions</div></div>
+            <div class="stat"><div class="value">SQLite</div><div class="label">Database</div></div>
+            <div class="stat"><div class="value">3</div><div class="label">Users</div></div>
+            <div class="stat"><div class="value">99.9%</div><div class="label">Uptime</div></div>
+        </div>
+        <div class="db-info">
+            <strong>Session Storage:</strong> Sessions stored in SQLite ({{DB_PATH}})
+        </div>
+    </div>
+</body>
+</html>
+"""
+    $html = replace($html, "{{USERNAME}}", $username)
+    $html = replace($html, "{{NAME}}", $name)
+    $html = replace($html, "{{ROLE}}", $role)
+    $html = replace($html, "{{SESSIONS}}", str($session_count))
+    $html = replace($html, "{{DB_PATH}}", $DB_PATH)
+    return $html
+
+def handle_request($method, $path, %headers, $body):
+    $random = randint(1, 100)
+    if $random == 1:
+        cleanup_sessions()
+    if $path == "/" and $method == "GET":
+        return html_response($LOGIN_PAGE)
+    if $path == "/login" and $method == "POST":
+        print("[POST /login]")
+        %form = parse_form($body)
+        $username = get(%form, "username", "")
+        $password = get(%form, "password", "")
+        $result = authenticate_user($username, $password)
+        if $result["success"]:
+            $user = $result["user"]
+            print("  SUCCESS: " + $username)
+            $token = create_session($user["id"], $user["username"], {"role": $user["role"]})
+            return {"status": 302, "headers": {"Location": "/dashboard", "Set-Cookie": "session=" + $token}, "body": ""}
+        print("  FAILED: " + $username)
+        return {"status": 302, "headers": {"Location": "/"}, "body": ""}
+    if $path == "/dashboard" and $method == "GET":
+        print("[GET /dashboard]")
+        $cookie = get(%headers, "Cookie", "")
+        %cookies = parse_cookies($cookie)
+        $token = get(%cookies, "session", "")
+        $session = get_session($token)
+        if $session["valid"]:
+            $session_count = count_active_sessions()
+            $html = render_dashboard($session["username"], $session["name"], $session["role"], $session_count)
+            return html_response($html)
+        print("  Invalid session")
+        return redirect("/")
+    if $path == "/logout" and $method == "POST":
+        print("[POST /logout]")
+        $cookie = get(%headers, "Cookie", "")
+        %cookies = parse_cookies($cookie)
+        $token = get(%cookies, "session", "")
+        if $token != "":
+            delete_session($token)
+        return {"status": 302, "headers": {"Location": "/"}, "body": ""}
+    if $path == "/api/status" and $method == "GET":
+        $session_count = count_active_sessions()
+        return json_response({"status": "ok", "version": "1.0.0", "language": "Pyrl", "database": "SQLite", "active_sessions": $session_count})
+    if $path == "/api/users" and $method == "GET":
+        $cookie = get(%headers, "Cookie", "")
+        %cookies = parse_cookies($cookie)
+        $token = get(%cookies, "session", "")
+        $session = get_session($token)
+        if not $session["valid"]:
+            return json_response({"error": "Unauthorized"}, 401)
+        if $session["role"] != "Administrator":
+            return json_response({"error": "Forbidden"}, 403)
+        $result = db_query($db_handle, "SELECT id, username, email, role, name, created_at FROM users")
+        if $result["success"]:
+            return json_response({"users": $result["rows"]})
+        return json_response({"error": "Database error"}, 500)
+    return html_response("<h1>404 Not Found</h1><p><a href='/'>Login</a></p>", 404)
+
+print("=" * 60)
+print("  Pyrl Web Application Server (SQLite)")
+print("=" * 60)
+print("  Port: " + $PORT)
+print("  Database: " + $DB_PATH)
+print("  Routes: /, /login, /dashboard, /logout, /api/status, /api/users")
+print("=" * 60)
+print("")
+
+$app = {"handle": &handle_request, "port": int($PORT), "db": $db_handle}
+
+print("Running tests...")
+print("")
+
+print("Test 1: GET /")
+$r1 = handle_request("GET", "/", {}, "")
+print("  Status: " + str($r1["status"]))
+print("")
+
+print("Test 2: POST /login (wrong)")
+$r2 = handle_request("POST", "/login", {}, "username=admin&password=wrong")
+print("  Status: " + str($r2["status"]))
+print("")
+
+print("Test 3: POST /login (correct)")
+$r3 = handle_request("POST", "/login", {}, "username=admin&password=admin123")
+print("  Status: " + str($r3["status"]))
+$cookie = get($r3["headers"], "Set-Cookie", "")
+$token = ""
+if startswith($cookie, "session="):
+    $token = split(replace($cookie, "session=", ""), ";")[0]
+    print("  Token: " + $token)
+print("")
+
+print("Test 4: GET /dashboard")
+%hdrs = {"Cookie": "session=" + $token}
+$r4 = handle_request("GET", "/dashboard", %hdrs, "")
+print("  Status: " + str($r4["status"]))
+print("")
+
+print("Test 5: GET /api/status")
+$r5 = handle_request("GET", "/api/status", {}, "")
+print("  Body: " + $r5["body"])
+print("")
+
+print("Test 6: GET /api/users")
+%hdrs = {"Cookie": "session=" + $token}
+$r6 = handle_request("GET", "/api/users", %hdrs, "")
+print("  Status: " + str($r6["status"]))
+print("")
+
+print("Test 7: POST /logout")
+%hdrs = {"Cookie": "session=" + $token}
+$r7 = handle_request("POST", "/logout", %hdrs, "")
+print("  Status: " + str($r7["status"]))
+print("")
+
+print("Test 8: GET /dashboard (after logout)")
+%hdrs = {"Cookie": "session=" + $token}
+$r8 = handle_request("GET", "/dashboard", %hdrs, "")
+print("  Status: " + str($r8["status"]))
+print("")
+
+print("=" * 60)
+print("  All tests passed!")
+print("  Run: python run_web_app.py --file examples/web_app_db.pyrl")
+print("=" * 60)

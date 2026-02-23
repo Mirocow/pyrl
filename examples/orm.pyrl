@@ -1,0 +1,67 @@
+# Pyrl ORM Library for SQLite
+# Provides helper functions for session management with SQLite
+
+# Create sessions table
+def orm_create_sessions_table($db, $table):
+    $sql = "CREATE TABLE IF NOT EXISTS " + $table + " (id TEXT PRIMARY KEY, user_id INTEGER, username TEXT, data TEXT, created_at REAL, expires_at REAL)"
+    return db_execute($db, $sql)
+
+# Create a new session
+def orm_create_session($db, $table, $user_id, $username, %data, $lifetime):
+    $session_id = uuid()
+    $created = time()
+    $expires = $created + $lifetime
+    $data_json = json_stringify(%data)
+    $sql = "INSERT INTO " + $table + " (id, user_id, username, data, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)"
+    $result = db_execute($db, $sql, [$session_id, $user_id, $username, $data_json, $created, $expires])
+    if $result["success"]:
+        return $session_id
+    return ""
+
+# Get session by ID
+def orm_get_session($db, $table, $session_id):
+    $now = time()
+    $sql = "SELECT * FROM " + $table + " WHERE id = ? AND expires_at > ?"
+    $result = db_query_one($db, $sql, [$session_id, $now])
+    if $result["success"] and $result["row"] != None:
+        $row = $result["row"]
+        return {"valid": True, "user_id": $row["user_id"], "username": $row["username"], "data": json_parse($row["data"])}
+    return {"valid": False}
+
+# Delete session
+def orm_delete_session($db, $table, $session_id):
+    $sql = "DELETE FROM " + $table + " WHERE id = ?"
+    return db_execute($db, $sql, [$session_id])
+
+# Cleanup expired sessions
+def orm_cleanup_sessions($db, $table):
+    $now = time()
+    $sql = "DELETE FROM " + $table + " WHERE expires_at < ?"
+    return db_execute($db, $sql, [$now])
+
+# Count active sessions
+def orm_count_sessions($db, $table):
+    $now = time()
+    $sql = "SELECT COUNT(*) as cnt FROM " + $table + " WHERE expires_at > ?"
+    $result = db_query_one($db, $sql, [$now])
+    if $result["success"] and $result["row"] != None:
+        return $result["row"]["cnt"]
+    return 0
+
+# Create users table
+def orm_create_users_table($db):
+    $sql = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL, email TEXT, role TEXT DEFAULT 'user', name TEXT, created_at REAL)"
+    return db_execute($db, $sql)
+
+# Find user by username
+def orm_find_user($db, $username):
+    $result = db_query_one($db, "SELECT * FROM users WHERE username = ?", [$username])
+    if $result["success"] and $result["row"] != None:
+        return $result["row"]
+    return None
+
+# Create user
+def orm_create_user($db, $username, $password, $email, $role, $name):
+    return db_execute($db, "INSERT INTO users (username, password, email, role, name, created_at) VALUES (?, ?, ?, ?, ?, ?)", [$username, $password, $email, $role, $name, time()])
+
+print("ORM Library loaded: orm_create_sessions_table, orm_create_session, orm_get_session, orm_delete_session, orm_cleanup_sessions, orm_count_sessions, orm_create_users_table, orm_find_user, orm_create_user")

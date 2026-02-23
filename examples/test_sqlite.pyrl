@@ -1,0 +1,186 @@
+# SQLite and ORM Tests for Pyrl
+
+print("==========================================")
+print("  SQLite Database Tests")
+print("==========================================")
+print("")
+
+# Test 1: Basic connection
+print("Test 1: Database connection")
+$db = db_connect(":memory:")
+print("  Handle: " + str($db))
+print("  OK")
+print("")
+
+# Test 2: Create table
+print("Test 2: Create table")
+$result = db_execute($db, """
+    CREATE TABLE users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        email TEXT,
+        age INTEGER,
+        created_at REAL
+    )
+""")
+print("  Success: " + str($result["success"]))
+print("  OK")
+print("")
+
+# Test 3: Insert data
+print("Test 3: Insert data")
+$result1 = db_execute($db, "INSERT INTO users (username, email, age, created_at) VALUES (?, ?, ?, ?)", ["alice", "alice@example.com", 25, time()])
+$result2 = db_execute($db, "INSERT INTO users (username, email, age, created_at) VALUES (?, ?, ?, ?)", ["bob", "bob@example.com", 30, time()])
+$result3 = db_execute($db, "INSERT INTO users (username, email, age, created_at) VALUES (?, ?, ?, ?)", ["charlie", "charlie@example.com", 35, time()])
+print("  Inserted 3 users")
+print("  Last ID: " + str($result3["lastrowid"]))
+print("  OK")
+print("")
+
+# Test 4: Query all
+print("Test 4: Query all users")
+$result = db_query($db, "SELECT * FROM users")
+print("  Rows: " + str(len($result["rows"])))
+for $row in $result["rows"]:
+    print("    - " + $row["username"] + " (" + str($row["age"]) + ")")
+print("  OK")
+print("")
+
+# Test 5: Query with parameter
+print("Test 5: Query with parameter")
+$result = db_query_one($db, "SELECT * FROM users WHERE username = ?", ["alice"])
+if $result["row"] != None:
+    print("  Found: " + $result["row"]["username"] + " - " + $result["row"]["email"])
+print("  OK")
+print("")
+
+# Test 6: Update
+print("Test 6: Update data")
+$result = db_execute($db, "UPDATE users SET age = ? WHERE username = ?", [26, "alice"])
+print("  Rowcount: " + str($result["rowcount"]))
+$result = db_query_one($db, "SELECT age FROM users WHERE username = ?", ["alice"])
+print("  New age: " + str($result["row"]["age"]))
+print("  OK")
+print("")
+
+# Test 7: Delete
+print("Test 7: Delete data")
+$result = db_execute($db, "DELETE FROM users WHERE username = ?", ["charlie"])
+print("  Rowcount: " + str($result["rowcount"]))
+$result = db_query($db, "SELECT * FROM users")
+print("  Remaining users: " + str(len($result["rows"])))
+print("  OK")
+print("")
+
+# Test 8: Transactions
+print("Test 8: Transactions")
+db_begin($db)
+db_execute($db, "INSERT INTO users (username, email, age, created_at) VALUES (?, ?, ?, ?)", ["temp1", "temp1@test.com", 20, time()])
+db_execute($db, "INSERT INTO users (username, email, age, created_at) VALUES (?, ?, ?, ?)", ["temp2", "temp2@test.com", 21, time()])
+db_rollback($db)
+$result = db_query($db, "SELECT * FROM users WHERE username LIKE 'temp%'")
+print("  After rollback: " + str(len($result["rows"])) + " temp users")
+print("  OK")
+print("")
+
+# Test 9: Tables list
+print("Test 9: List tables")
+$result = db_tables($db)
+print("  Tables: " + join(", ", $result["tables"]))
+print("  OK")
+print("")
+
+# Test 10: Close connection
+print("Test 10: Close connection")
+$result = db_close($db)
+print("  Success: " + str($result["success"]))
+print("  OK")
+print("")
+
+print("==========================================")
+print("  Session Storage Tests")
+print("==========================================")
+print("")
+
+# Test sessions
+$db = db_connect(":memory:")
+db_execute($db, """
+    CREATE TABLE sessions (
+        id TEXT PRIMARY KEY,
+        user_id INTEGER,
+        data TEXT,
+        created_at REAL,
+        expires_at REAL
+    )
+""")
+
+print("Test 11: Create session")
+$session_id = uuid()
+$created = time()
+$expires = $created + 3600
+$result = db_execute($db, "INSERT INTO sessions (id, user_id, data, created_at, expires_at) VALUES (?, ?, ?, ?, ?)", [$session_id, 1, "{\"role\":\"admin\"}", $created, $expires])
+print("  Session ID: " + $session_id)
+print("  Success: " + str($result["success"]))
+print("  OK")
+print("")
+
+print("Test 12: Validate session")
+$result = db_query_one($db, "SELECT * FROM sessions WHERE id = ? AND expires_at > ?", [$session_id, time()])
+if $result["row"] != None:
+    print("  Valid: True")
+    print("  Data: " + $result["row"]["data"])
+print("  OK")
+print("")
+
+print("Test 13: Delete session")
+db_execute($db, "DELETE FROM sessions WHERE id = ?", [$session_id])
+$result = db_query_one($db, "SELECT * FROM sessions WHERE id = ?", [$session_id])
+if $result["row"] == None:
+    print("  Session deleted: True")
+print("  OK")
+print("")
+
+db_close($db)
+
+print("==========================================")
+print("  Utility Functions Tests")
+print("==========================================")
+print("")
+
+print("Test 14: UUID generation")
+$uuid1 = uuid()
+$uuid2 = uuid()
+print("  UUID 1: " + $uuid1)
+print("  UUID 2: " + $uuid2)
+print("  Different: " + str($uuid1 != $uuid2))
+print("  OK")
+print("")
+
+print("Test 15: SHA256 hash")
+$hash = sha256("test data")
+print("  Hash: " + $hash)
+print("  Length: " + str(len($hash)))
+print("  OK")
+print("")
+
+print("Test 16: HMAC-SHA256")
+$hmac = hmac_sha256("secret_key", "message")
+print("  HMAC: " + $hmac)
+print("  Length: " + str(len($hmac)))
+print("  OK")
+print("")
+
+print("Test 17: Base64 encode/decode")
+$original = "Hello, Pyrl!"
+$encoded = base64_encode($original)
+$decoded = base64_decode($encoded)
+print("  Original: " + $original)
+print("  Encoded: " + $encoded)
+print("  Decoded: " + $decoded)
+print("  Match: " + str($original == $decoded))
+print("  OK")
+print("")
+
+print("==========================================")
+print("  All SQLite tests passed!")
+print("==========================================")

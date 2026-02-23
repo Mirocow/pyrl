@@ -715,6 +715,318 @@ def pyrl_parse_cookies(cookie_header):
     return result
 
 
+# ===========================================
+# SQLite Database Functions
+# ===========================================
+
+# Store for database connections
+_db_connections: Dict[int, Any] = {}
+
+
+@builtin('db_connect')
+def pyrl_db_connect(filename: str = ":memory:"):
+    """Connect to SQLite database. Returns connection handle.
+    
+    Args:
+        filename: Path to database file (default: in-memory database)
+    
+    Returns:
+        Database connection handle (integer id)
+    """
+    import sqlite3
+    conn = sqlite3.connect(filename, check_same_thread=False)
+    conn.row_factory = sqlite3.Row  # Enable row access by column name
+    handle = id(conn)
+    _db_connections[handle] = {
+        'connection': conn,
+        'cursor': conn.cursor(),
+        'filename': filename
+    }
+    return handle
+
+
+@builtin('db_execute')
+def pyrl_db_execute(handle: int, sql: str, params: list = None):
+    """Execute SQL statement (INSERT, UPDATE, DELETE, CREATE, etc.).
+    
+    Args:
+        handle: Database connection handle from db_connect
+        sql: SQL statement to execute
+        params: Optional list of parameters for parameterized queries
+    
+    Returns:
+        Dict with 'success', 'rowcount', 'lastrowid' or 'error'
+    """
+    if handle not in _db_connections:
+        return {'success': False, 'error': 'Invalid database handle'}
+    
+    db = _db_connections[handle]
+    conn = db['connection']
+    cursor = db['cursor']
+    
+    try:
+        if params:
+            cursor.execute(sql, params)
+        else:
+            cursor.execute(sql)
+        conn.commit()
+        return {
+            'success': True,
+            'rowcount': cursor.rowcount,
+            'lastrowid': cursor.lastrowid
+        }
+    except Exception as e:
+        conn.rollback()
+        return {'success': False, 'error': str(e)}
+
+
+@builtin('db_query')
+def pyrl_db_query(handle: int, sql: str, params: list = None):
+    """Execute SELECT query and fetch all results.
+    
+    Args:
+        handle: Database connection handle from db_connect
+        sql: SELECT SQL statement
+        params: Optional list of parameters for parameterized queries
+    
+    Returns:
+        Dict with 'success', 'rows' (list of dicts) or 'error'
+    """
+    if handle not in _db_connections:
+        return {'success': False, 'error': 'Invalid database handle'}
+    
+    db = _db_connections[handle]
+    cursor = db['cursor']
+    
+    try:
+        if params:
+            cursor.execute(sql, params)
+        else:
+            cursor.execute(sql)
+        
+        rows = cursor.fetchall()
+        # Convert sqlite3.Row to dict
+        result_rows = []
+        for row in rows:
+            result_rows.append(dict(row))
+        
+        return {'success': True, 'rows': result_rows}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+@builtin('db_query_one')
+def pyrl_db_query_one(handle: int, sql: str, params: list = None):
+    """Execute SELECT query and fetch one result.
+    
+    Args:
+        handle: Database connection handle from db_connect
+        sql: SELECT SQL statement
+        params: Optional list of parameters
+    
+    Returns:
+        Dict with 'success', 'row' (dict or None) or 'error'
+    """
+    if handle not in _db_connections:
+        return {'success': False, 'error': 'Invalid database handle'}
+    
+    db = _db_connections[handle]
+    cursor = db['cursor']
+    
+    try:
+        if params:
+            cursor.execute(sql, params)
+        else:
+            cursor.execute(sql)
+        
+        row = cursor.fetchone()
+        if row:
+            return {'success': True, 'row': dict(row)}
+        return {'success': True, 'row': None}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+@builtin('db_close')
+def pyrl_db_close(handle: int):
+    """Close database connection.
+    
+    Args:
+        handle: Database connection handle to close
+    
+    Returns:
+        Dict with 'success' or 'error'
+    """
+    if handle not in _db_connections:
+        return {'success': False, 'error': 'Invalid database handle'}
+    
+    db = _db_connections[handle]
+    try:
+        db['connection'].close()
+        del _db_connections[handle]
+        return {'success': True}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+@builtin('db_tables')
+def pyrl_db_tables(handle: int):
+    """Get list of all tables in database.
+    
+    Args:
+        handle: Database connection handle
+    
+    Returns:
+        Dict with 'success', 'tables' (list of table names) or 'error'
+    """
+    result = pyrl_db_query(handle, 
+        "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
+    if result['success']:
+        tables = [row['name'] for row in result['rows']]
+        return {'success': True, 'tables': tables}
+    return result
+
+
+@builtin('db_begin')
+def pyrl_db_begin(handle: int):
+    """Begin a database transaction.
+    
+    Args:
+        handle: Database connection handle
+    
+    Returns:
+        Dict with 'success' or 'error'
+    """
+    if handle not in _db_connections:
+        return {'success': False, 'error': 'Invalid database handle'}
+    
+    db = _db_connections[handle]
+    try:
+        db['connection'].execute("BEGIN")
+        return {'success': True}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+@builtin('db_commit')
+def pyrl_db_commit(handle: int):
+    """Commit current transaction.
+    
+    Args:
+        handle: Database connection handle
+    
+    Returns:
+        Dict with 'success' or 'error'
+    """
+    if handle not in _db_connections:
+        return {'success': False, 'error': 'Invalid database handle'}
+    
+    db = _db_connections[handle]
+    try:
+        db['connection'].commit()
+        return {'success': True}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+@builtin('db_rollback')
+def pyrl_db_rollback(handle: int):
+    """Rollback current transaction.
+    
+    Args:
+        handle: Database connection handle
+    
+    Returns:
+        Dict with 'success' or 'error'
+    """
+    if handle not in _db_connections:
+        return {'success': False, 'error': 'Invalid database handle'}
+    
+    db = _db_connections[handle]
+    try:
+        db['connection'].rollback()
+        return {'success': True}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+# ===========================================
+# Utility Functions for Sessions
+# ===========================================
+
+@builtin('uuid')
+def pyrl_uuid():
+    """Generate a UUID4 string.
+    
+    Returns:
+        UUID string like '550e8400-e29b-41d4-a716-446655440000'
+    """
+    import uuid as uuid_module
+    return str(uuid_module.uuid4())
+
+
+@builtin('hmac_sha256')
+def pyrl_hmac_sha256(key: str, message: str):
+    """Generate HMAC-SHA256 hash.
+    
+    Args:
+        key: Secret key for HMAC
+        message: Message to hash
+    
+    Returns:
+        Hexadecimal hash string
+    """
+    import hmac
+    import hashlib
+    return hmac.new(
+        key.encode('utf-8'),
+        message.encode('utf-8'),
+        hashlib.sha256
+    ).hexdigest()
+
+
+@builtin('sha256')
+def pyrl_sha256(data: str):
+    """Generate SHA256 hash of a string.
+    
+    Args:
+        data: String to hash
+    
+    Returns:
+        Hexadecimal hash string
+    """
+    import hashlib
+    return hashlib.sha256(data.encode('utf-8')).hexdigest()
+
+
+@builtin('base64_encode')
+def pyrl_base64_encode(data: str):
+    """Encode string to base64.
+    
+    Args:
+        data: String to encode
+    
+    Returns:
+        Base64 encoded string
+    """
+    import base64
+    return base64.b64encode(data.encode('utf-8')).decode('utf-8')
+
+
+@builtin('base64_decode')
+def pyrl_base64_decode(data: str):
+    """Decode base64 string.
+    
+    Args:
+        data: Base64 encoded string
+    
+    Returns:
+        Decoded string
+    """
+    import base64
+    return base64.b64decode(data.encode('utf-8')).decode('utf-8')
+
+
 # Constants
 CONSTANTS = {
     'True': True,

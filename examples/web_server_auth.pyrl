@@ -543,17 +543,17 @@ $error_page = """
 # Pyrl HTTP Server class
 class PyrlServer:
     def __init__($self, %config):
-        $self.host = %config{host}
-        $self.port = %config{port}
-        $self.secret_key = %config{secret_key}
-        $self.session_timeout = %config{session_timeout}
+        $self.host = %config["host"]
+        $self.port = %config["port"]
+        $self.secret_key = %config["secret_key"]
+        $self.session_timeout = %config["session_timeout"]
         $self.routes = {}
         $self.running = False
     
     def route($self, $path, $method, &handler):
         # Register route handler
         $key = $method + ":" + $path
-        %{$self.routes}{$key} = &handler
+        $self.routes[$key] = &handler
         print("Registered route: " + $key)
     
     def handle_request($self, $method, $path, %headers, $body):
@@ -561,13 +561,13 @@ class PyrlServer:
         $key = $method + ":" + $path
         
         if $key in $self.routes:
-            $handler = $self.routes{$key}
+            $handler = $self.routes[$key]
             return $handler(%headers, $body)
         
         # Check for wildcard routes
         for $route_key in keys($self.routes):
             if startswith($path, $route_key):
-                $handler = $self.routes{$route_key}
+                $handler = $self.routes[$route_key]
                 return $handler($path, %headers, $body)
         
         # 404 Not Found
@@ -620,14 +620,14 @@ class PyrlServer:
 # Generate session token
 def generate_token($username):
     $timestamp = str(time())
-    $data = $username + ":" + $timestamp + ":" + %config{secret_key}
+    $data = $username + ":" + $timestamp + ":" + %config["secret_key"]
     $token = hash($data)
     return $token
 
 # Verify user credentials
 def verify_user($username, $password):
     if $username in %users:
-        $user = %users{$username}
+        $user = %users[$username]
         if $user{password} == $password:
             return {success: True, user: $user}
     return {success: False, error: "Invalid username or password"}
@@ -635,17 +635,17 @@ def verify_user($username, $password):
 # Create session
 def create_session($username):
     $token = generate_token($username)
-    %sessions{$token} = {
+    %sessions[$token] = {
         username: $username,
         created: time(),
-        expires: time() + %config{session_timeout}
+        expires: time() + %config["session_timeout"]
     }
     return $token
 
 # Validate session
 def validate_session($token):
     if $token in %sessions:
-        $session = %sessions{$token}
+        $session = %sessions[$token]
         if $session{expires} > time():
             return {valid: True, username: $session{username}}
         else:
@@ -677,10 +677,10 @@ def handle_login_post(%headers, $body):
             $value = @parts[1]
             # URL decode (simplified)
             $value = replace($value, "+", " ")
-            %form_data{$key} = $value
+            %form_data[$key] = $value
     
-    $username = %form_data{username}
-    $password = %form_data{password}
+    $username = %form_data["username"]
+    $password = %form_data["password"]
     
     print("  Username: " + $username)
     print("  Password: " + "*" * len($password))
@@ -718,7 +718,7 @@ def handle_dashboard(%headers, $body):
     print("[GET /dashboard] Serving dashboard")
     
     # Check for session cookie
-    $cookie = %headers{Cookie}
+    $cookie = %headers["Cookie"]
     $token = None
     
     if $cookie:
@@ -735,7 +735,7 @@ def handle_dashboard(%headers, $body):
         
         if $session_result{valid}:
             $username = $session_result{username}
-            $user = %users{$username}
+            $user = %users[$username]
             
             print("  User: " + $username)
             print("  Role: " + $user{role})
@@ -861,7 +861,7 @@ print("")
 # List users (for demo)
 print("Registered Users:")
 for $username in keys(%users):
-    $user = %users{$username}
+    $user = %users[$username]
     print("  - " + $username + " (" + $user{role} + "): " + $user{name})
 print("")
 

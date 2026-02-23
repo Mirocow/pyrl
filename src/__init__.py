@@ -18,48 +18,51 @@ Quick Start:
     print(result)  # 15
 """
 
-# Import from core module
+# Import from core module (Lark-based)
 from .core import (
     # Main VM class
     PyrlVM,
     run,
     run_file,
     create_vm,
-    
-    # Lexer
-    tokenize,
-    Lexer,
-    
-    # Parser
-    parse,
-    Parser,
-    
-    # Interpreter
-    Interpreter,
     Environment,
-    interpret,
+    
+    # Parser (Lark-based)
+    PyrlLarkParser,
+    parse_lark,
+    parse_file_lark,
     
     # Exceptions
     PyrlError,
-    LexerError,
     ParseError,
     RuntimeError,
     VariableError,
     FunctionError,
-    TypeError_,
-    IndexError_,
-    KeyError_,
-    ImportError_,
     
-    # AST Nodes (most commonly used)
-    Token,
-    TokenType,
-    ASTNode,
-    ProgramNode,
+    # AST Nodes (Lark-based)
+    Program,
+    ScalarVar,
+    ArrayVar,
+    HashVar,
+    FuncVar,
+    NumberLiteral,
+    StringLiteral,
+    BooleanLiteral,
+    ArrayLiteral,
+    HashLiteral,
+    BinaryOp,
+    UnaryOp,
+    Assignment,
+    FunctionCall,
+    FunctionDef,
+    IfStatement,
+    ForLoop,
+    WhileLoop,
+    ReturnStatement,
 )
 
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 __author__ = 'Pyrl Team'
 
 __all__ = [
@@ -68,31 +71,38 @@ __all__ = [
     'run',
     'run_file',
     'create_vm',
-    
-    # Lower-level API
-    'tokenize',
-    'Lexer',
-    'parse',
-    'Parser',
-    'Interpreter',
     'Environment',
-    'interpret',
+    
+    # Parser
+    'PyrlLarkParser',
+    'parse_lark',
+    'parse_file_lark',
     
     # Exceptions
     'PyrlError',
-    'LexerError',
     'ParseError',
     'RuntimeError',
     'VariableError',
     'FunctionError',
-    'TypeError_',
-    'IndexError_',
-    'KeyError_',
-    'ImportError_',
     
-    # AST
-    'Token',
-    'TokenType',
-    'ASTNode',
-    'ProgramNode',
+    # AST Nodes
+    'Program',
+    'ScalarVar',
+    'ArrayVar',
+    'HashVar',
+    'FuncVar',
+    'NumberLiteral',
+    'StringLiteral',
+    'BooleanLiteral',
+    'ArrayLiteral',
+    'HashLiteral',
+    'BinaryOp',
+    'UnaryOp',
+    'Assignment',
+    'FunctionCall',
+    'FunctionDef',
+    'IfStatement',
+    'ForLoop',
+    'WhileLoop',
+    'ReturnStatement',
 ]

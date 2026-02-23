@@ -1,9 +1,10 @@
 """
 Pyrl Core Module
 Core components of the Pyrl language interpreter.
+Based on Lark parser with integrated lexer.
 """
 
-# Legacy parser (still available for backward compatibility)
+# Main VM (Lark-based)
 from .vm import (
     PyrlVM,
     run,
@@ -13,70 +14,13 @@ from .vm import (
     Environment,
     PyrlRuntimeError,
     ReturnValue,
+    BreakException,
+    ContinueException,
     BUILTINS,
     CONSTANTS,
 )
-from .lexer import tokenize, Lexer
-from .parser import parse, Parser
-from .interpreter import Interpreter, interpret
-from .exceptions import (
-    PyrlError,
-    LexerError,
-    ParseError,
-    RuntimeError,
-    VariableError,
-    FunctionError,
-    TypeError_,
-    IndexError_,
-    KeyError_,
-    ImportError_,
-    ReturnException,
-    BreakException,
-    ContinueException,
-)
-from .ast_nodes import (
-    Token,
-    TokenType,
-    ASTNode,
-    ProgramNode,
-    NumberNode,
-    StringNode,
-    BooleanNode,
-    NoneNode,
-    ScalarNode,
-    ArrayNode,
-    HashNode,
-    FunctionRefNode,
-    BinaryOpNode,
-    UnaryOpNode,
-    ArrayLiteralNode,
-    HashLiteralNode,
-    IndexNode,
-    AttributeNode,
-    CallNode,
-    LambdaNode,
-    AssignNode,
-    PrintNode,
-    IfNode,
-    WhileNode,
-    ForNode,
-    ForRangeNode,
-    DefNode,
-    ReturnNode,
-    BreakNode,
-    ContinueNode,
-    PassNode,
-    ImportNode,
-    FromImportNode,
-    ClassNode,
-    TryNode,
-    RaiseNode,
-    WithNode,
-    GlobalNode,
-    NonlocalNode,
-)
-from .builtins import get_builtins, BUILTIN_CONSTANTS, PyrlBuiltin
 
+# Lark parser (primary parser)
 from .lark_parser import (
     PyrlLarkParser,
     parse_lark,
@@ -114,6 +58,22 @@ from .lark_parser import (
     VueComponent,
 )
 
+# Exceptions
+from .exceptions import (
+    PyrlError,
+    ParseError,
+    RuntimeError,
+    VariableError,
+    FunctionError,
+    TypeError_,
+    IndexError_,
+    KeyError_,
+    ImportError_,
+    ReturnException,
+    BreakException,
+    ContinueException,
+)
+
 
 __all__ = [
     # VM
@@ -121,23 +81,52 @@ __all__ = [
     'run',
     'run_file',
     'create_vm',
-
-    # Lexer
-    'tokenize',
-    'Lexer',
-
-    # Parser
-    'parse',
-    'Parser',
-
-    # Interpreter
-    'Interpreter',
+    'PyrlFunction',
     'Environment',
-    'interpret',
+    'PyrlRuntimeError',
+    'ReturnValue',
+    'BreakException',
+    'ContinueException',
+
+    # Parser (Lark-based)
+    'PyrlLarkParser',
+    'parse_lark',
+    'parse_file_lark',
+    'print_ast',
+    'GRAMMAR',
+
+    # AST Nodes (Lark-based)
+    'Program',
+    'ScalarVar',
+    'ArrayVar',
+    'HashVar',
+    'FuncVar',
+    'IdentRef',
+    'NumberLiteral',
+    'StringLiteral',
+    'BooleanLiteral',
+    'NoneLiteral',
+    'ArrayLiteral',
+    'HashLiteral',
+    'RegexLiteral',
+    'BinaryOp',
+    'UnaryOp',
+    'Assignment',
+    'HashAccess',
+    'ArrayAccess',
+    'FunctionCall',
+    'FunctionDef',
+    'IfStatement',
+    'ForLoop',
+    'WhileLoop',
+    'ReturnStatement',
+    'PrintStatement',
+    'AssertStatement',
+    'TestBlock',
+    'VueComponent',
 
     # Exceptions
     'PyrlError',
-    'LexerError',
     'ParseError',
     'RuntimeError',
     'VariableError',
@@ -147,52 +136,8 @@ __all__ = [
     'KeyError_',
     'ImportError_',
     'ReturnException',
-    'BreakException',
-    'ContinueException',
-
-    # AST Nodes
-    'Token',
-    'TokenType',
-    'ASTNode',
-    'ProgramNode',
-    'NumberNode',
-    'StringNode',
-    'BooleanNode',
-    'NoneNode',
-    'ScalarNode',
-    'ArrayNode',
-    'HashNode',
-    'FunctionRefNode',
-    'BinaryOpNode',
-    'UnaryOpNode',
-    'ArrayLiteralNode',
-    'HashLiteralNode',
-    'IndexNode',
-    'AttributeNode',
-    'CallNode',
-    'LambdaNode',
-    'AssignNode',
-    'PrintNode',
-    'IfNode',
-    'WhileNode',
-    'ForNode',
-    'ForRangeNode',
-    'DefNode',
-    'ReturnNode',
-    'BreakNode',
-    'ContinueNode',
-    'PassNode',
-    'ImportNode',
-    'FromImportNode',
-    'ClassNode',
-    'TryNode',
-    'RaiseNode',
-    'WithNode',
-    'GlobalNode',
-    'NonlocalNode',
 
     # Builtins
-    'get_builtins',
-    'BUILTIN_CONSTANTS',
-    'PyrlBuiltin',
+    'BUILTINS',
+    'CONSTANTS',
 ]

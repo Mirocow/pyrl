@@ -920,10 +920,14 @@ class PyrlVM:
             env.set(target.name, value)
         elif isinstance(target, HashVar):
             env.set(target.name, value)
-        elif isinstance(target, (HashAccess, ArrayAccess)):
+        elif isinstance(target, HashAccess):
             obj = self.execute(target.obj, env)
             key = self.execute(target.key, env)
             obj[key] = value
+        elif isinstance(target, ArrayAccess):
+            obj = self.execute(target.obj, env)
+            index = self.execute(target.index, env)
+            obj[index] = value
         else:
             raise PyrlRuntimeError(f"Invalid assignment target: {type(target).__name__}")
 
@@ -982,7 +986,11 @@ class PyrlVM:
         result = None
 
         for item in iterable:
-            env.define(node.var, item)
+            # Use set() to update existing variable, or define if it doesn't exist
+            if env.has(node.var):
+                env.set(node.var, item)
+            else:
+                env.define(node.var, item)
             try:
                 for stmt in node.body:
                     result = self.execute(stmt, env)
@@ -1094,6 +1102,18 @@ class PyrlVM:
         self.env.vm = self
         self.output = []
         self._init_builtins()
+
+    def get_variable(self, name: str) -> Any:
+        """Get a variable value by name."""
+        return self.env.get(name)
+
+    def set_variable(self, name: str, value: Any) -> None:
+        """Set a variable value by name."""
+        self.env.set(name, value)
+
+    def has_variable(self, name: str) -> bool:
+        """Check if a variable exists."""
+        return self.env.has(name)
 
 
 # ===========================================

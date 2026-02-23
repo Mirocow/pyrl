@@ -195,12 +195,12 @@ $last = @numbers[-1]
 ```pyrl
 %person = {name: "Alice", age: 30, active: True}
 
-# Доступ по ключу
-$name = %person{name}
-$age = %person{"age"}
+# Доступ по ключу (Python-style квадратные скобки)
+$name = %person["name"]
+$age = %person["age"]
 
 # Добавление/изменение
-%person{email} = "alice@example.com"
+%person["email"] = "alice@example.com"
 ```
 
 ### Функциональные ссылки
@@ -869,18 +869,18 @@ if $response{"status"} == 200:
 ```pyrl
 class PyrlServer:
     def __init__($self, %config):
-        $self.host = %config{host}
-        $self.port = %config{port}
+        $self.host = %config["host"]
+        $self.port = %config["port"]
         $self.routes = {}
     
     def route($self, $path, $method, &handler):
         $key = $method + ":" + $path
-        %{$self.routes}{$key} = &handler
+        $self.routes[$key] = &handler
     
     def handle_request($self, $method, $path, %headers, $body):
         $key = $method + ":" + $path
         if $key in $self.routes:
-            $handler = $self.routes{$key}
+            $handler = $self.routes[$key]
             return $handler(%headers, $body)
         return $self.error_response(404, "Not Found")
 ```
@@ -900,17 +900,17 @@ class PyrlServer:
 ```pyrl
 def verify_user($username, $password):
     if $username in %users:
-        $user = %users{$username}
+        $user = %users[$username]
         if $user{password} == $password:
             return {success: True, user: $user}
     return {success: False, error: "Invalid credentials"}
 
 def create_session($username):
     $token = generate_token($username)
-    %sessions{$token} = {
+    %sessions[$token] = {
         username: $username,
         created: time(),
-        expires: time() + %config{session_timeout}
+        expires: time() + %config["session_timeout"]
     }
     return $token
 ```
@@ -924,10 +924,10 @@ def handle_login_post(%headers, $body):
     %form_data = {}
     for $param in @params:
         @parts = split($param, "=")
-        %form_data{@parts[0]} = @parts[1]
+        %form_data[@parts[0]] = @parts[1]
     
-    $username = %form_data{username}
-    $password = %form_data{password}
+    $username = %form_data["username"]
+    $password = %form_data["password"]
     
     # Проверка credentials
     $result = verify_user($username, $password)

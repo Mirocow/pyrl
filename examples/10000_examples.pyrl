@@ -45,7 +45,7 @@ for $i in range($times):
 
 # Example 9
 %person = {name: "Alice", greeting: "Hello"}
-print(%person{"greeting"} + ", " + %person{"name"} + "!")
+print(%person["greeting"] + ", " + %person["name"] + "!")
 
 # Example 10
 $uppercase = upper("hello, world!")
@@ -384,7 +384,7 @@ print($y)
 print(@arr)
 
 %h = {a: 1}
-%h{"b"} = 2
+%h["b"] = 2
 print(%h)
 
 $x = 5
@@ -805,7 +805,7 @@ print(sum_all(1, 2, 3, 4, 5))
 # Example 717 - Function with kwargs-like dict
 def print_info(%info):
     for $key in keys(%info):
-        print($key + ": " + str(%info{$key}))
+        print($key + ": " + str(%info[$key]))
 print_info({name: "Alice", age: 30})
 
 # Example 718 - Decorator-like pattern
@@ -823,11 +823,11 @@ print($logged_add(3, 5))
 %cache = {}
 def fib_memo($n):
     if $n in %cache:
-        return %cache{$n}
+        return %cache[$n]
     if $n <= 1:
         return $n
     $result = fib_memo($n - 1) + fib_memo($n - 2)
-    %cache{$n} = $result
+    %cache[$n] = $result
     return $result
 print(fib_memo(20))
 
@@ -1007,7 +1007,7 @@ print(%empty)
 
 # Example 2003 - Access value by key
 %person = {name: "Alice", age: 30}
-print(%person{"name"})
+print(%person["name"])
 
 # Example 2004 - Access with get
 %person = {name: "Alice", age: 30}
@@ -1019,12 +1019,12 @@ print(get(%person, "age", 0))
 
 # Example 2006 - Add key-value
 %person = {name: "Alice"}
-%person{"age"} = 30
+%person["age"] = 30
 print(%person)
 
 # Example 2007 - Modify value
 %person = {name: "Alice", age: 30}
-%person{"age"} = 31
+%person["age"] = 31
 print(%person)
 
 # Example 2008 - Delete key
@@ -1080,11 +1080,11 @@ print(%person)
 
 # Example 2019 - Nested hash
 %person = {name: "Alice", address: {city: "NYC", zip: "10001"}}
-print(%person{"address"}{"city"})
+print(%person["address"]{"city"})
 
 # Example 2020 - Hash of arrays
 %data = {names: ["Alice", "Bob"], ages: [30, 25]}
-print(%data{"names"})
+print(%data["names"])
 
 # Example 2021 - Array of hashes
 @people = [{name: "Alice"}, {name: "Bob"}]
@@ -1095,9 +1095,9 @@ print(@people[0]{"name"})
 %h2 = {c: 3, d: 4}
 %merged = {}
 for $k, $v in items(%h1):
-    %merged{$k} = $v
+    %merged[$k] = $v
 for $k, $v in items(%h2):
-    %merged{$k} = $v
+    %merged[$k] = $v
 print(%merged)
 
 # Example 2023 - Count values
@@ -1105,9 +1105,9 @@ print(%merged)
 %counts = {}
 for $item in @arr:
     if $item in %counts:
-        %counts{$item} = %counts{$item} + 1
+        %counts[$item] = %counts[$item] + 1
     else:
-        %counts{$item} = 1
+        %counts[$item] = 1
 print(%counts)
 
 # Examples 2024-3000 continue with more hash operations...
@@ -1521,7 +1521,7 @@ for $line in @lines:
     if $line and not startswith($line, "#"):
         @parts = split($line, " = ")
         if len(@parts) == 2:
-            %config{@parts[0]} = @parts[1]
+            %config[@parts[0]] = @parts[1]
 print(%config)
 
 # Examples 6006-7000 continue with more file patterns...
@@ -1803,7 +1803,7 @@ print(handle_request("/api"))
 }
 def route($path):
     if $path in %routes:
-        return %routes{$path}
+        return %routes[$path]
     return "404"
 print(route("/about"))
 
@@ -1811,21 +1811,21 @@ print(route("/about"))
 %cache = {}
 def get_cached($key, $default):
     if $key in %cache:
-        return %cache{$key}
+        return %cache[$key]
     return $default
-%cache{"name"} = "Alice"
+%cache["name"] = "Alice"
 print(get_cached("name", "Unknown"))
 
 # Example 9504 - Event emitter pattern
 %events = {}
 def on($event, $callback):
     if $event not in %events:
-        %events{$event} = []
-    %events{$event} = append(%events{$event}, $callback)
+        %events[$event] = []
+    %events[$event] = append(%events[$event], $callback)
 
 def emit($event, $data):
     if $event in %events:
-        for $callback in %events{$event}:
+        for $callback in %events[$event]:
             $callback($data)
 
 on("greet", lambda $name: print("Hello, " + $name + "!"))
@@ -1878,11 +1878,11 @@ $obs.subscribe(lambda $x: print("Got: " + str($x)))
 # Example 9508 - Simple DI container
 %services = {}
 def register($name, $factory):
-    %services{$name} = $factory
+    %services[$name] = $factory
 
 def resolve($name):
     if $name in %services:
-        return %services{$name}()
+        return %services[$name]()
     return None
 
 register("config", lambda: {debug: True})
@@ -1940,9 +1940,9 @@ print(tick())
 %requests = {}
 def rate_limit($key, $limit):
     if $key not in %requests:
-        %requests{$key} = 0
-    if %requests{$key} < $limit:
-        %requests{$key} = %requests{$key} + 1
+        %requests[$key] = 0
+    if %requests[$key] < $limit:
+        %requests[$key] = %requests[$key] + 1
         return True
     return False
 
@@ -1955,12 +1955,12 @@ print(rate_limit("api", 3))  # False
 %channels = {}
 def subscribe($channel, $callback):
     if $channel not in %channels:
-        %channels{$channel} = []
-    %channels{$channel} = append(%channels{$channel}, $callback)
+        %channels[$channel] = []
+    %channels[$channel] = append(%channels[$channel], $callback)
 
 def publish($channel, $message):
     if $channel in %channels:
-        for $callback in %channels{$channel}:
+        for $callback in %channels[$channel]:
             $callback($message)
 
 subscribe("news", lambda $m: print("News: " + $m))
@@ -1970,8 +1970,8 @@ publish("news", "New version released!")
 %memo_cache = {}
 def memoize($key, $func):
     if $key not in %memo_cache:
-        %memo_cache{$key} = $func()
-    return %memo_cache{$key}
+        %memo_cache[$key] = $func()
+    return %memo_cache[$key]
 
 print(memoize("expensive", lambda: 2 ** 20))
 
@@ -2090,7 +2090,7 @@ def inorder_traversal($node):
     "C": ["A", "D"],
     "D": ["B", "C"]
 }
-print(%graph{"A"})
+print(%graph["A"])
 
 # Example 9525 - BFS simulation
 def bfs($start, %graph):
@@ -2100,7 +2100,7 @@ def bfs($start, %graph):
         $node = dequeue()
         if $node not in @visited:
             @visited = append(@visited, $node)
-            for $neighbor in %graph{$node}:
+            for $neighbor in %graph[$node]:
                 if $neighbor not in @visited:
                     enqueue($neighbor)
     return @visited
@@ -2110,7 +2110,7 @@ def dfs($node, %graph, @visited):
     if $node in @visited:
         return @visited
     @visited = append(@visited, $node)
-    for $neighbor in %graph{$node}:
+    for $neighbor in %graph[$node]:
         @visited = dfs($neighbor, %graph, @visited)
     return @visited
 
@@ -2239,8 +2239,8 @@ def group_by($key_func, @list):
     for $item in @list:
         $key = $key_func($item)
         if $key not in %groups:
-            %groups{$key} = []
-        %groups{$key} = append(%groups{$key}, $item)
+            %groups[$key] = []
+        %groups[$key] = append(%groups[$key], $item)
     return %groups
 
 # Example 9544 - Simple flatten
@@ -2284,9 +2284,9 @@ def frequencies(@list):
     %freq = {}
     for $item in @list:
         if $item in %freq:
-            %freq{$item} = %freq{$item} + 1
+            %freq[$item] = %freq[$item] + 1
         else:
-            %freq{$item} = 1
+            %freq[$item] = 1
     return %freq
 
 # Example 9549 - Simple intersection
@@ -2322,10 +2322,10 @@ def union(@list1, @list2):
 
 # Define functions
 def greet_person(%person):
-    return "Hello, " + %person{"name"} + "!"
+    return "Hello, " + %person["name"] + "!"
 
 def is_adult(%person):
-    return %person{"age"} >= 18
+    return %person["age"] >= 18
 
 def format_skills(@skills):
     return join(", ", @skills)
@@ -2335,21 +2335,21 @@ $greeting = greet_person(%Person)
 print($greeting)
 
 if is_adult(%Person):
-    print(%Person{"name"} + " is an adult")
+    print(%Person["name"] + " is an adult")
 
-$skills_str = format_skills(%Person{"skills"})
+$skills_str = format_skills(%Person["skills"])
 print("Skills: " + $skills_str)
 
 # Loop through and process
-@upper_skills = map(upper, %Person{"skills"})
+@upper_skills = map(upper, %Person["skills"])
 for $skill in @upper_skills:
     print("Skill: " + $skill)
 
 # Calculate statistics
 %stats = {
-    total_skills: len(%Person{"skills"}),
-    name_length: len(%Person{"name"}),
-    is_developer: len(%Person{"skills"}) > 0
+    total_skills: len(%Person["skills"]),
+    name_length: len(%Person["name"]),
+    is_developer: len(%Person["skills"]) > 0
 }
 
 # Output results

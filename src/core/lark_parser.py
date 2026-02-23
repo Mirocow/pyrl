@@ -47,14 +47,13 @@ assignment: assign_target "=" expression
 assign_target: SCALAR_VAR
              | ARRAY_VAR
              | HASH_VAR
-             | hash_access
-             | array_access
+             | index_access
 
 ?expression: or_expr
 
-?or_expr: and_expr ("or" and_expr)*
+?or_expr: and_expr (OR and_expr)*
 
-?and_expr: comparison_expr ("and" comparison_expr)*
+?and_expr: comparison_expr (AND comparison_expr)*
 
 ?comparison_expr: additive_expr (COMP_OP additive_expr)*
 
@@ -62,16 +61,15 @@ additive_expr: multiplicative_expr (ADD_OP multiplicative_expr)*
 
 multiplicative_expr: unary_expr (MUL_OP unary_expr)*
 
-?unary_expr: NOT_OP unary_expr
-           | MINUS_OP unary_expr
-           | primary_expr
+?unary_expr: NOT unary_expr
+           | NOT_OP unary_expr
+           | ADD_OP? primary_expr
 
 ?primary_expr: literal
              | "(" expression ")"
              | regex_literal
              | function_call
-             | hash_access
-             | array_access
+             | index_access
              | var_ref
 
 // FIXED: Added IDENT to support built-in functions (str, len, int, etc.)
@@ -81,10 +79,12 @@ multiplicative_expr: unary_expr (MUL_OP unary_expr)*
         | FUNC_VAR
         | IDENT
 
-// Hash access uses {} brackets: %hash{"key"}
-hash_access: primary_expr "{" expression "}"
-// Array access uses [] brackets: @array[0]
-array_access: primary_expr "[" expression "]"
+// Index access uses [] brackets for both arrays and hashes (Python-style)
+// @array[0] - array index access
+// %hash["key"] - hash key access
+index_access: primary_expr "[" expression "]"
+
+// Legacy: hash_access and array_access are now unified as index_access
 
 literal: STRING | NUMBER | BOOLEAN | NONE | hash_literal | array_literal
 
@@ -133,36 +133,42 @@ FUNC_VAR: "&" IDENT
 BOOLEAN: "True" | "False" | "true" | "false"
 NONE: "None" | "none" | "null"
 
+// Keywords - must be before IDENT to have priority
+AND: "and"
+OR: "or"
+NOT: "not"
+
 // IDENT last (least specific)
 IDENT: /[a-zA-Z_][a-zA-Z0-9_]*/
 
 STRING: ESCAPED_STRING
        | SINGLE_QUOTED_STRING
 
+ESCAPED_STRING: /"(?:[^"\\]|\\.)*"/
 SINGLE_QUOTED_STRING: /'[^']*'/
 
-NUMBER: SIGNED_INT | SIGNED_FLOAT
+NUMBER: INT | FLOAT
+INT: /\d+/
+FLOAT: /\d+\.\d*/
 
 // ===========================================
 // Operators - FIXED: Order matters! Longer operators first
 // ===========================================
 COMP_OP: "==" | "!=" | "<=" | ">=" | "=~" | "!~" | "<" | ">"
 ADD_OP: "+" | "-"
-MUL_OP: "*" | "/" | "%" | "//"
+MUL_OP: "//" | "*" | "/" | "%"
 NOT_OP: "!"
-MINUS_OP: "-"
 
-%import common.ESCAPED_STRING
-%import common.SIGNED_INT
-%import common.SIGNED_FLOAT
-%import common.WS_INLINE
+// Whitespace (inline)
+WS_INLINE: /[\t ]+/
+
+%ignore WS_INLINE
 
 // Proper regex syntax for newlines (no broken \r?\n)
 _NL: /(?:\r?\n[\t ]*)+/
 
-// FIXED: Proper regex syntax for comments (no broken newlines)
+// Comments - only # style to avoid conflict with // operator
 COMMENT: /#[^\n]*/
-       | /\/\/[^\n]*/
 
 %ignore WS_INLINE
 %ignore COMMENT
@@ -566,6 +572,11 @@ class PyrlTransformer(Transformer):
     def primary_expr(self, children): return children[0] if children else None
     def literal(self, children): return children[0] if children else None
 
+    def index_access(self, children):
+        """Unified index access for both arrays and hashes (Python-style [])."""
+        return ArrayAccess(obj=children[0], index=children[1]) if len(children) >= 2 else (children[0] if children else None)
+
+    # Legacy methods - kept for backward compatibility
     def hash_access(self, children):
         return HashAccess(obj=children[0], key=children[1]) if len(children) >= 2 else (children[0] if children else None)
 
@@ -583,9 +594,16 @@ class PyrlTransformer(Transformer):
         name = None
         params = []
         body = []
+        
+        # Debug: print children types
+        # print(f"DEBUG function_definition: {[type(c).__name__ for c in children]}")
+        
         i = 0
+        # Skip 'def' or '&' token
         if i < len(children) and isinstance(children[i], Token) and children[i].value in ('def', '&'):
             i += 1
+        
+        # Get function name
         if i < len(children):
             if isinstance(children[i], FuncVar):
                 name = children[i].name
@@ -593,21 +611,31 @@ class PyrlTransformer(Transformer):
             elif isinstance(children[i], Token) and children[i].type == 'IDENT':
                 name = children[i].value
                 i += 1
-            # FIXED: Also check for IdentRef
             elif isinstance(children[i], IdentRef):
                 name = children[i].name
                 i += 1
-        while i < len(children) and (isinstance(children[i], Token) and children[i].value in '():' or str(children[i]) in ('_NL', 'INDENT')):
-            i += 1
-        if i < len(children) and isinstance(children[i], list):
-            potential_params = children[i]
-            if all(isinstance(p, ScalarVar) for p in potential_params):
-                params = [p.name for p in potential_params]
+        
+        # Skip tokens until we find arg_list or params
+        while i < len(children):
+            child = children[i]
+            if isinstance(child, list):
+                # This could be arg_list (params) or body
+                if all(isinstance(p, ScalarVar) for p in child if p is not None):
+                    # This is the parameter list
+                    params = [p.name for p in child if isinstance(p, ScalarVar)]
+                else:
+                    # This could be body statements
+                    body = self._filter_tokens(child)
                 i += 1
-        while i < len(children) and (isinstance(children[i], Token) and children[i].value in '():' or str(children[i]) in ('INDENT', 'DEDENT', '_NL')):
-            i += 1
-        if i < len(children) and isinstance(children[i], list):
-            body = self._filter_tokens(children[i])
+            elif isinstance(child, Token):
+                i += 1
+            elif child is None:
+                i += 1
+            else:
+                # Could be a statement (body)
+                body.append(child)
+                i += 1
+        
         return FunctionDef(name=name or '<anonymous>', params=params, body=body)
 
     def function_call(self, children):
@@ -635,61 +663,221 @@ class PyrlTransformer(Transformer):
         return [c for c in children if c is not None and not (isinstance(c, Token) and c.value == ',')]
 
     def conditional(self, children):
+        """Transform if/elif/else statement."""
         condition = None
         then_body = []
         elif_clauses = []
         else_body = None
-        state = 'condition'
         current_elif_cond = None
-        for child in children:
+
+        # Process children
+        # Structure: condition, INDENT, statements..., DEDENT, [else_clause]
+        # else_clause may contain: 'elif', condition, INDENT, statements..., DEDENT
+        # or: 'else', INDENT, statements..., DEDENT
+
+        i = 0
+        # Skip 'if' token if present
+        while i < len(children) and isinstance(children[i], Token) and children[i].value == 'if':
+            i += 1
+
+        # Get condition
+        if i < len(children) and not isinstance(children[i], Token):
+            condition = children[i]
+            i += 1
+
+        # Skip INDENT token
+        while i < len(children) and isinstance(children[i], Token) and children[i].type == 'INDENT':
+            i += 1
+
+        # Collect then_body statements until DEDENT or next clause
+        while i < len(children):
+            child = children[i]
             if isinstance(child, Token):
-                if child.value == 'if': state = 'condition'
-                elif child.value == 'elif': state = 'elif_condition'
-                elif child.value == 'else': state = 'else'
-                continue
-            if state == 'condition' and condition is None:
-                condition = child
-                state = 'then_body'
-            elif state == 'then_body' and isinstance(child, list) and not then_body:
-                then_body = self._filter_tokens(child)
-            elif state == 'elif_condition':
-                current_elif_cond = child
-                state = 'elif_body'
-            elif state == 'elif_body' and isinstance(child, list):
-                elif_clauses.append((current_elif_cond, self._filter_tokens(child)))
-                state = 'condition'
-            elif state == 'else' and isinstance(child, list):
-                else_body = self._filter_tokens(child)
+                if child.type == 'DEDENT':
+                    i += 1
+                    break
+                elif child.value in ('elif', 'else'):
+                    break
+                i += 1
+            elif isinstance(child, list):
+                then_body.extend(self._filter_tokens(child))
+                i += 1
+            else:
+                then_body.append(child)
+                i += 1
+
+        # Process elif/else clauses
+        while i < len(children):
+            child = children[i]
+
+            if isinstance(child, Token) and child.value == 'elif':
+                i += 1
+                # Get elif condition
+                elif_cond = None
+                if i < len(children) and not isinstance(children[i], Token):
+                    elif_cond = children[i]
+                    i += 1
+
+                # Skip INDENT
+                while i < len(children) and isinstance(children[i], Token) and children[i].type == 'INDENT':
+                    i += 1
+
+                # Collect elif body
+                elif_body = []
+                while i < len(children):
+                    c = children[i]
+                    if isinstance(c, Token):
+                        if c.type == 'DEDENT':
+                            i += 1
+                            break
+                        elif c.value in ('elif', 'else'):
+                            break
+                        i += 1
+                    elif isinstance(c, list):
+                        elif_body.extend(self._filter_tokens(c))
+                        i += 1
+                    else:
+                        elif_body.append(c)
+                        i += 1
+
+                if elif_cond:
+                    elif_clauses.append((elif_cond, elif_body))
+
+            elif isinstance(child, Token) and child.value == 'else':
+                i += 1
+                # Skip INDENT
+                while i < len(children) and isinstance(children[i], Token) and children[i].type == 'INDENT':
+                    i += 1
+
+                # Collect else body
+                else_body = []
+                while i < len(children):
+                    c = children[i]
+                    if isinstance(c, Token):
+                        if c.type == 'DEDENT':
+                            i += 1
+                            break
+                        i += 1
+                    elif isinstance(c, list):
+                        else_body.extend(self._filter_tokens(c))
+                        i += 1
+                    else:
+                        else_body.append(c)
+                        i += 1
+            elif isinstance(child, list):
+                # Could be else_clause nested data
+                # Structure for elif: [condition, INDENT, statements..., DEDENT, else_clause?]
+                # Structure for else: [INDENT, statements..., DEDENT]
+                if len(child) >= 1:
+                    # Check if first item is a Token
+                    first_item = child[0] if child else None
+                    
+                    # If it starts with INDENT, it's an else body
+                    if isinstance(first_item, Token) and first_item.type == 'INDENT':
+                        else_body = []
+                        for item in child[1:]:  # Skip INDENT
+                            if isinstance(item, Token) and item.type == 'DEDENT':
+                                break
+                            elif isinstance(item, list):
+                                else_body.extend(self._filter_tokens(item))
+                            elif not isinstance(item, Token):
+                                else_body.append(item)
+                    elif first_item is not None and not isinstance(first_item, Token):
+                        # This is an elif clause: [condition, INDENT, body..., DEDENT, else_clause?]
+                        elif_cond = first_item
+                        elif_body = []
+                        
+                        # Skip INDENT and collect body
+                        j = 1
+                        while j < len(child) and isinstance(child[j], Token) and child[j].type == 'INDENT':
+                            j += 1
+                        
+                        # Collect elif body until DEDENT or end
+                        while j < len(child):
+                            item = child[j]
+                            if isinstance(item, Token) and item.type == 'DEDENT':
+                                j += 1
+                                break
+                            elif isinstance(item, list):
+                                elif_body.extend(self._filter_tokens(item))
+                            elif not isinstance(item, Token):
+                                elif_body.append(item)
+                            j += 1
+                        
+                        if elif_cond:
+                            elif_clauses.append((elif_cond, elif_body))
+                        
+                        # Check if there's an else clause remaining
+                        if j < len(child) and isinstance(child[j], list):
+                            else_list = child[j]
+                            if len(else_list) >= 1 and isinstance(else_list[0], Token) and else_list[0].type == 'INDENT':
+                                else_body = []
+                                for item in else_list[1:]:
+                                    if isinstance(item, Token) and item.type == 'DEDENT':
+                                        break
+                                    elif isinstance(item, list):
+                                        else_body.extend(self._filter_tokens(item))
+                                    elif not isinstance(item, Token):
+                                        else_body.append(item)
+                    else:
+                        # Try to extract elif/else from nested structure
+                        for item in child:
+                            if isinstance(item, tuple) and len(item) == 2:
+                                elif_clauses.append((item[0], self._filter_tokens(item[1]) if isinstance(item[1], list) else [item[1]]))
+                            elif isinstance(item, list):
+                                else_body = self._filter_tokens(item)
+                i += 1
+            else:
+                i += 1
+
         return IfStatement(condition=condition, then_body=then_body, elif_clauses=elif_clauses, else_body=else_body)
 
     def else_clause(self, children): return children if children else None
 
     def loop(self, children):
-        if not children: return None
-        for child in children:
-            if isinstance(child, Token):
-                if child.value == 'for':
-                    var = None
-                    iterable = None
-                    body = []
-                    for c in children:
-                        if isinstance(c, ScalarVar) and var is None:
-                            var = c.name
-                        elif var and iterable is None and not isinstance(c, Token) and c.value not in ('for', 'in', ':'):
-                            iterable = c
-                        elif isinstance(c, list) and iterable:
-                            body = self._filter_tokens(c)
-                    return ForLoop(var=var or '$i', iterable=iterable, body=body)
-                elif child.value == 'while':
-                    condition = None
-                    body = []
-                    for c in children:
-                        if not isinstance(c, Token) and c.value not in ('while', ':') and condition is None:
-                            condition = c
-                        elif isinstance(c, list) and condition:
-                            body = self._filter_tokens(c)
-                    return WhileLoop(condition=condition, body=body)
-        return WhileLoop(condition=children[0] if children else None, body=[])
+        """Transform loop statement (for or while)."""
+        if not children:
+            return None
+
+        # Filter out None values
+        children = [c for c in children if c is not None]
+
+        # For loop: first child is ScalarVar (loop variable)
+        # While loop: first child is expression (condition)
+        if children and isinstance(children[0], ScalarVar):
+            # This is a for loop: for $var in iterable: body
+            var = children[0].name
+            iterable = None
+            body = []
+
+            # Second child should be the iterable expression
+            if len(children) > 1:
+                iterable = children[1]
+
+            # Remaining children are body statements
+            for c in children[2:]:
+                if isinstance(c, list):
+                    body.extend(self._filter_tokens(c))
+                elif not isinstance(c, Token):
+                    body.append(c)
+
+            return ForLoop(var=var or '_i', iterable=iterable, body=body)
+        else:
+            # This is a while loop: while condition: body
+            condition = None
+            body = []
+
+            if children:
+                condition = children[0]
+
+            # Remaining children are body statements
+            for c in children[1:]:
+                if isinstance(c, list):
+                    body.extend(self._filter_tokens(c))
+                elif not isinstance(c, Token):
+                    body.append(c)
+
+            return WhileLoop(condition=condition, body=body)
 
     def return_statement(self, children):
         return ReturnStatement(value=children[0] if children and children[0] is not None else None)
@@ -870,7 +1058,7 @@ def greet($name):
 $greeter = &greet
 print($greeter("World"))
 print("Integer: " + str($integer))
-print("Person name: " + %person{"name"})
+print("Person name: " + %person["name"])
 
 if $integer > 10:
     print("Large")

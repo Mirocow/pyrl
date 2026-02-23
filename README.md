@@ -205,15 +205,27 @@ python pyrl_cli.py -p script.pyrl
 # Режим отладки
 python pyrl_cli.py -d script.pyrl
 
-# Запуск сервера
-python pyrl_server.py
+# Запуск веб-сервера
+python scripts/run_web_app.py
+
+# Запуск примеров
+python scripts/run_examples.py
+
+# Генерация примеров
+python scripts/generate_examples.py
+
+# Обучение модели
+python scripts/train_model.py
 ```
 
 ## API Server
 
 ```bash
 # Запуск сервера
-uvicorn pyrl_server:app --host 0.0.0.0 --port 8000
+python scripts/pyrl_server.py
+
+# Или через uvicorn
+uvicorn scripts.pyrl_server:app --host 0.0.0.0 --port 8000
 
 # Выполнение кода
 curl -X POST http://localhost:8000/execute \
@@ -268,13 +280,31 @@ print(@positive)  # [5, 8, 3]
 
 ```
 pyrl/
-├── src/core/
-│   ├── lark_parser.py    # Lark-парсер с грамматикой
-│   ├── vm.py             # Виртуальная машина
-│   └── exceptions.py     # Исключения
+├── pyrl_cli.py           # CLI интерфейс
+├── src/
+│   ├── config.py         # Централизованная конфигурация
+│   └── core/
+│       ├── lark_parser.py    # Lark-парсер с грамматикой
+│       ├── exceptions.py     # Исключения
+│       └── vm/               # Виртуальная машина
+│           ├── vm.py             # Главная VM
+│           ├── environment.py    # Управление областями видимости
+│           ├── objects.py        # OOP объекты
+│           ├── builtins.py       # Встроенные функции
+│           ├── builtins_http.py  # HTTP функции
+│           ├── builtins_db.py    # SQLite функции
+│           └── builtins_crypto.py # Криптография
+├── scripts/              # Скрипты утилиты
+│   ├── generate_examples.py  # Генератор примеров
+│   ├── generate_model.py     # Генератор модели
+│   ├── run_examples.py       # Запуск примеров
+│   ├── run_web_app.py        # Веб-сервер
+│   └── train_model.py        # Обучение модели
 ├── examples/             # Примеры кода
 ├── tests/                # Тесты pytest (321 тест)
 ├── models/               # ML модель
+├── data/                 # Runtime данные
+├── cache/                # Кэш и чекпоинты
 ├── docker/               # Docker конфигурации
 └── documents/            # Документация
 ```

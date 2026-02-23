@@ -68,7 +68,21 @@ Thumbs.db
 *.zip
 *.tar.gz
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Runtime data
+data/
+!data/.gitkeep
+cache/
+!cache/.gitkeep
+checkpoints/
+
+# Environment
+.env
+
 htmlcov/
 logs/
-checkpoiints/
-.env
+checkpoints/

@@ -400,10 +400,10 @@ class ParseErrorInfo:
 
     def _parse_exception(self):
         if isinstance(self.exception, UnexpectedToken):
-            self.line_num = self.exception.line
-            self.col_num = self.exception.column
-            self.token = self.exception.token
-            self.expected = self.exception.accepts or []
+            self.line_num = getattr(self.exception, 'line', 1)
+            self.col_num = getattr(self.exception, 'column', 1)
+            self.token = getattr(self.exception, 'token', None)
+            self.expected = getattr(self.exception, 'accepts', []) or []
         elif isinstance(self.exception, UnexpectedInput):
             self.line_num = getattr(self.exception, 'line', 1)
             self.col_num = getattr(self.exception, 'column', 1)

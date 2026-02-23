@@ -7,6 +7,11 @@ import sys
 import os
 from pathlib import Path
 
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from src.config import get_config
+
 def run_pyrl_file(filepath):
     """Run a single Pyrl file and return success status."""
     print(f"\n{'='*60}")
@@ -31,7 +36,8 @@ def run_pyrl_file(filepath):
     return result.returncode == 0
 
 def main():
-    examples_dir = Path("/home/z/my-project/pyrl/examples/runnable")
+    config = get_config()
+    examples_dir = config.examples_dir / "runnable"
     
     if not examples_dir.exists():
         print(f"Error: Directory {examples_dir} not found")

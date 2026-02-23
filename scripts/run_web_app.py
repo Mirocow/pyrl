@@ -10,8 +10,8 @@ Usage:
     python run_web_app.py [options]
 
 Options:
-    --port PORT      Server port (default: from env PYRL_PORT or 8080)
-    --host HOST      Server host (default: from env PYRL_HOST or 0.0.0.0)
+    --port PORT      Server port (default: from config or 8080)
+    --host HOST      Server host (default: from config or 0.0.0.0)
     --file FILE      Pyrl application file (default: examples/web_app.pyrl)
 
 Environment Variables:
@@ -27,10 +27,12 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import threading
 import time
+from pathlib import Path
 
 # Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from src.config import get_config
 from src.core.vm import PyrlVM, PyrlFunction, PyrlInstance, PyrlRuntimeError
 
 
@@ -234,15 +236,17 @@ def run_server(host: str, port: int, pyrl_file: str):
 
 
 def main():
+    config = get_config()
+    
     parser = argparse.ArgumentParser(description='Pyrl Web Application Server')
     parser.add_argument('--port', type=int, 
-                        default=int(os.environ.get('PYRL_PORT', 8080)),
-                        help='Server port (default: 8080)')
+                        default=config.server_port,
+                        help=f'Server port (default: {config.server_port})')
     parser.add_argument('--host', type=str,
-                        default=os.environ.get('PYRL_HOST', '0.0.0.0'),
-                        help='Server host (default: 0.0.0.0)')
+                        default=config.server_host,
+                        help=f'Server host (default: {config.server_host})')
     parser.add_argument('--file', type=str,
-                        default='examples/web_app.pyrl',
+                        default=str(config.examples_dir / 'web_app.pyrl'),
                         help='Pyrl application file')
     
     args = parser.parse_args()

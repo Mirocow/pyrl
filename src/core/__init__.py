@@ -4,13 +4,16 @@ Core components of the Pyrl language interpreter.
 Based on Lark parser with integrated lexer.
 """
 
-# Main VM (Lark-based)
+# Main VM (from vm package)
 from .vm import (
     PyrlVM,
     run,
     run_file,
     create_vm,
     PyrlFunction,
+    PyrlClass,
+    PyrlInstance,
+    PyrlMethod,
     Environment,
     PyrlRuntimeError,
     ReturnValue,
@@ -18,6 +21,9 @@ from .vm import (
     ContinueException,
     BUILTINS,
     CONSTANTS,
+    HTTP_BUILTINS,
+    DB_BUILTINS,
+    CRYPTO_BUILTINS,
 )
 
 # Lark parser (primary parser)
@@ -56,6 +62,13 @@ from .lark_parser import (
     AssertStatement,
     TestBlock,
     VueComponent,
+    # OOP and Anonymous Functions
+    Block,
+    AnonymousFuncDef,
+    ClassDef,
+    MethodDef,
+    PropertyDef,
+    MethodCall,
 )
 
 # Exceptions
@@ -82,6 +95,9 @@ __all__ = [
     'run_file',
     'create_vm',
     'PyrlFunction',
+    'PyrlClass',
+    'PyrlInstance',
+    'PyrlMethod',
     'Environment',
     'PyrlRuntimeError',
     'ReturnValue',
@@ -124,6 +140,12 @@ __all__ = [
     'AssertStatement',
     'TestBlock',
     'VueComponent',
+    'Block',
+    'AnonymousFuncDef',
+    'ClassDef',
+    'MethodDef',
+    'PropertyDef',
+    'MethodCall',
 
     # Exceptions
     'PyrlError',
@@ -140,4 +162,7 @@ __all__ = [
     # Builtins
     'BUILTINS',
     'CONSTANTS',
+    'HTTP_BUILTINS',
+    'DB_BUILTINS',
+    'CRYPTO_BUILTINS',
 ]

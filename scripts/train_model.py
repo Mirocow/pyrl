@@ -23,10 +23,15 @@ from collections import Counter
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# Configuration from environment
-DATA_DIR = Path(os.getenv("PYRL_DATA_DIR", "examples"))
-MODELS_DIR = Path(os.getenv("PYRL_MODELS_DIR", "models/pyrl-model"))
-CHECKPOINTS_DIR = Path(os.getenv("PYRL_CHECKPOINTS_DIR", "checkpoints"))
+from src.config import get_config
+
+# Get config
+_config = get_config()
+
+# Configuration from config
+DATA_DIR = _config.examples_dir
+MODELS_DIR = _config.model_path
+CHECKPOINTS_DIR = _config.cache_dir / "checkpoints"
 
 
 # ============================================

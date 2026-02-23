@@ -6,11 +6,17 @@ Creates model files for the Pyrl language.
 import json
 import os
 import struct
+import sys
 from pathlib import Path
 
-# Get paths from environment or use defaults
-MODELS_DIR = Path(os.getenv("PYRL_MODELS_DIR", "models"))
-MODEL_PATH = MODELS_DIR / "pyrl-model"
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from src.config import get_config
+
+# Get config
+config = get_config()
+MODEL_PATH = config.model_path
 
 
 def generate_tokenizer():

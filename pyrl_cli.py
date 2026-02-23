@@ -232,7 +232,7 @@ class PyrlCLI:
             # Skip builtins and internal variables
             if name.startswith('_') or name in ('True', 'False', 'None', 'PI', 'E', 'INF', 'NAN'):
                 continue
-            
+
             # Determine sigil based on name prefix or value type
             if name.startswith('$'):
                 sigil = ''
@@ -258,7 +258,7 @@ class PyrlCLI:
             else:
                 sigil = '$'
                 display_name = name
-            
+
             if isinstance(value, (list, dict)):
                 value_str = str(value)
                 if len(value_str) > 50:
@@ -371,10 +371,10 @@ class PyrlCLI:
                 print(f"Error: File not found: {filepath}", file=sys.stderr)
                 return 1
             source = path.read_text()
-            
+
             parser = PyrlLarkParser(debug=self.debug)
             ast = parser.parse(source)
-            
+
             print(f"\n\033[96mAST from {filepath}:\033[0m")
             print("─" * 60)
             lark_print_ast(ast)
@@ -422,19 +422,19 @@ For more information, visit: https://github.com/pyrl-lang/pyrl
 def main() -> int:
     parser = create_parser()
     args = parser.parse_args()
-    
+
     if args.no_color:
         os.environ['NO_COLOR'] = '1'
-    
+
     cli = PyrlCLI(debug=args.debug)
-    
+
     if args.code:
         return cli.run_code(args.code)
     if args.parse and args.file:
         return cli.parse_file(args.file)
     if args.file:
         return cli.run_file(args.file)
-    
+
     try:
         cli.run_repl()
         return 0

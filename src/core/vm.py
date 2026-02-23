@@ -625,6 +625,96 @@ def pyrl_input(prompt=None):
     return input()
 
 
+# Environment functions
+@builtin('env_get')
+def pyrl_env_get(name, default=None):
+    """Get environment variable."""
+    import os
+    return os.environ.get(name, default)
+
+
+@builtin('env_set')
+def pyrl_env_set(name, value):
+    """Set environment variable."""
+    import os
+    os.environ[name] = str(value)
+    return value
+
+
+# URL encoding functions
+@builtin('url_encode')
+def pyrl_url_encode(s):
+    """URL encode a string."""
+    import urllib.parse
+    return urllib.parse.quote(str(s))
+
+
+@builtin('url_decode')
+def pyrl_url_decode(s):
+    """URL decode a string."""
+    import urllib.parse
+    return urllib.parse.unquote(str(s))
+
+
+@builtin('parse_form')
+def pyrl_parse_form(data):
+    """Parse URL-encoded form data into a hash."""
+    import urllib.parse
+    result = {}
+    if data:
+        pairs = data.split('&')
+        for pair in pairs:
+            if '=' in pair:
+                key, value = pair.split('=', 1)
+                result[urllib.parse.unquote(key)] = urllib.parse.unquote_plus(value)
+    return result
+
+
+# HTTP Response helpers
+@builtin('html_response')
+def pyrl_html_response(content, status=200):
+    """Create an HTML response."""
+    return {
+        'status': status,
+        'headers': {'Content-Type': 'text/html; charset=utf-8'},
+        'body': content
+    }
+
+
+@builtin('json_response')
+def pyrl_json_response(data, status=200):
+    """Create a JSON response."""
+    return {
+        'status': status,
+        'headers': {'Content-Type': 'application/json'},
+        'body': json.dumps(data, default=str)
+    }
+
+
+@builtin('redirect')
+def pyrl_redirect(location, permanent=False):
+    """Create a redirect response."""
+    return {
+        'status': 301 if permanent else 302,
+        'headers': {'Location': location},
+        'body': ''
+    }
+
+
+@builtin('parse_cookies')
+def pyrl_parse_cookies(cookie_header):
+    """Parse Cookie header into a hash."""
+    result = {}
+    if cookie_header:
+        cookies = cookie_header.split(';')
+        for cookie in cookies:
+            cookie = cookie.strip()
+            if '=' in cookie:
+                key, value = cookie.split('=', 1)
+                result[key.strip()] = value.strip()
+    return result
+
+
 # Constants
 CONSTANTS = {
     'True': True,
@@ -656,12 +746,20 @@ class PyrlFunction:
         if self.closure and self.closure.vm:
             local_env.vm = self.closure.vm
 
-        # Bind parameters with $ prefix
+        # Bind parameters
         for i, param in enumerate(self.params):
-            if i < len(args):
-                local_env.define('$' + param, args[i])
+            # Handle both old format (string) and new format (tuple)
+            if isinstance(param, tuple):
+                param_name, param_type = param
             else:
-                local_env.define('$' + param, None)
+                # Old format: just a string name
+                param_name = param if param.startswith(('$', '@', '%', '&')) else '$' + param
+                param_type = 'scalar'
+            
+            if i < len(args):
+                local_env.define(param_name, args[i])
+            else:
+                local_env.define(param_name, None)
 
         # Execute body
         try:
@@ -793,12 +891,20 @@ class PyrlMethod:
             for prop_name, prop_value in self.instance._properties.items():
                 local_env.define('$' + prop_name, prop_value)
         
-        # Bind parameters with $ prefix
+        # Bind parameters
         for i, param in enumerate(self.params):
-            if i < len(args):
-                local_env.define('$' + param, args[i])
+            # Handle both old format (string) and new format (tuple)
+            if isinstance(param, tuple):
+                param_name, param_type = param
             else:
-                local_env.define('$' + param, None)
+                # Old format: just a string name
+                param_name = param if param.startswith(('$', '@', '%', '&')) else '$' + param
+                param_type = 'scalar'
+            
+            if i < len(args):
+                local_env.define(param_name, args[i])
+            else:
+                local_env.define(param_name, None)
         
         # Execute body
         try:

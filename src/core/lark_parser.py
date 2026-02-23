@@ -50,9 +50,9 @@ compound_stmt: function_definition
 function_definition: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
 
 // Block syntax for anonymous functions
-// Use block_stmt to avoid conflicts with hash_literal
-block: "{" block_stmts "}"
-block_stmts: [block_stmt (";" block_stmt)* [";"]]
+// Statements separated by newlines or semicolons
+block: "{" [block_stmt (block_sep block_stmt)* [block_sep]] "}"
+block_sep: _NL+ | ";"+ 
 block_stmt: assignment
           | return_statement
           | expression_statement
@@ -188,9 +188,12 @@ IDENT: /[a-zA-Z_][a-zA-Z0-9_]*/
 
 STRING: ESCAPED_STRING
        | SINGLE_QUOTED_STRING
+       | TRIPLE_QUOTED_STRING
 
 ESCAPED_STRING: /"(?:[^"\\]|\\.)*"/
 SINGLE_QUOTED_STRING: /'[^']*'/
+TRIPLE_QUOTED_STRING.2: /\"\"\"(.|\n)*?\"\"\"/
+
 
 NUMBER: INT | FLOAT
 INT: /\d+/
@@ -605,8 +608,14 @@ class PyrlTransformer(Transformer):
     def STRING(self, t):
         v = t.value
         if len(v) >= 2:
-            if v.startswith('"') and v.endswith('"'):
+            # Triple-quoted string: """..."""
+            if v.startswith('"""') and v.endswith('"""'):
+                v = v[3:-3]  # Remove triple quotes
+                # Don't process escape sequences in triple-quoted strings (raw-like)
+            # Regular double-quoted string: "..."
+            elif v.startswith('"') and v.endswith('"'):
                 v = v[1:-1].replace('\\n', '\n').replace('\\t', '\t').replace('\\r', '\r').replace('\\"', '"').replace('\\\\', '\\')
+            # Single-quoted string: '...'
             elif v.startswith("'") and v.endswith("'"):
                 v = v[1:-1]
         return StringLiteral(value=v)
@@ -699,9 +708,6 @@ class PyrlTransformer(Transformer):
         params = []
         body = []
         
-        # Debug: print children types
-        # print(f"DEBUG function_definition: {[type(c).__name__ for c in children]}")
-        
         i = 0
         # Skip 'def' or '&' token
         if i < len(children) and isinstance(children[i], Token) and children[i].value in ('def', '&'):
@@ -724,9 +730,19 @@ class PyrlTransformer(Transformer):
             child = children[i]
             if isinstance(child, list):
                 # This could be arg_list (params) or body
-                if all(isinstance(p, ScalarVar) for p in child if p is not None):
-                    # This is the parameter list
-                    params = [p.name for p in child if isinstance(p, ScalarVar)]
+                # Check if this is a parameter list
+                is_param_list = all(isinstance(p, (ScalarVar, HashVar, ArrayVar, FuncVar)) for p in child if p is not None)
+                if is_param_list:
+                    # Extract parameter names with appropriate sigils
+                    for p in child:
+                        if isinstance(p, ScalarVar):
+                            params.append(('$' + p.name, 'scalar'))
+                        elif isinstance(p, HashVar):
+                            params.append(('%' + p.name, 'hash'))
+                        elif isinstance(p, ArrayVar):
+                            params.append(('@' + p.name, 'array'))
+                        elif isinstance(p, FuncVar):
+                            params.append(('&' + p.name, 'func'))
                 else:
                     # This could be body statements
                     body = self._filter_tokens(child)
@@ -1046,6 +1062,10 @@ class PyrlTransformer(Transformer):
         """Transform block_stmt."""
         return children[0] if children else None
 
+    def block_sep(self, children):
+        """Block separator (newlines or semicolons) - ignore in AST."""
+        return None
+
     def block_if(self, children):
         """Transform block if statement."""
         condition = None
@@ -1193,14 +1213,22 @@ class PyrlTransformer(Transformer):
             elif isinstance(child, IdentRef):
                 name = child.name
             elif isinstance(child, list):
-                if all(isinstance(p, ScalarVar) for p in child if p is not None):
-                    params = [p.name for p in child if isinstance(p, ScalarVar)]
+                # Check if this is a param list
+                is_param_list = all(isinstance(p, (ScalarVar, FuncVar)) for p in child if p is not None)
+                if is_param_list:
+                    for p in child:
+                        if isinstance(p, ScalarVar):
+                            params.append(('$' + p.name, 'scalar'))
+                        elif isinstance(p, FuncVar):
+                            params.append(('&' + p.name, 'func'))
                 else:
                     body = self._filter_tokens(child)
             elif isinstance(child, Block):
                 body = child.statements
             elif isinstance(child, ScalarVar):
-                params.append(child.name)
+                params.append(('$' + child.name, 'scalar'))
+            elif isinstance(child, FuncVar):
+                params.append(('&' + child.name, 'func'))
             elif child is not None and not isinstance(child, Token):
                 body.append(child)
 

@@ -63,8 +63,8 @@ print("Names count: " + str(len(@names)))
     host: "localhost"
 }
 
-print("Person name: " + %person["name"])
-print("Person age: " + str(%person["age"]))
+print("Person name: " + %person{"name"})
+print("Person age: " + str(%person{"age"}))
 
 # ===========================================
 # FUNCTION REFERENCES (&)

@@ -1,0 +1,18 @@
+{
+    "files.exclude": {
+        "**/.apivcs": false,
+        "**/.gitignore": false,
+        "**/.github": false,
+        "**/.designer.json": false,
+        "**/.exchange.xml": false,
+        "**/.vscode": false,
+        "**/.mvn": false,
+        "**/.tmp": false,
+        "**/.settings": false,
+        "**/.exchange_modules_tmp": false,
+        "**/.history": false,
+        "**/.kilocode": false,
+        "**/.refactoring": false,
+        "**/.circleci": false
+    }
+}

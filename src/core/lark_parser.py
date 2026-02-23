@@ -1,11 +1,13 @@
 """
 Pyrl Lark Parser Module
 Parses Pyrl source code using Lark parser with grammar-based parsing.
+Enhanced: Detailed error reporting with line numbers, context, and visual markers.
 """
-from typing import List, Optional, Any, Dict
-from dataclasses import dataclass
+from typing import List, Optional, Any, Dict, Union
+from dataclasses import dataclass, field
 from lark import Lark, Transformer, Token, Tree
 from lark.indenter import Indenter
+from lark.exceptions import UnexpectedToken, UnexpectedInput, GrammarError
 
 
 # ===========================================
@@ -13,31 +15,40 @@ from lark.indenter import Indenter
 # ===========================================
 
 GRAMMAR = r"""
-start: _NL* statement (_NL+ statement)* _NL*
+start: (_NL | statement)*
 
-statement: return_statement
-         | assignment 
-         | function_definition
-         | conditional 
-         | loop 
-         | test_block 
-         | vue_component_gen
-         | print_statement
-         | assertion_statement
-         | expression_statement
-         
+statement: simple_stmt _NL?
+         | compound_stmt
+
+simple_stmt: return_statement
+           | assignment
+           | print_statement
+           | assertion_statement
+           | expression_statement
+
 assertion_statement: "assert" expression comparison_op expression
                    | "assert" expression
-                   
-comparison_op: "==" | "!=" | "<" | ">" | "<=" | ">="
-         
+
+comparison_op: COMP_OP
+
 expression_statement: expression
-             
-function_definition: FUNC_VAR "(" [param_list] ")" ":" _NL INDENT statement+ DEDENT
 
-param_list: SCALAR_VAR ("," SCALAR_VAR)*
+compound_stmt: function_definition
+             | conditional
+             | loop
+             | test_block
+             | vue_component_gen
 
-assignment: (SCALAR_VAR | ARRAY_VAR | HASH_VAR | hash_access | array_access) "=" expression
+function_definition: FUNC_VAR "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
+                   | "def" IDENT "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
+
+assignment: assign_target "=" expression
+
+assign_target: SCALAR_VAR
+             | ARRAY_VAR
+             | HASH_VAR
+             | hash_access
+             | array_access
 
 ?expression: or_expr
 
@@ -55,31 +66,40 @@ multiplicative_expr: unary_expr (MUL_OP unary_expr)*
            | MINUS_OP unary_expr
            | primary_expr
 
-?primary_expr: literal 
-             | function_call
-             | VARIABLE 
-             | hash_access
-             | array_access
+?primary_expr: literal
              | "(" expression ")"
              | regex_literal
-             
-hash_access: HASH_VAR "[" expression "]" | SCALAR_VAR "[" expression "]"
+             | function_call
+             | hash_access
+             | array_access
+             | var_ref
 
-array_access: ARRAY_VAR "[" expression "]"
+// FIXED: Added IDENT to support built-in functions (str, len, int, etc.)
+?var_ref: SCALAR_VAR
+        | ARRAY_VAR
+        | HASH_VAR
+        | FUNC_VAR
+        | IDENT
+
+// Hash access uses {} brackets: %hash{"key"}
+hash_access: primary_expr "{" expression "}"
+// Array access uses [] brackets: @array[0]
+array_access: primary_expr "[" expression "]"
 
 literal: STRING | NUMBER | BOOLEAN | NONE | hash_literal | array_literal
 
-hash_literal: "{" [hash_item ("," hash_item)*] [","] "}"
+// Hash literal - supports multi-line
+hash_literal: "{" [_NL* hash_item ("," _NL* hash_item)* _NL*] [","] "}"
 hash_item: (STRING | IDENT) ":" expression
 
-array_literal: "[" [expression ("," expression)*] [","] "]"
+// Array literal - supports multi-line
+array_literal: "[" [_NL* expression ("," _NL* expression)* _NL*] [","] "]"
 
 regex_literal: "r" STRING
 
-conditional: "if" expression ":" _NL INDENT statement+ DEDENT
-           | "if" expression ":" _NL INDENT statement+ DEDENT "else" ":" _NL INDENT statement+ DEDENT
-           | "if" expression ":" _NL INDENT statement+ DEDENT "elif" expression ":" _NL INDENT statement+ DEDENT
-           | "if" expression ":" _NL INDENT statement+ DEDENT "elif" expression ":" _NL INDENT statement+ DEDENT "else" ":" _NL INDENT statement+ DEDENT
+conditional: "if" expression ":" _NL INDENT statement+ DEDENT else_clause?
+else_clause: "elif" expression ":" _NL INDENT statement+ DEDENT else_clause?
+           | "else" ":" _NL INDENT statement+ DEDENT
 
 loop: "for" SCALAR_VAR "in" expression ":" _NL INDENT statement+ DEDENT
     | "while" expression ":" _NL INDENT statement+ DEDENT
@@ -89,20 +109,31 @@ test_block: "test" STRING? ":" _NL INDENT statement+ DEDENT
 print_statement: "print" "(" expression ")"
 
 vue_component_gen: "vue" STRING ":" _NL INDENT vue_property+ DEDENT
-vue_property: INDENT IDENT ":" expression _NL
+vue_property: IDENT ":" expression _NL
 
-function_call: FUNC_VAR "(" [arg_list] ")"
+function_call: primary_expr "(" [arg_list] ")"
 
 arg_list: expression ("," expression)*
 
 return_statement: "return" expression?
 
-VARIABLE: SCALAR_VAR | ARRAY_VAR | HASH_VAR | FUNC_VAR
+// ===========================================
+// Variable Types with Sigils
+// ===========================================
+// $ - Scalar variables (single values)
+// @ - Array variables (lists)
+// % - Hash variables (dictionaries)
+// & - Function variables (references)
 SCALAR_VAR: "$" IDENT
 ARRAY_VAR: "@" IDENT
 HASH_VAR: "%" IDENT
 FUNC_VAR: "&" IDENT
 
+// FIXED: BOOLEAN and NONE before IDENT to prevent misidentification
+BOOLEAN: "True" | "False" | "true" | "false"
+NONE: "None" | "none" | "null"
+
+// IDENT last (least specific)
 IDENT: /[a-zA-Z_][a-zA-Z0-9_]*/
 
 STRING: ESCAPED_STRING
@@ -111,12 +142,11 @@ STRING: ESCAPED_STRING
 SINGLE_QUOTED_STRING: /'[^']*'/
 
 NUMBER: SIGNED_INT | SIGNED_FLOAT
-BOOLEAN: "True" | "False" | "true" | "false"
-NONE: "None" | "none" | "null"
 
-OR_OP: "||"
-AND_OP: "&&"
-COMP_OP: "==" | "!=" | "<" | ">" | "<=" | ">=" | "=~" | "!~"
+// ===========================================
+// Operators - FIXED: Order matters! Longer operators first
+// ===========================================
+COMP_OP: "==" | "!=" | "<=" | ">=" | "=~" | "!~" | "<" | ">"
 ADD_OP: "+" | "-"
 MUL_OP: "*" | "/" | "%" | "//"
 NOT_OP: "!"
@@ -127,9 +157,15 @@ MINUS_OP: "-"
 %import common.SIGNED_FLOAT
 %import common.WS_INLINE
 
+// Proper regex syntax for newlines (no broken \r?\n)
 _NL: /(?:\r?\n[\t ]*)+/
 
+// FIXED: Proper regex syntax for comments (no broken newlines)
+COMMENT: /#[^\n]*/
+       | /\/\/[^\n]*/
+
 %ignore WS_INLINE
+%ignore COMMENT
 %declare INDENT DEDENT
 """
 
@@ -141,7 +177,7 @@ _NL: /(?:\r?\n[\t ]*)+/
 @dataclass
 class Program:
     """Root AST node containing all statements."""
-    statements: List[Any]
+    statements: List[Any] = field(default_factory=list)
 
 
 @dataclass
@@ -168,10 +204,16 @@ class FuncVar:
     name: str
 
 
+@dataclass(frozen=True)
+class IdentRef:
+    """Identifier reference (for built-in functions)."""
+    name: str
+
+
 @dataclass
 class NumberLiteral:
     """Numeric literal."""
-    value: float
+    value: Union[int, float]
 
 
 @dataclass
@@ -195,13 +237,13 @@ class NoneLiteral:
 @dataclass
 class ArrayLiteral:
     """Array literal [a, b, c]."""
-    elements: List[Any]
+    elements: List[Any] = field(default_factory=list)
 
 
 @dataclass
 class HashLiteral:
     """Hash literal {key: value}."""
-    pairs: Dict[str, Any]
+    pairs: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -234,14 +276,14 @@ class Assignment:
 
 @dataclass
 class HashAccess:
-    """Hash access expression."""
+    """Hash access with {} brackets: %hash{"key"}"""
     obj: Any
     key: Any
 
 
 @dataclass
 class ArrayAccess:
-    """Array access expression."""
+    """Array access with [] brackets: @array[0]"""
     obj: Any
     index: Any
 
@@ -250,24 +292,24 @@ class ArrayAccess:
 class FunctionCall:
     """Function call expression."""
     name: str
-    args: List[Any]
+    args: List[Any] = field(default_factory=list)
 
 
 @dataclass
 class FunctionDef:
     """Function definition."""
     name: str
-    params: List[str]
-    body: List[Any]
+    params: List[str] = field(default_factory=list)
+    body: List[Any] = field(default_factory=list)
 
 
 @dataclass
 class IfStatement:
     """If/elif/else statement."""
     condition: Any
-    then_body: List[Any]
-    elif_clauses: List[tuple]  # List of (condition, body)
-    else_body: Optional[List[Any]]
+    then_body: List[Any] = field(default_factory=list)
+    elif_clauses: List[tuple] = field(default_factory=list)
+    else_body: Optional[List[Any]] = None
 
 
 @dataclass
@@ -275,20 +317,20 @@ class ForLoop:
     """For loop statement."""
     var: str
     iterable: Any
-    body: List[Any]
+    body: List[Any] = field(default_factory=list)
 
 
 @dataclass
 class WhileLoop:
     """While loop statement."""
     condition: Any
-    body: List[Any]
+    body: List[Any] = field(default_factory=list)
 
 
 @dataclass
 class ReturnStatement:
     """Return statement."""
-    value: Optional[Any]
+    value: Optional[Any] = None
 
 
 @dataclass
@@ -301,22 +343,22 @@ class PrintStatement:
 class AssertStatement:
     """Assert statement."""
     left: Any
-    operator: Optional[str]
-    right: Optional[Any]
+    operator: Optional[str] = None
+    right: Optional[Any] = None
 
 
 @dataclass
 class TestBlock:
     """Test block."""
-    name: Optional[str]
-    body: List[Any]
+    name: Optional[str] = None
+    body: List[Any] = field(default_factory=list)
 
 
 @dataclass
 class VueComponent:
     """Vue component generation."""
     name: str
-    properties: Dict[str, Any]
+    properties: Dict[str, Any] = field(default_factory=dict)
 
 
 # ===========================================
@@ -325,13 +367,97 @@ class VueComponent:
 
 class PyrlIndenter(Indenter):
     """Handle Python-like indentation for Lark parser."""
-    
+
     NL_type = '_NL'
-    OPEN_PAREN_types = []
-    CLOSE_PAREN_types = []
+    OPEN_PAREN_types = ['LPAR', 'LSQB', 'LBRACE']
+    CLOSE_PAREN_types = ['RPAR', 'RSQB', 'RBRACE']
     INDENT_type = 'INDENT'
     DEDENT_type = 'DEDENT'
     tab_len = 4
+
+
+# ===========================================
+# Error Reporting
+# ===========================================
+
+class ParseErrorInfo:
+    """Detailed parse error information."""
+
+    def __init__(self, source: str, exception: Exception):
+        self.source = source
+        self.exception = exception
+        self.lines = source.split('\n')  # Proper newline
+        self.line_num = 1
+        self.col_num = 1
+        self.context_lines = 3
+        self._parse_exception()
+
+    def _parse_exception(self):
+        if isinstance(self.exception, UnexpectedToken):
+            self.line_num = self.exception.line
+            self.col_num = self.exception.column
+            self.token = self.exception.token
+            self.expected = self.exception.accepts or []
+        elif isinstance(self.exception, UnexpectedInput):
+            self.line_num = getattr(self.exception, 'line', 1)
+            self.col_num = getattr(self.exception, 'column', 1)
+            self.token = getattr(self.exception, 'token', None)
+            self.expected = []
+        else:
+            self.token = None
+            self.expected = []
+
+    def get_context(self) -> str:
+        start_line = max(0, self.line_num - self.context_lines - 1)
+        end_line = min(len(self.lines), self.line_num + self.context_lines)
+        context = []
+        line_num_width = len(str(end_line))
+        for i in range(start_line, end_line):
+            line_no = i + 1
+            line_content = self.lines[i] if i < len(self.lines) else ''
+            prefix = f"{line_no:>{line_num_width}} | "
+            context.append(f"{prefix}{line_content}")
+            if i + 1 == self.line_num:
+                marker = ' ' * len(prefix) + ' ' * (self.col_num - 1) + '^' * max(1, len(str(self.token.value)) if self.token else 1)
+                context.append(f"\033[91m{marker}\033[0m")
+        return '\n'.join(context)  # Proper newline
+
+    def format_expected(self) -> str:
+        if not self.expected:
+            return "Unknown"
+        # Handle both set and list types for expected tokens
+        expected_items = list(self.expected) if isinstance(self.expected, (set, frozenset)) else self.expected
+        token_map = {
+            'SCALAR_VAR': '$variable', 'ARRAY_VAR': '@variable', 'HASH_VAR': '%variable',
+            'FUNC_VAR': '&variable', 'IDENT': 'identifier', 'STRING': 'string',
+            'NUMBER': 'number', 'BOOLEAN': 'boolean', 'NONE': 'None',
+            'LPAR': '(', 'RPAR': ')', 'LSQB': '[', 'RSQB': ']', 'LBRACE': '{', 'RBRACE': '}',
+            'COLON': ':', 'COMMA': ',', 'COMP_OP': 'comparison', 'ADD_OP': '+/-',
+            'MUL_OP': '*/%', 'IF': 'if', 'ELSE': 'else', 'ELIF': 'elif',
+            'FOR': 'for', 'WHILE': 'while', 'DEF': 'def', 'RETURN': 'return',
+            'PRINT': 'print', '_NL': 'newline',
+        }
+        readable = [token_map.get(str(t), str(t)) for t in expected_items[:10]]
+        if len(expected_items) > 10:
+            readable.append(f"... and {len(expected_items) - 10} more")
+        return ', '.join(readable)
+
+    def __str__(self) -> str:
+        error_msg = [
+            "\033[91m" + "=" * 60 + "\033[0m",
+            "\033[91mPARSE ERROR\033[0m",
+            "\033[91m" + "=" * 60 + "\033[0m",
+            f"\033[93mLocation:\033[0m Line {self.line_num}, Column {self.col_num}",
+        ]
+        if self.token:
+            error_msg.append(f"\033[93mUnexpected token:\033[0m {self.token.value!r} (type: {self.token.type})")
+        error_msg.append(f"\033[93mExpected one of:\033[0m {self.format_expected()}")
+        error_msg.append("")
+        error_msg.append("\033[93mContext:\033[0m")
+        error_msg.append(self.get_context())
+        error_msg.append("")
+        error_msg.append("\033[91m" + "=" * 60 + "\033[0m")
+        return '\n'.join(error_msg)
 
 
 # ===========================================
@@ -340,360 +466,269 @@ class PyrlIndenter(Indenter):
 
 class PyrlTransformer(Transformer):
     """Transform Lark parse tree into Pyrl AST."""
-    
+
+    def _filter_tokens(self, items):
+        return [c for c in items if c is not None and not isinstance(c, Token)]
+
     def start(self, children):
-        """Transform start rule."""
         statements = []
         for child in children:
             if isinstance(child, list):
-                statements.extend(child)
-            else:
+                statements.extend(self._filter_tokens(child))
+            elif child is not None and not isinstance(child, Token):
                 statements.append(child)
         return Program(statements=statements)
-    
+
     def statement(self, children):
-        """Transform statement rule."""
-        return children[0] if children else None
-    
+        return children[0] if children and not isinstance(children[0], Token) else None
+
+    def simple_stmt(self, children):
+        return children[0] if children and not isinstance(children[0], Token) else None
+
+    def compound_stmt(self, children):
+        return children[0] if children and not isinstance(children[0], Token) else None
+
     def expression_statement(self, children):
-        """Transform expression statement."""
-        return children[0] if children else None
-    
-    # Variables
-    def SCALAR_VAR(self, token):
-        """Transform scalar variable."""
-        return ScalarVar(name=token.value[1:])  # Remove $ prefix
-    
-    def ARRAY_VAR(self, token):
-        """Transform array variable."""
-        return ArrayVar(name=token.value[1:])  # Remove @ prefix
-    
-    def HASH_VAR(self, token):
-        """Transform hash variable."""
-        return HashVar(name=token.value[1:])  # Remove % prefix
-    
-    def FUNC_VAR(self, token):
-        """Transform function variable."""
-        return FuncVar(name=token.value[1:])  # Remove & prefix
-    
-    def VARIABLE(self, token):
-        """Transform generic variable."""
-        return token  # Return as token, will be handled by parent rule
-    
-    # Literals
-    def NUMBER(self, token):
-        """Transform number literal."""
-        value = token.value
-        if '.' in value or 'e' in value.lower():
-            return NumberLiteral(value=float(value))
-        return NumberLiteral(value=int(value))
-    
-    def STRING(self, token):
-        """Transform string literal."""
-        value = token.value
-        # Handle escape sequences
-        if value.startswith('"') and value.endswith('"'):
-            value = value[1:-1]
-            value = value.replace('\\n', '\n')
-            value = value.replace('\\t', '\t')
-            value = value.replace('\\"', '"')
-            value = value.replace('\\\\', '\\')
-        elif value.startswith("'") and value.endswith("'"):
-            value = value[1:-1]
-        return StringLiteral(value=value)
-    
-    def BOOLEAN(self, token):
-        """Transform boolean literal."""
-        return BooleanLiteral(value=token.value.lower() in ('true', 'True'))
-    
-    def NONE(self, token):
-        """Transform none literal."""
-        return NoneLiteral()
-    
+        return children[0] if children and not isinstance(children[0], Token) else None
+
+    def SCALAR_VAR(self, t): return ScalarVar(name=t.value[1:])
+    def ARRAY_VAR(self, t): return ArrayVar(name=t.value[1:])
+    def HASH_VAR(self, t): return HashVar(name=t.value[1:])
+    def FUNC_VAR(self, t): return FuncVar(name=t.value[1:])
+    def IDENT(self, t): return IdentRef(name=t.value)
+
+    def NUMBER(self, t):
+        v = t.value
+        return NumberLiteral(value=float(v) if '.' in v or 'e' in v.lower() or 'E' in v else int(v))
+
+    def STRING(self, t):
+        v = t.value
+        if len(v) >= 2:
+            if v.startswith('"') and v.endswith('"'):
+                v = v[1:-1].replace('\\n', '\n').replace('\\t', '\t').replace('\\r', '\r').replace('\\"', '"').replace('\\\\', '\\')
+            elif v.startswith("'") and v.endswith("'"):
+                v = v[1:-1]
+        return StringLiteral(value=v)
+
+    def BOOLEAN(self, t): return BooleanLiteral(value=t.value.lower() == 'true')
+    def NONE(self, t): return NoneLiteral()
+
     def array_literal(self, children):
-        """Transform array literal."""
-        elements = [c for c in children if c is not None]
-        return ArrayLiteral(elements=elements)
-    
+        return ArrayLiteral(elements=[c for c in children if c is not None and not (isinstance(c, Token) and c.value == ',')])
+
     def hash_literal(self, children):
-        """Transform hash literal."""
         pairs = {}
-        for child in children:
-            if isinstance(child, tuple):
-                pairs[child[0]] = child[1]
+        for c in children:
+            if isinstance(c, tuple) and len(c) == 2:
+                key, value = c
+                if isinstance(key, IdentRef): key = key.name
+                pairs[key] = value
         return HashLiteral(pairs=pairs)
-    
+
     def hash_item(self, children):
-        """Transform hash item."""
+        if len(children) < 2: return None
         key = children[0]
         if isinstance(key, Token):
             key = key.value
-            if key.startswith('"') and key.endswith('"'):
+            if (key.startswith('"') and key.endswith('"')) or (key.startswith("'") and key.endswith("'")):
                 key = key[1:-1]
-            elif key.startswith("'") and key.endswith("'"):
-                key = key[1:-1]
-        value = children[1]
-        return (key, value)
-    
+        # Handle IdentRef for hash keys
+        elif isinstance(key, IdentRef):
+            key = key.name
+        return (key, children[1])
+
     def regex_literal(self, children):
-        """Transform regex literal."""
-        pattern = children[0]
-        if isinstance(pattern, StringLiteral):
-            return RegexLiteral(pattern=pattern.value)
-        return RegexLiteral(pattern=str(pattern))
-    
-    # Expressions
-    def or_expr(self, children):
-        """Transform or expression."""
+        p = children[0]
+        return RegexLiteral(pattern=p.value if isinstance(p, StringLiteral) else str(p))
+
+    def or_expr(self, children): return self._build_binary_ops(children, 'or')
+    def and_expr(self, children): return self._build_binary_ops(children, 'and')
+    def comparison_expr(self, children): return self._build_binary_ops(children, None)
+    def additive_expr(self, children): return self._build_binary_ops(children, None)
+    def multiplicative_expr(self, children): return self._build_binary_ops(children, None)
+
+    def _build_binary_ops(self, children, specific_op=None):
+        if len(children) == 1: return children[0]
         result = children[0]
-        i = 1
-        while i < len(children):
-            if isinstance(children[i], Token):
-                result = BinaryOp(left=result, operator='or', right=children[i + 1])
-                i += 2
-            else:
-                i += 1
-        return result
-    
-    def and_expr(self, children):
-        """Transform and expression."""
-        result = children[0]
-        i = 1
-        while i < len(children):
-            if isinstance(children[i], Token):
-                result = BinaryOp(left=result, operator='and', right=children[i + 1])
-                i += 2
-            else:
-                i += 1
-        return result
-    
-    def comparison_expr(self, children):
-        """Transform comparison expression."""
-        result = children[0]
-        i = 1
-        while i < len(children):
+        for i in range(1, len(children), 2):
             if isinstance(children[i], Token):
                 op = children[i].value
-                result = BinaryOp(left=result, operator=op, right=children[i + 1])
-                i += 2
-            else:
-                i += 1
+                if specific_op is None or op == specific_op:
+                    result = BinaryOp(left=result, operator=op, right=children[i + 1])
         return result
-    
-    def additive_expr(self, children):
-        """Transform additive expression."""
-        result = children[0]
-        i = 1
-        while i < len(children):
-            if isinstance(children[i], Token):
-                op = children[i].value
-                result = BinaryOp(left=result, operator=op, right=children[i + 1])
-                i += 2
-            else:
-                i += 1
-        return result
-    
-    def multiplicative_expr(self, children):
-        """Transform multiplicative expression."""
-        result = children[0]
-        i = 1
-        while i < len(children):
-            if isinstance(children[i], Token):
-                op = children[i].value
-                result = BinaryOp(left=result, operator=op, right=children[i + 1])
-                i += 2
-            else:
-                i += 1
-        return result
-    
+
     def unary_expr(self, children):
-        """Transform unary expression."""
-        if len(children) == 1:
-            return children[0]
+        if len(children) == 1: return children[0]
         if isinstance(children[0], Token):
             return UnaryOp(operator=children[0].value, operand=children[1])
         return children[0]
-    
-    def primary_expr(self, children):
-        """Transform primary expression."""
-        return children[0]
-    
-    def literal(self, children):
-        """Transform literal."""
-        return children[0]
-    
-    # Access expressions
+
+    def primary_expr(self, children): return children[0] if children else None
+    def literal(self, children): return children[0] if children else None
+
     def hash_access(self, children):
-        """Transform hash access."""
-        obj = children[0]
-        key = children[1]
-        return HashAccess(obj=obj, key=key)
-    
+        return HashAccess(obj=children[0], key=children[1]) if len(children) >= 2 else (children[0] if children else None)
+
     def array_access(self, children):
-        """Transform array access."""
-        obj = children[0]
-        index = children[1]
-        return ArrayAccess(obj=obj, index=index)
-    
-    # Assignment
+        return ArrayAccess(obj=children[0], index=children[1]) if len(children) >= 2 else (children[0] if children else None)
+
+    def assign_target(self, children): return children[0] if children else None
+
     def assignment(self, children):
-        """Transform assignment."""
-        target = children[0]
-        value = children[1]
-        return Assignment(target=target, value=value)
-    
-    # Function definition
+        return Assignment(target=children[0], value=children[1]) if len(children) >= 2 else None
+
+    # Handle IdentRef for function names
     def function_definition(self, children):
         """Transform function definition."""
-        name = children[0].name if isinstance(children[0], FuncVar) else str(children[0])
+        name = None
         params = []
         body = []
-        
-        for child in children[1:]:
-            if isinstance(child, list):
-                # Check if it's params or body
-                if all(isinstance(c, str) for c in child):
-                    params = child
-                else:
-                    body = child
-            elif isinstance(child, ScalarVar):
-                params.append(child.name)
-            elif isinstance(child, str):
-                params.append(child)
-        
-        return FunctionDef(name=name, params=params, body=body)
-    
-    def param_list(self, children):
-        """Transform parameter list."""
-        params = []
-        for child in children:
-            if isinstance(child, ScalarVar):
-                params.append(child.name)
-            elif isinstance(child, str):
-                params.append(child)
-        return params
-    
-    # Function call
+        i = 0
+        if i < len(children) and isinstance(children[i], Token) and children[i].value in ('def', '&'):
+            i += 1
+        if i < len(children):
+            if isinstance(children[i], FuncVar):
+                name = children[i].name
+                i += 1
+            elif isinstance(children[i], Token) and children[i].type == 'IDENT':
+                name = children[i].value
+                i += 1
+            # FIXED: Also check for IdentRef
+            elif isinstance(children[i], IdentRef):
+                name = children[i].name
+                i += 1
+        while i < len(children) and (isinstance(children[i], Token) and children[i].value in '():' or str(children[i]) in ('_NL', 'INDENT')):
+            i += 1
+        if i < len(children) and isinstance(children[i], list):
+            potential_params = children[i]
+            if all(isinstance(p, ScalarVar) for p in potential_params):
+                params = [p.name for p in potential_params]
+                i += 1
+        while i < len(children) and (isinstance(children[i], Token) and children[i].value in '():' or str(children[i]) in ('INDENT', 'DEDENT', '_NL')):
+            i += 1
+        if i < len(children) and isinstance(children[i], list):
+            body = self._filter_tokens(children[i])
+        return FunctionDef(name=name or '<anonymous>', params=params, body=body)
+
     def function_call(self, children):
-        """Transform function call."""
-        name = children[0].name if isinstance(children[0], FuncVar) else str(children[0])
+        if not children: return None
+        name_node = children[0]
+        if isinstance(name_node, (FuncVar, ScalarVar, ArrayVar, HashVar)):
+            name = name_node.name
+        elif isinstance(name_node, IdentRef):
+            name = name_node.name
+        elif isinstance(name_node, Token) and name_node.type == 'IDENT':
+            name = name_node.value
+        elif hasattr(name_node, 'name'):
+            name = name_node.name
+        else:
+            name = str(name_node)
         args = []
         for child in children[1:]:
             if isinstance(child, list):
-                args = child
-            else:
+                args.extend([c for c in child if c is not None and not (isinstance(c, Token) and c.value == ',')])
+            elif child is not None and not isinstance(child, Token):
                 args.append(child)
         return FunctionCall(name=name, args=args)
-    
+
     def arg_list(self, children):
-        """Transform argument list."""
-        return list(children)
-    
-    # Control flow
+        return [c for c in children if c is not None and not (isinstance(c, Token) and c.value == ',')]
+
     def conditional(self, children):
-        """Transform conditional statement."""
         condition = None
         then_body = []
         elif_clauses = []
         else_body = None
-        
-        i = 0
-        while i < len(children):
-            child = children[i]
-            
-            if condition is None and not isinstance(child, list):
+        state = 'condition'
+        current_elif_cond = None
+        for child in children:
+            if isinstance(child, Token):
+                if child.value == 'if': state = 'condition'
+                elif child.value == 'elif': state = 'elif_condition'
+                elif child.value == 'else': state = 'else'
+                continue
+            if state == 'condition' and condition is None:
                 condition = child
-            elif isinstance(child, list) and not then_body:
-                then_body = child
-            elif isinstance(child, Token) and child.value == 'elif':
-                # Parse elif clause
-                i += 1
-                elif_cond = children[i]
-                i += 1
-                elif_body = children[i]
-                elif_clauses.append((elif_cond, elif_body))
-            elif isinstance(child, Token) and child.value == 'else':
-                # Parse else clause
-                i += 1
-                else_body = children[i]
-            
-            i += 1
-        
-        return IfStatement(
-            condition=condition,
-            then_body=then_body,
-            elif_clauses=elif_clauses,
-            else_body=else_body
-        )
-    
+                state = 'then_body'
+            elif state == 'then_body' and isinstance(child, list) and not then_body:
+                then_body = self._filter_tokens(child)
+            elif state == 'elif_condition':
+                current_elif_cond = child
+                state = 'elif_body'
+            elif state == 'elif_body' and isinstance(child, list):
+                elif_clauses.append((current_elif_cond, self._filter_tokens(child)))
+                state = 'condition'
+            elif state == 'else' and isinstance(child, list):
+                else_body = self._filter_tokens(child)
+        return IfStatement(condition=condition, then_body=then_body, elif_clauses=elif_clauses, else_body=else_body)
+
+    def else_clause(self, children): return children if children else None
+
     def loop(self, children):
-        """Transform loop statement."""
-        # Check if it's for or while
-        first_child = children[0]
-        
-        if isinstance(first_child, Token) and first_child.value == 'for':
-            # For loop
-            var = children[1].name if isinstance(children[1], ScalarVar) else str(children[1])
-            iterable = children[2]
-            body = children[3] if len(children) > 3 else []
-            return ForLoop(var=var, iterable=iterable, body=body)
-        else:
-            # While loop
-            condition = children[0]
-            body = children[1] if len(children) > 1 else []
-            return WhileLoop(condition=condition, body=body)
-    
+        if not children: return None
+        for child in children:
+            if isinstance(child, Token):
+                if child.value == 'for':
+                    var = None
+                    iterable = None
+                    body = []
+                    for c in children:
+                        if isinstance(c, ScalarVar) and var is None:
+                            var = c.name
+                        elif var and iterable is None and not isinstance(c, Token) and c.value not in ('for', 'in', ':'):
+                            iterable = c
+                        elif isinstance(c, list) and iterable:
+                            body = self._filter_tokens(c)
+                    return ForLoop(var=var or '$i', iterable=iterable, body=body)
+                elif child.value == 'while':
+                    condition = None
+                    body = []
+                    for c in children:
+                        if not isinstance(c, Token) and c.value not in ('while', ':') and condition is None:
+                            condition = c
+                        elif isinstance(c, list) and condition:
+                            body = self._filter_tokens(c)
+                    return WhileLoop(condition=condition, body=body)
+        return WhileLoop(condition=children[0] if children else None, body=[])
+
     def return_statement(self, children):
-        """Transform return statement."""
-        value = children[0] if children else None
-        return ReturnStatement(value=value)
-    
+        return ReturnStatement(value=children[0] if children and children[0] is not None else None)
+
     def print_statement(self, children):
-        """Transform print statement."""
-        return PrintStatement(value=children[0])
-    
+        return PrintStatement(value=children[0] if children else None)
+
     def assertion_statement(self, children):
-        """Transform assert statement."""
         if len(children) == 1:
             return AssertStatement(left=children[0], operator=None, right=None)
-        return AssertStatement(left=children[0], operator=str(children[1]), right=children[2])
-    
-    def comparison_op(self, children):
-        """Transform comparison operator."""
-        return children[0]
-    
+        elif len(children) >= 3:
+            op = children[1].value if isinstance(children[1], Token) else str(children[1])
+            return AssertStatement(left=children[0], operator=op, right=children[2])
+        return AssertStatement(left=children[0] if children else None, operator=None, right=None)
+
+    def comparison_op(self, children): return children[0] if children else None
+
     def test_block(self, children):
-        """Transform test block."""
         name = None
         body = []
         for child in children:
-            if isinstance(child, StringLiteral):
-                name = child.value
-            elif isinstance(child, list):
-                body = child
+            if isinstance(child, StringLiteral): name = child.value
+            elif isinstance(child, list): body = self._filter_tokens(child)
         return TestBlock(name=name, body=body)
-    
+
     def vue_component_gen(self, children):
-        """Transform Vue component generation."""
+        if not children: return None
         name = children[0].value if isinstance(children[0], StringLiteral) else str(children[0])
         properties = {}
         for child in children[1:]:
-            if isinstance(child, dict):
-                properties.update(child)
-            elif isinstance(child, tuple):
+            if isinstance(child, tuple) and len(child) == 2:
                 properties[child[0]] = child[1]
         return VueComponent(name=name, properties=properties)
-    
+
     def vue_property(self, children):
-        """Transform Vue property."""
-        key = None
-        value = None
-        for child in children:
-            if isinstance(child, Token):
-                key = child.value
-            elif not isinstance(child, Token):
-                value = child
-        return (key, value)
+        if len(children) >= 2:
+            key = children[0].value if isinstance(children[0], Token) else str(children[0])
+            return (key, children[1])
+        return None
 
 
 # ===========================================
@@ -702,54 +737,64 @@ class PyrlTransformer(Transformer):
 
 class PyrlLarkParser:
     """Lark-based parser for Pyrl language."""
-    
-    def __init__(self):
+
+    def __init__(self, debug: bool = False):
+        self.debug = debug
         self.parser = Lark(
             GRAMMAR,
             parser='lalr',
             transformer=PyrlTransformer(),
             postlex=PyrlIndenter(),
-            start='start'
+            start='start',
+            debug=debug
         )
-    
+
     def parse(self, source: str) -> Program:
-        """Parse source code into AST."""
         try:
             return self.parser.parse(source)
+        except UnexpectedToken as e:
+            error_info = ParseErrorInfo(source, e)
+            if self.debug:
+                print(f"\n\033[93mDebug info:\033[0m")
+                print(f"  Token type: {e.token.type}")
+                print(f"  Token value: {e.token.value!r}")
+                print(f"  Line: {e.line}, Column: {e.column}")
+                print(f"  Expected tokens: {e.accepts}")
+            raise SyntaxError(str(error_info))
+        except UnexpectedInput as e:
+            raise SyntaxError(str(ParseErrorInfo(source, e)))
+        except GrammarError as e:
+            raise SyntaxError(f"Grammar error: {e}")
         except Exception as e:
             raise SyntaxError(f"Parse error: {e}")
-    
+
     def parse_file(self, filepath: str) -> Program:
-        """Parse a file into AST."""
-        with open(filepath, 'r', encoding='utf-8') as f:
-            source = f.read()
-        return self.parse(source)
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                return self.parse(f.read())
+        except FileNotFoundError:
+            raise SyntaxError(f"File not found: {filepath}")
+        except UnicodeDecodeError as e:
+            raise SyntaxError(f"Encoding error in file {filepath}: {e}")
 
 
 # ===========================================
 # Convenience Functions
 # ===========================================
 
-# Global parser instance
 _parser = None
 
-
-def get_parser() -> PyrlLarkParser:
-    """Get or create the global parser instance."""
+def get_parser(debug: bool = False) -> PyrlLarkParser:
     global _parser
-    if _parser is None:
-        _parser = PyrlLarkParser()
+    if _parser is None or debug:
+        _parser = PyrlLarkParser(debug=debug)
     return _parser
 
+def parse_lark(source: str, debug: bool = False) -> Program:
+    return get_parser(debug).parse(source)
 
-def parse_lark(source: str) -> Program:
-    """Parse source code using Lark parser."""
-    return get_parser().parse(source)
-
-
-def parse_file_lark(filepath: str) -> Program:
-    """Parse a file using Lark parser."""
-    return get_parser().parse_file(filepath)
+def parse_file_lark(filepath: str, debug: bool = False) -> Program:
+    return get_parser(debug).parse_file(filepath)
 
 
 # ===========================================
@@ -757,180 +802,84 @@ def parse_file_lark(filepath: str) -> Program:
 # ===========================================
 
 def print_ast(node, indent: int = 0) -> None:
-    """Pretty print AST for debugging."""
-    prefix = "  " * indent
-    
+    pfx = "  " * indent
     if isinstance(node, Program):
-        print(f"{prefix}Program:")
-        for stmt in node.statements:
-            print_ast(stmt, indent + 1)
-    
-    elif isinstance(node, ScalarVar):
-        print(f"{prefix}ScalarVar: ${node.name}")
-    
-    elif isinstance(node, ArrayVar):
-        print(f"{prefix}ArrayVar: @{node.name}")
-    
-    elif isinstance(node, HashVar):
-        print(f"{prefix}HashVar: %{node.name}")
-    
-    elif isinstance(node, FuncVar):
-        print(f"{prefix}FuncVar: &{node.name}")
-    
-    elif isinstance(node, NumberLiteral):
-        print(f"{prefix}Number: {node.value}")
-    
-    elif isinstance(node, StringLiteral):
-        print(f"{prefix}String: {repr(node.value)}")
-    
-    elif isinstance(node, BooleanLiteral):
-        print(f"{prefix}Boolean: {node.value}")
-    
-    elif isinstance(node, NoneLiteral):
-        print(f"{prefix}None")
-    
+        print(f"{pfx}Program:")
+        for stmt in node.statements: print_ast(stmt, indent + 1)
+    elif isinstance(node, ScalarVar): print(f"{pfx}ScalarVar: ${node.name}")
+    elif isinstance(node, ArrayVar): print(f"{pfx}ArrayVar: @{node.name}")
+    elif isinstance(node, HashVar): print(f"{pfx}HashVar: %{node.name}")
+    elif isinstance(node, FuncVar): print(f"{pfx}FuncVar: &{node.name}")
+    elif isinstance(node, IdentRef): print(f"{pfx}IdentRef: {node.name}")
+    elif isinstance(node, NumberLiteral): print(f"{pfx}Number: {node.value}")
+    elif isinstance(node, StringLiteral): print(f"{pfx}String: {repr(node.value)}")
+    elif isinstance(node, BooleanLiteral): print(f"{pfx}Boolean: {node.value}")
+    elif isinstance(node, NoneLiteral): print(f"{pfx}None")
     elif isinstance(node, ArrayLiteral):
-        print(f"{prefix}Array:")
-        for elem in node.elements:
-            print_ast(elem, indent + 1)
-    
+        print(f"{pfx}Array:")
+        for elem in node.elements: print_ast(elem, indent + 1)
     elif isinstance(node, HashLiteral):
-        print(f"{prefix}Hash:")
-        for key, value in node.pairs.items():
-            print(f"{prefix}  {key}:")
-            print_ast(value, indent + 2)
-    
+        print(f"{pfx}Hash:")
+        for k, v in node.pairs.items(): print(f"{pfx}  {k}:"); print_ast(v, indent + 2)
     elif isinstance(node, BinaryOp):
-        print(f"{prefix}BinaryOp: {node.operator}")
-        print(f"{prefix}  left:")
-        print_ast(node.left, indent + 2)
-        print(f"{prefix}  right:")
-        print_ast(node.right, indent + 2)
-    
-    elif isinstance(node, UnaryOp):
-        print(f"{prefix}UnaryOp: {node.operator}")
-        print_ast(node.operand, indent + 1)
-    
+        print(f"{pfx}BinaryOp: {node.operator}"); print_ast(node.left, indent + 2); print_ast(node.right, indent + 2)
+    elif isinstance(node, UnaryOp): print(f"{pfx}UnaryOp: {node.operator}"); print_ast(node.operand, indent + 1)
     elif isinstance(node, Assignment):
-        print(f"{prefix}Assignment:")
-        print(f"{prefix}  target:")
-        print_ast(node.target, indent + 2)
-        print(f"{prefix}  value:")
-        print_ast(node.value, indent + 2)
-    
-    elif isinstance(node, HashAccess):
-        print(f"{prefix}HashAccess:")
-        print(f"{prefix}  object:")
-        print_ast(node.obj, indent + 2)
-        print(f"{prefix}  key:")
-        print_ast(node.key, indent + 2)
-    
-    elif isinstance(node, ArrayAccess):
-        print(f"{prefix}ArrayAccess:")
-        print(f"{prefix}  object:")
-        print_ast(node.obj, indent + 2)
-        print(f"{prefix}  index:")
-        print_ast(node.index, indent + 2)
-    
+        print(f"{pfx}Assignment:"); print_ast(node.target, indent + 2); print_ast(node.value, indent + 2)
+    elif isinstance(node, HashAccess): print(f"{pfx}HashAccess {{}}:"); print_ast(node.obj, indent + 2); print_ast(node.key, indent + 2)
+    elif isinstance(node, ArrayAccess): print(f"{pfx}ArrayAccess []:"); print_ast(node.obj, indent + 2); print_ast(node.index, indent + 2)
     elif isinstance(node, FunctionCall):
-        print(f"{prefix}FunctionCall: {node.name}")
-        for arg in node.args:
-            print_ast(arg, indent + 1)
-    
+        print(f"{pfx}FunctionCall: {node.name}")
+        for arg in node.args: print_ast(arg, indent + 1)
     elif isinstance(node, FunctionDef):
-        print(f"{prefix}FunctionDef: {node.name}({', '.join(node.params)})")
-        for stmt in node.body:
-            print_ast(stmt, indent + 1)
-    
+        print(f"{pfx}FunctionDef: {node.name}({', '.join(node.params)})")
+        for stmt in node.body: print_ast(stmt, indent + 1)
     elif isinstance(node, IfStatement):
-        print(f"{prefix}If:")
-        print(f"{prefix}  condition:")
-        print_ast(node.condition, indent + 2)
-        print(f"{prefix}  then:")
-        for stmt in node.then_body:
-            print_ast(stmt, indent + 2)
-        if node.elif_clauses:
-            for cond, body in node.elif_clauses:
-                print(f"{prefix}  elif:")
-                print_ast(cond, indent + 2)
-                for stmt in body:
-                    print_ast(stmt, indent + 2)
-        if node.else_body:
-            print(f"{prefix}  else:")
-            for stmt in node.else_body:
-                print_ast(stmt, indent + 2)
-    
+        print(f"{pfx}If:"); print_ast(node.condition, indent + 2)
+        print(f"{pfx}  then:"); [print_ast(s, indent + 2) for s in node.then_body]
+        for cond, body in node.elif_clauses: print(f"{pfx}  elif:"); print_ast(cond, indent + 2); [print_ast(s, indent + 2) for s in body]
+        if node.else_body: print(f"{pfx}  else:"); [print_ast(s, indent + 2) for s in node.else_body]
     elif isinstance(node, ForLoop):
-        print(f"{prefix}For: {node.var}")
-        print(f"{prefix}  iterable:")
-        print_ast(node.iterable, indent + 2)
-        print(f"{prefix}  body:")
-        for stmt in node.body:
-            print_ast(stmt, indent + 2)
-    
+        print(f"{pfx}For: {node.var}"); print_ast(node.iterable, indent + 2); print(f"{pfx}  body:"); [print_ast(s, indent + 2) for s in node.body]
     elif isinstance(node, WhileLoop):
-        print(f"{prefix}While:")
-        print(f"{prefix}  condition:")
-        print_ast(node.condition, indent + 2)
-        print(f"{prefix}  body:")
-        for stmt in node.body:
-            print_ast(stmt, indent + 2)
-    
+        print(f"{pfx}While:"); print_ast(node.condition, indent + 2); print(f"{pfx}  body:"); [print_ast(s, indent + 2) for s in node.body]
     elif isinstance(node, ReturnStatement):
-        print(f"{prefix}Return:")
-        if node.value:
-            print_ast(node.value, indent + 1)
-    
-    elif isinstance(node, PrintStatement):
-        print(f"{prefix}Print:")
-        print_ast(node.value, indent + 1)
-    
+        print(f"{pfx}Return:"); print_ast(node.value, indent + 1) if node.value else None
+    elif isinstance(node, PrintStatement): print(f"{pfx}Print:"); print_ast(node.value, indent + 1)
     elif isinstance(node, AssertStatement):
-        print(f"{prefix}Assert:")
-        print_ast(node.left, indent + 1)
-        if node.right:
-            print(f"{prefix}  {node.operator}")
-            print_ast(node.right, indent + 1)
-    
-    elif isinstance(node, TestBlock):
-        print(f"{prefix}Test: {node.name or ''}")
-        for stmt in node.body:
-            print_ast(stmt, indent + 1)
-    
+        print(f"{pfx}Assert:"); print_ast(node.left, indent + 1)
+        if node.right: print(f"{pfx}  {node.operator}"); print_ast(node.right, indent + 1)
+    elif isinstance(node, TestBlock): print(f"{pfx}Test: {node.name or ''}"); [print_ast(s, indent + 1) for s in node.body]
     elif isinstance(node, VueComponent):
-        print(f"{prefix}VueComponent: {node.name}")
-        for key, value in node.properties.items():
-            print(f"{prefix}  {key}:")
-            print_ast(value, indent + 2)
-    
-    else:
-        print(f"{prefix}{type(node).__name__}: {node}")
+        print(f"{pfx}VueComponent: {node.name}")
+        for k, v in node.properties.items(): print(f"{pfx}  {k}:"); print_ast(v, indent + 2)
+    elif isinstance(node, Token): print(f"{pfx}Token: {node.type} = {node.value!r}")
+    else: print(f"{pfx}{type(node).__name__}: {node}")
 
 
 if __name__ == '__main__':
-    # Test parser
     test_code = '''
+$integer = 42
 $name = "Alice"
-$age = 30
-
 @numbers = [1, 2, 3, 4, 5]
+%person = {name: "John", age: 30}
 
-%person = {name: "Bob", age: 25}
+def greet($name):
+    return "Hello, " + $name + "!"
 
-def &greet($name):
-    print("Hello, " + $name + "!")
+$greeter = &greet
+print($greeter("World"))
+print("Integer: " + str($integer))
+print("Person name: " + %person{"name"})
 
-&greet($name)
-
-if $age > 18:
-    print("Adult")
+if $integer > 10:
+    print("Large")
 else:
-    print("Minor")
+    print("Small")
 
 for $i in @numbers:
     print($i)
 '''
-    
-    parser = PyrlLarkParser()
+    parser = PyrlLarkParser(debug=True)
     ast = parser.parse(test_code)
     print_ast(ast)

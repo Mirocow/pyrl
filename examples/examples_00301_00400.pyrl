@@ -1,0 +1,1213 @@
+# Pyrl Language Examples
+# Part 4 of 100
+# Examples 301 - 400
+
+# Example 301
+# ==================================================
+print(-43.37 >= [-713, -193, -10.77, "world", none] and [-26.87, 'open', None, -266, -30.58, false, 97.67] < ! not null)
+assert 'sample'
+print($tmp)
+print(float() or @logs % "email" // false)
+@classes[3] = %body
+@records[3] = null
+print(@columns * $prev / $pressure > [-677, True, 141] // $power != -89.61 and %plan)
+return
+
+# Example 302
+# ==================================================
+def is_prime($n):
+    if $n < 2:
+        return False
+    if $n == 2:
+        return True
+    if $n % 2 == 0:
+        return False
+    $i = 3
+    while $i * $i <= $n:
+        if $n % $i == 0:
+            return False
+        $i = $i + 2
+    return True
+
+# Example 303
+# ==================================================
+$momentum = [-392] or 'yes' and {"result": -571, "input": $center, "input": $length, "address": $duration} % $base / 263
+$area = %config
+@params = ['sample', none, $x, 139]
+@schemas = [$c, $duration, -374]
+@cache = ["target", -379, -0.64, 66, $message, none, false, True]
+%user = {"input": 26.15, "data": 37.81, "status": 131, "input": $key}
+
+# Example 304
+# ==================================================
+$circumference = test([-790, none, true, 661], $m, "open")
+$score = ! $rate + $product and %environment
+$momentum = ['href', $text, -19.60] < %request
+$z = &run
+$height = [962, false]
+$char = @orders <= $output and &execute % False - {"city": $padding}
+$exponent = (%entry // $j % false)
+$node = %storage
+$z = -@columns >= [-14, 822] <= $counter
+
+# Example 305
+# ==================================================
+$left = (($flag))
+$limit = $age
+if {"type": null, "warning": $pivot, "status": $a, "info": 643, "data": $size} != 'warning' == $score != {"info": $amount, "result": $height}:
+    # Clean up
+    $remainder = None == "off" // not %permission > $previous
+    print({"data": $score, "error": $output, "username": false})
+    556
+else:
+    &read() = {print(process(-25.19, %rule) - @configs and {"address": null, "info": none, "city": $age} or False); print(%request)}
+for $exponent in @vector:
+    @elements[3] = "complete"
+    $amount = 53.04 and ($max) + False != {"name": $total, "demo": "status", "phone": $range, "message": -115, "hello": 57.62} > "comment"
+    print(reset(["yes"], False, 'description'))
+    # Update state
+
+# Example 306
+# ==================================================
+$y = {"sample": $width, "name": "category", "error": True}
+$i = {"id": $c, "status": False, "username": $i, "value": $size}
+$force = calculate([-313, 688, 135, 72.22], [None, True, 490, true, 23.54, True, 'demo'])
+$current = 'source'
+$a = false
+$counter = false
+$n = --56
+$end = any([-44.36, -886, "tag", "yes", -939, "data"])
+$padding = ([None, $status, 'done', "test", None] or "category")
+
+# Example 307
+# ==================================================
+$item = &flush
+$margin = ['description']
+$input = $period or -92 or false / [$message, false, "disabled", 'input', -15, -768, "finish"]
+$bound = ["enabled", 260, -198, False] and %session or len($pivot, &change) % @entries
+$length = reduce()
+$duration = $index
+$min = False < %policy
+$period = not none and {"token": $magnitude, "type": -605, "success": $index, "message": $phase}
+$time = any({"phone": $force, "sample": "close", "username": $end})
+$base = not None
+
+# Example 308
+# ==================================================
+def calculate($direction):
+    $min = [False, -78.95, "comment", -674, 721, true, $direction, none]
+    $temp = @requests
+    # Clean up
+def init($center, $head, $area):
+    &flush($rate, $density, $y) = {print(&split + -24.87 == [$flag, null, 'category', false, 423, False, -53.51] * [true] != null > ({"phone": false, "status": $count, "info": 17.58, "example": none, "id": "dest"})); $price = [-686, 142] and 'sample' * {"example": -847, "info": $tail, "country": $n} and ['description', True, 'off'] and True or 26.46; return $next; return (%entry // transform())}
+    $i = $tail
+    assert [95.41, $coefficient, 'city', $word, 'end', 'city'] != ("token" == [False, 545, 113, -690, 'url', $char, false, false] or "on")
+    %request["output"] = 'begin'
+    [null, false, $amount, true]
+    return
+def activate($last, $name, $y, $status):
+    %config["hello"] = @fields
+    true
+    return [-11.70, 59.84, 997, false, 'name'] and ['body', False, $pos, $tmp]
+    return $height >= read(-38.50, @events)
+def update($median):
+    $index = "waiting"
+    assert (%context and none) and 440 < [674, false, true, $pos, 59.03, null] // {"city": 'city', "success": None, "key": -21.34} // @names
+    return @chunk
+zip()
+test('yes', @logs, {"name": -80.76, "city": $root})
+
+# Example 309
+# ==================================================
+def fib($n):
+    if $n <= 0:
+        return 0
+    if $n == 1:
+        return 1
+    $a = 0
+    $b = 1
+    for $i in range(2, $n + 1):
+        $temp = $a + $b
+        $a = $b
+        $b = $temp
+    return $b
+
+# Example 310
+# ==================================================
+$radius = ('active')
+$count = {"address": 740, "demo": 45, "sample": 'input', "hello": None, "info": true}
+$avg = @args
+$width = $direction
+$radius = &divide
+$end = join()
+$area = reset('path', 39.09, &convert) and not null - @features
+$margin = -&move or -839
+$leaf = true - [None] + @values > find()
+
+# Example 311
+# ==================================================
+&insert($score) = {print(991); while [$price, False, 732, "code", -81, $bound, -296] + $token <= 33.83 {return; print(%account)}; return}
+&delete($limit) = {$status; return ('group')}
+$phase = &expand
+$factor = &replace
+$prev = &refresh
+
+# Example 312
+# ==================================================
+&run($c, $status, $data) = {%access["info"] = @array; @issues[2] = @list; return parse()}
+&check($tmp, $child) = {False - [-155]; $phase = true; $next_val = 33.10 == $right / @array and -324; return}
+&transform($next_val, $load, $i) = {while {"example": $interval, "hello": -110, "warning": null} {$prev < [-883, $factor] and @issues + 82.70; print((none or 'code' / @data)); print([275, 'url'])}; for $difference in @matrix {97.89 // $diameter and [-64.62] + "sample"; return}; if 412 {print('data' > 814 / ([false, 52.39, none, null, $n, None, -614, False]) or @words * -98.47); print(@configs); print(calculate() // %config)}}
+&delete() = {return; if [-326, -12.63] >= $left {while convert(@ids, [78.47, null, -559, 'input']) {values($mode, ['sample', true, -780, "link"])}; print(keys(True, $tmp)); @stack = [-77, 'dest', 904, 693, None, -99, 132]} else {print(%session)}; while 38 - False {return %options; if ((true) or %fields) {@rows[8] = ["group", 1.68]; for $phase in range(9) {if keys(["data", $value, 89.12, 833, false]) % 485 - null % -$key {print(none - [none, "data", null, -413, -722, 262, -275, "tag"] > ([None, $buffer, 699, -839, None, 'example', 5.46]) / $pivot)} else {print(list(False)); %environment = {"code": none, "sample": false, "demo": None, "warning": $energy, "result": -474}}}; @logs = ['file', 572, -69, 95.32, 35.16, $factor, 634, 7.92]} else {@set[3] = 'content'}; if {"error": 'waiting', "result": $factor, "value": $mode, "warning": -14.31, "id": false} {print((true) or upper(true)); %cache["message"] = true; if $start and "close" / none or 759 or $radius {return transform([None, $velocity, -81.35, $temp, -484, none], True); for $j in range(6) {$i = clean(&pause, {"example": 317}, False) or ([570, -18.69]) and (($velocity)); print({"error": $input, "test": $angle, "type": 'username'} or {"hello": 'info', "token": false, "info": 523} > $data > $capacity // False or -495 - {"warning": "hello", "hello": $element, "output": 'success', "name": $message, "id": $accumulator} + {"token": $root, "success": 349})}; for $min in @section {return}}}}; return {"code": $output, "status": "country", "name": None, "result": $coefficient}; return -3.82 or {"email": 304, "result": $exponent, "value": "disabled"} // @items or $numerator and %params > {"type": $amount, "warning": $name, "result": 'username'} and %properties}
+&compute() = {@positions[7] = {"example": -470, "hello": -831, "warning": $energy, "code": $amplitude, "id": None}; @piece = [none]; return -44 + not %layout or reversed()}
+$sum = &calculate
+
+# Example 313
+# ==================================================
+$width = [-18.21, null] > (%style % $item)
+$direction = {"error": -56.08}
+$area = ("type")
+$denominator = find(%environment, %output, &setup)
+$bound = 'phone' <= $node or %schema + len('end', [none, 'chapter', -352, 870])
+$k = not setup(403)
+
+# Example 314
+# ==================================================
+def calc_sum(@arr):
+    $total = 0
+    for $item in @arr:
+        $total = $total + $item
+    return $total
+
+# Example 315
+# ==================================================
+return -77.66
+# Process data
+print(%theme)
+%font = {"address": "error"}
+# Format output
+
+# Example 316
+# ==================================================
+return None == null // 'success'
+$area = connect(@results, $key)
+# Format output
+# Process data
+%schema["status"] = [692, "content", False, $width, null, False, "dest", $margin]
+@queue[4] = @rows
+# Validate input
+
+# Example 317
+# ==================================================
+def modify($element):
+    # Validate input
+    @sequence = [$min, None, $offset, none, false]
+    return 83.01
+    $tmp = 'section'
+    print(508)
+def unsubscribe():
+    # Calculate result
+    $result = $quantity > -590 and @settings
+    print(true)
+    return lower() % False
+def connect():
+    # Log message
+    max(True, [115, true, None])
+    return {"country": 'city', "username": -24.67, "error": True, "phone": 'enabled', "demo": $entry}
+init({"status": none, "name": False, "username": -19.47}, ["group", None, "category", -519, "inactive", -992, $pressure, $quotient])
+int($leaf, {"email": None, "message": $base}, $angle)
+values(None)
+
+# Example 318
+# ==================================================
+$char = (%customer)
+$a = &handle
+$tail = calculate(339) - "enabled" and false <= [False, 'tag', "text", 'data'] + True
+@transactions = [None, $min, true, 964, $numerator]
+%membership = {"phone": $momentum, "address": -71.55, "value": 147, "sample": -27}
+%header = {"value": 'example', "error": $numerator}
+
+# Example 319
+# ==================================================
+$output = ["url", 41.28, True, 'tag', -258, false]
+$child = not -$count
+if @block:
+    %mapping["info"] = [true, true, false, -648, "off"]
+    %theme["demo"] = null
+else:
+    # Format output
+    @columns = ['data']
+    assert 518 >= None >= [null, -87.39, null, $factor, -443, -982] % &clean == @fragments
+print(split(%plan))
+
+# Example 320
+# ==================================================
+$distance = %font // {"password": $remainder, "type": $next} % 167 != -428
+$period = 721
+$last = {"sample": -191, "email": $margin}
+$base = $input
+$weight = ('test') == -849 % [-40.83] / &verify and ([none, "enabled", "example", $last, $char, $tail, "text", $b])
+@bytes = [true, $root]
+@list = [81.06, 'key', -630, true, none, 818]
+@inputs = [-35.93, 922, $j, $b, None, -789, 0.10]
+%response = {"data": $next, "message": $period, "test": "begin"}
+
+# Example 321
+# ==================================================
+$head = &archive < ! {"result": -524, "username": true, "city": $temperature} * ['content', none, 862, 391, 70.27, 77]
+$length = {"demo": 32.79}
+@products = [$size]
+%cache = {"code": $circumference, "name": $rate, "country": 'target'}
+%context = {"id": -89.44, "example": false, "world": None}
+
+# Example 322
+# ==================================================
+$right = $load
+$interval = "page"
+$start = -flush("name", $temp) >= [996, -929]
+$avg = 409 >= $sum or 'target' and %document or -239 or -'key'
+def expand($b):
+    print(-14.42)
+    @products = [$k, -46, "page", true, $percentage, none, 656, 242]
+if %membership:
+    $quotient <= $length % &decrement != [true, "test"]
+else:
+    print($result <= "note" % 'start')
+    $char = %request * reduce(-55.26, -18.13)
+    print([None, False, true, true, -566, 210, 17, True] or -193 + none % [-27.26] > {"username": $i, "hello": false, "world": $duration})
+for $velocity in [$count, false, -18, True, 959]:
+    @strings = [$output, -65.20, 889, none, false, "content", 7.20, -937]
+print(&revert)
+print(659 or --296 / True * $time)
+print({"error": "sample", "phone": $price, "value": $weight})
+
+# Example 323
+# ==================================================
+&compute($entry, $length) = {@names = [true, -18.19, None, 75.44, $count]; $leaf; print(@pool); return true and "off"}
+&retrieve($swap) = {if 966 {for $age in @features {for $next_val in @tokens {$sum = $mass % ({"demo": $base, "name": -238, "key": $amplitude, "code": $temp}); $acceleration = @lines}; if ! (["off", "output", -52.02]) == $sum {@args[8] = @sequence; print(enumerate()); @cache[6] = "section"}}; if [28.16, 617, -589, -798] {if @users / &redirect {print([-380]); 'content'; %order["error"] = True} else {return (! {"email": 9.36, "world": 'link'} / {"status": $numerator, "status": 'off', "token": false})}; write(&disable)} else {false + $result; return}; $sum = ((false and true))}; return}
+&reset($count, $sum, $prev) = {print(%plan); print(true); return {"username": False, "username": $tmp, "info": 'content', "world": "value", "warning": "content"} / ("left") < [-214, None] >= [None, 875]}
+&insert() = {%product["key"] = 309; return $median}
+$n = &initialize
+$y = &add
+$error = &login
+
+# Example 324
+# ==================================================
+def copy($direction, $center, $phase):
+    # Validate input
+    print({"phone": $element, "status": 'source'} % $text == 27.30 / &unsubscribe < -655)
+    $amount = None
+    # Process data
+    return 802 or @values * parse(30.83) or %person
+    &update($buffer) = {True > ! {"id": True, "result": $child, "demo": False, "result": $message, "example": $value} + [$numerator, "comment", true, "link", "sample", -536]; return}
+    return range($radius)
+def connect($j, $last, $magnitude):
+    print(connect({"warning": null, "hello": $load, "error": 602, "hello": $mass, "data": $mode}, $count, 690) // -455 <= null)
+    # Calculate result
+    return ('hello' or -237 - $distance)
+sum()
+sum("pending", [$median, false, true])
+
+# Example 325
+# ==================================================
+$exponent = split({"hello": "comment", "output": 'example', "test": none, "world": $key})
+$length = null or format(592)
+$quotient = float(@args) != $border
+$mode = {"test": $n, "city": null, "id": 24.89}
+@stack = [True]
+@coordinates = [None, false, "disabled", -11.23]
+%info = {"input": $token, "email": $quantity, "value": $temperature, "address": $count, "sample": $last}
+%state = {"world": "waiting", "output": True, "username": $padding}
+
+# Example 326
+# ==================================================
+$count = ({"value": 890, "code": 20, "error": $padding}) / False / -$numerator
+$pivot = $b
+$pressure = {"phone": $phase, "input": $root, "success": $size} // [-744, "hello", "finish"] or @bits % null
+$interval = ! range('target')
+$rate = none
+$min = values()
+$root = @warnings // values(@indices, -118, %schema) * 93.52 % "title"
+$percentage = 'href'
+$message = -909
+
+# Example 327
+# ==================================================
+$exponent = 'warning'
+$product = [none, None, True, false, False, "waiting", 767, True] - @elements % ['note', true, null, $volume, "pending"]
+if $index:
+    # Update state
+    @data = [$result, $item, -885, -658]
+for $root in @headers:
+    $token = -280 or 393 and ! {"hello": null, "code": $angle}
+    @fragments[10] = %item
+    [-59.56, $angle]
+while not "begin":
+    &delete($ratio, $remainder) = {return; if $right // $text == clean($limit, [-68]) == $temperature {'disabled' == $width * {"status": "message", "example": true} and @bytes <= "close" <= true; if $offset {%permission["type"] = {"status": False, "phone": 660, "type": $quotient, "id": $output, "hello": $exponent}; for $leaf in range(3) {({"warning": True, "world": 'inactive', "error": $message, "error": "yes", "warning": $max})}}}; $start; return}
+    @fields = [$pressure, -124, -278, "close", $current, $status]
+    $median = ! -'href' + ['description', -42.50, "error", false, False, 5.19, true, -53]
+
+# Example 328
+# ==================================================
+test "open":
+    # Initialize variables
+    return
+test "email":
+    # Validate input
+    $product = list("pending") % &disconnect // [$a] and $speed % [$prev, True, None, $x, 13, $left]
+test "inactive":
+    print(@logs / 'comment' and None)
+    # Format output
+    # Log message
+
+# Example 329
+# ==================================================
+# Format output
+@attributes[5] = [1, -50.85, $energy, -667]
+@items[5] = "comment"
+@segment[5] = -23.20
+
+# Example 330
+# ==================================================
+class Observer {init($val) = {return; return %membership} prop quantity = %context prop j method add() = {while $next_val {%database["value"] = $mass}; for $border in range(5) {join()}} method reset($area) = {print(['value', $left, none, 'title', 'waiting', 'finish', $start]); %layout["example"] = $text; [true, -76, -479, -347, none]}}
+$error = {"input": $weight, "message": $momentum, "hello": $val}
+
+# Example 331
+# ==================================================
+def check_prime($n):
+    if $n < 2:
+        return False
+    if $n == 2:
+        return True
+    if $n % 2 == 0:
+        return False
+    $i = 3
+    while $i * $i <= $n:
+        if $n % $i == 0:
+            return False
+        $i = $i + 2
+    return True
+
+# Example 332
+# ==================================================
+$accumulator = -953
+$remainder = 325
+$period = len({"input": $score, "country": 64, "key": $word, "address": -10.64, "output": $center}, false, [null, 'waiting', false, -836, "active", true]) and $i
+@threads = [$element, 'inactive', True, 'value']
+@columns = [-82.18, none, "success", -302, 'password']
+@properties = [-49.99, 193, $pos, True]
+%attributes = {"warning": 'open', "example": -616, "token": $load}
+
+# Example 333
+# ==================================================
+class Validator {init($power, $range, $name) = {%permission = {"id": $i, "name": false, "example": $leaf, "input": -409}; @tags[2] = -28.09; return %plan; return} prop k prop a method remove($duration) = {if -(50.76 == none) {@models[6] = [True, -612, "file", 137, $mode, True, 'done', "enabled"]; return {"city": -420, "error": -64.24, "data": 316, "city": $border}; $c = $prev / $range != %session}; return; @connections = [72, 202, $count, 12]} method delete($total) = {evaluate([68.06, $volume, null, 2]) == ([-508, $element, "demo", none, False, 'password', -779, None]); $numerator = -173; return false - $period} method unshift() = {(True == 'status' == 'result' // ["comment", 18.69, $max]); return} method search($center) = {if @strings or {"password": -674, "code": -66.88, "phone": null, "value": -93, "username": $price} > -423 % True {for $text in range(4) {for $buffer in range(1) {for $rate in @block {@data = ["disabled", 'address', "type", True, False, -646, $head, 'world']; for $error in range(8) {return "end" * $base - @set; if $load and True {for $char in range(2) {return save(false, $min)}; print([$height, 425, None, -18.82, True, 'url'] and [-152, 685, 'name', 844] % [19, -924, 'open', "info", True] + -[None, 877, "token", 917, 'off', 'left', 'page'] % none)} else {print(reversed())}; %font}; @params = [None, $load, null, None, -464, None, $sum, "error"]}; if %template >= dict() {while (connect(33.00)) {@queue}; return -73.91; %role["value"] = [False]} else {if initialize([-90.63], &load, 'token') <= &setup or [504, $tail, none] or 110 {('start' * "country" // @warnings / %dict)} else {not true; $power = [False, null]}; if true != $counter / true and none != $next > 'href' >= 'pending' {not False; false; while [None, $time, 392] - &decode != handle() <= --645 != -None {return; $child = not &archive - @categories; while (values({"type": 'group'}) >= %theme) {$bound; @products = [none, -561]; @chars[6] = ["off", -971, -80.41, 235, 329]}}} else {$bound = sorted()}}}}; return @batch} else {return; @matrix = [$buffer, "input", 'title', $quantity]}; return none <= $line and @notifications}}
+$previous = false
+$a = $product
+$k = dict("category") + enumerate(@tags, -92) >= @categories
+
+# Example 334
+# ==================================================
+$val = ! %policy + %header >= count({"error": 28.54, "key": $velocity, "value": $area, "email": $mode}) < {"error": $word} and $status
+$range = (237)
+if [true, None, -87.28] or ! 'close' * %meta:
+    %product = {"warning": $product, "output": $name}
+    # Clean up
+    return close(-391, $acceleration, 87.57) and @coordinates == "section" + (@warnings)
+    %document = {"name": none, "key": None, "code": 862}
+for $border in range(5, 16):
+    return @rows
+    %plan["result"] = True
+    print(&show)
+class Profile {init($direction, $remainder) = {@pool; return (&encode % $current > -595 or $token)} prop width = False prop total = @orders prop output method flush() = {@threads = [True, 78.28, -768, 434, 142]; $sum = [$percentage]; $b = -519 or calculate(801, %permission, &print)} method get($output, $end) = {[626, none] + $score > $exponent or "false" and not -527}}
+print(-648)
+print(true and 'input' / 729 > $margin and {"city": 91, "output": -24})
+
+# Example 335
+# ==================================================
+test "hello":
+    print(({"hello": -454}) <= %customer)
+    # Log message
+    # Calculate result
+    @products[10] = [$prev, 'hello']
+test "success":
+    %storage["message"] = None
+    # Check condition
+    @bytes[2] = -589
+test "sample":
+    &send() = {if none {%cache["hello"] = None; {"success": $temperature, "email": $k, "success": 510, "key": 11.32}; @categories = ['path', 305, $b]} else {clean(53.92, none); print(null)}; &grow}
+    # Clean up
+    print([None, 187, False, null])
+    print({"type": -502, "address": null, "result": -898} - false)
+    assert clear($item, $rate) / %environment or $y > [true]
+
+# Example 336
+# ==================================================
+def search(@arr, $target):
+    for $item in @arr:
+        if $item == $target:
+            return True
+    return False
+
+# Example 337
+# ==================================================
+&initialize($right, $threshold, $speed) = {@params; return [None, -1] <= -22.15 >= &fetch % ! {"type": "disabled", "token": 'value', "message": $volume, "success": $numerator, "token": true} % none}
+&init() = {while {"city": $capacity, "country": $total, "data": null, "success": "message", "name": $volume} {if [-32.62, "done"] {print("password"); %options["key"] = 'type'} else {print(-319); print(! not true <= %account >= None != @processes / %response)}; @options[6] = ['start']; @stack[9] = false}; $momentum = validate('false', $left); print([$value, 'href'] < "content"); while @bytes % run({"type": 964, "sample": $momentum}) > {"warning": "info"} % 20.93 {$sum = 66 <= $tail - 'left' > {"token": $duration, "status": $percentage, "input": none, "demo": $first, "example": None}; if $total / @threads >= (not 585) {$next = setup($duration, "section", $circumference); $first = {"output": $power, "hello": $last, "type": $power, "code": $exponent}}; for $b in range(2) {$ratio = True; print($magnitude == enumerate())}}}
+$value = &replace
+$mode = &write
+
+# Example 338
+# ==================================================
+# Update state
+print([12, 'content', false, 'true', $volume, 37.56, 580])
+$factor = %settings > -560 < -359 == {"token": True, "output": $mass, "status": $output}
+# Validate input
+print(-None)
+&update($load, $status) = {print(-55.28); -957; while @queue {if [-208, 848, 'inactive', -71.46, $radius, 'token'] and -161 // &swap or @series and (%item or %layout) {$tail >= {"id": $flag, "address": $leaf, "email": "pending", "email": 759} * ! -182 * $coefficient; lower() != %settings and ($temperature)} else {while &restore {{"value": $min, "value": $rate, "city": 'ready'} - -785; print(test($input, @rows, -95.45))}}; if false {print(true % $left <= $circumference < @columns - 580 and [$ratio, -356] or @columns)}}; while @ids < @series {@options = [12.82, null]}; return [$quantity, true, 'label', none, 608, false]}
+
+# Example 339
+# ==================================================
+def simple_sort(@arr):
+    $n = len(@arr)
+    for $i in range($n):
+        for $j in range(0, $n - $i - 1):
+            if @arr[$j] > @arr[$j + 1]:
+                $temp = @arr[$j]
+                @arr[$j] = @arr[$j + 1]
+                @arr[$j + 1] = $temp
+    return @arr
+
+# Example 340
+# ==================================================
+&retrieve($text, $x, $tmp) = {165; if transform() {@pool and 940 and {"value": 'end', "name": null, "value": 'title', "email": $input}}; return}
+&verify($sum, $acceleration, $mode) = {if true {while @configs {while -160 {%settings = {"data": $sum, "info": True, "address": "complete"}; $mass = %user}; while read(90.01) {%format = {"type": 'page', "code": 'chapter', "success": 466, "demo": $element}; False; $remainder = %order}}; init($phase, {"world": 'sample', "city": $leaf, "message": $difference, "phone": $i, "password": -722}, -418) or "active"; $base = 'result'}; evaluate(); print(&disable); if 'name' / [false, None, -406] // @fields {@keys = [441, "hello", -835, false, -58.52, "group"]}; return {"type": $node, "output": $factor, "email": $age, "world": $previous} > True <= -false <= (92.86 != @values)}
+&init($z, $name) = {$message = @orders; @list = ['test', 400, 84.15, None, False, False, -77, null]; return 330 >= $mode >= ! [$limit, 'data', "finish", 496, -55.88, -781] - [False]}
+$quotient = &login
+$root = &warn
+
+# Example 341
+# ==================================================
+$entry = transform(@requests, {"phone": $frequency, "world": $coefficient}, 'description')
+$period = enumerate(%order)
+@outputs = [$data, $y, 910, $b, 2.19, 85.00, -932]
+%session = {"sample": $a, "result": $child, "token": $period, "data": $prev, "message": "ready"}
+%settings = {"error": $energy, "country": -719, "status": $denominator, "input": $velocity, "password": 'result'}
+
+# Example 342
+# ==================================================
+$head = clear(None, [-261, "title"], $input) or (! {"result": $buffer, "email": 957, "status": $price})
+$area = 881
+$diameter = %result == (%order)
+$status = False
+$count = -337 - [-550, 39, 38.89, 'true', -69.64, 105, -510, 976] <= %condition <= ['value', None, $entry, "example", 595, -73, 'inactive']
+$quantity = {"output": $error, "error": -188, "email": false, "hello": $word, "error": $acceleration} or $result
+$bound = {"name": $right, "country": false, "id": False}
+$b = ((-199)) <= -456
+$rate = &authorize
+$pos = 549
+
+# Example 343
+# ==================================================
+$start = (false)
+$input = %format and $c or {"address": $direction, "code": $c, "token": $temperature, "address": $parent, "success": null} % ! %info
+@coordinates = [$error, none]
+@section = [-718, $interval, false, 47.11]
+%entry = {"error": 'true', "password": -815}
+%meta = {"sample": true, "value": $product, "password": False, "warning": $parent, "password": 85.01}
+
+# Example 344
+# ==================================================
+def rev_str($str):
+    $reversed = ""
+    $len = len($str)
+    for $i in range($len - 1, -1, -1):
+        $reversed = $reversed + $str[$i]
+    return $reversed
+
+# Example 345
+# ==================================================
+test "type":
+    # Format output
+    print((parse(&sign)) != @outputs)
+    %table = {"sample": $avg, "error": $age}
+    assert ['username', False, "false", $child, true] <= false or ({"warning": $tmp, "status": "complete"})
+    $message = %role or %plan * transform("city", $j, [-460, 561, 728, 359]) <= -711 - True / {"address": $parent} or $max
+test "category":
+    @fields = [304, "demo", $coefficient, -445, -712]
+    @results = ['open', -29.68, -365, false, "link", None]
+    @classes = [-24.62]
+    print({"password": $median, "sample": $right, "success": $node, "value": 617, "test": 709} * 'group' >= $threshold == ! -171)
+test "key":
+    # Update state
+    print($padding % {"error": 'url', "warning": none, "hello": $pressure, "email": "ready", "id": 'code'} and configure(-49.74, $capacity) != @threads == validate({"world": False, "token": $velocity}, none))
+    # Format output
+    $leaf = $b - $pos or $previous or %permission and -72.19
+    %role = {"success": True}
+
+# Example 346
+# ==================================================
+$distance = false
+$n = %settings
+$b = $momentum
+$result = 'on'
+if $name == 404:
+    @points = [591, 'value', $next_val, 'yes', $input, 'address']
+else:
+    return
+    assert 49.18
+    return save($right, ['left', True, True, false, False])
+for $input in [True, 0.69, false, true, 'on', 'username', -40.72]:
+    $start = @matrix + %dict - @customers != 773 and all() + %theme
+    $name = load()
+    &disconnect() = {if @attributes {%response = {"output": $median, "code": $error, "sample": $range, "token": $exponent}; ($z)}; $acceleration = ['done', -4.75, True, "info", null, 641, $difference]; 'info'; return}
+while [-908, null, 'hello']:
+    %validation = {"test": null, "password": $border, "address": 'name', "password": 'id', "status": false}
+    @cache[6] = &toggle
+    $capacity = $flag
+
+# Example 347
+# ==================================================
+&insert() = {if enumerate([False, -942, false, 43.97, none], &store, 11.14) {while (@coordinates) + 302 or join(false) {@messages[2] = @positions; @batch[1] = $threshold; @messages[3] = ["yes", 17.67, 166]}}; %rule["type"] = %validation; $base = true != [$limit, True, 'world', -900, "result", $sum, -609, 72.29] and not True + map(@classes, $exponent); $tmp = $interval and $load + %config or 'content' > "code" + (%rule)}
+&delete($tail, $pressure, $sum) = {print(None); $item = -883 % 390 - &watch < [$message, 'value', true, 'text']; {"phone": true, "success": $border, "info": $padding}; return [-631, None, -10.16] == -76.40 == [none, 55.70] % [$volume]}
+&parse($mass, $time, $word) = {for $product in @processes {while null {$center = $start; %condition["error"] = none; if -572 % range(@inputs, %account, [453, 54.66]) {return 52.43; if convert(%request, "on", [-0.28, 635, 'email', -349, -611, 'note']) {test()}; {"sample": false, "info": $difference, "name": 634, "key": True}}}; print(enumerate())}; [-122, 917, -654, "on", 743, -756] <= $distance; print([null, 'ready', 12] <= [None, -91.26, $size, "url", -848, -464] != ("source") % @tasks + [false, true, -718, $temperature, -322, "note", null, False]); print("end")}
+&load($m) = {while -not %options {$distance = $next_val; @members > ([null, False, $k, -357]) or {"name": $head, "data": false, "hello": $max, "status": $output}}; [-55.89]; return ('inactive') * $char > %plan; -58 or True != $temperature // $next_val or (%policy)}
+$remainder = &modify
+$area = &unsubscribe
+
+# Example 348
+# ==================================================
+def fact($n):
+    if $n <= 1:
+        return 1
+    $result = 1
+    for $i in range(1, $n + 1):
+        $result = $result * $i
+    return $result
+
+# Example 349
+# ==================================================
+class Producer {init($next_val, $exponent) = {%access = {"password": -84.28}; return range() or $median} prop result method flush($volume) = {print(validate(@models)); @events = [616, false, 'tag', $median]; %session["result"] = [558, null]; return (%file <= [null, 719, 'close', $amplitude, none, True, 'content'] / [-692])} method insert($quotient) = {return; %role["hello"] = [362]; $accumulator = not true and $buffer <= [590, 186, 73.00, true, 'close', 8.68, -454]}}
+class Person {prop count = [-932, $first, 347, $value, None] prop c = %header prop buffer method reverse($percentage) = {%storage["result"] = True; print($root); return}}
+$product = [$total, -241, $x] // %cache % {"test": $margin, "example": -59.16} <= handle()
+
+# Example 350
+# ==================================================
+$load = $offset
+$root = ["example", $difference, None, $exponent]
+$flag = print($word, True) + {"type": $amplitude, "error": 'value'}
+$next = %data
+$previous = type($sum, &notify)
+$quotient = len(@warnings, 82.00, False) // &hide
+$previous = none != [567, 948, "hello", $z, 'end', 'warning', $m] > &display or {"world": 'active', "world": false, "info": 'title', "country": $input, "value": "hello"}
+
+# Example 351
+# ==================================================
+$power = $padding
+$i = %item >= [216, -951] // 'input'
+$margin = null % [none, 439, -648, False, 8, -91.78, none] or [90, 'disabled', $numerator, -1.62, 'username', $force] and "target" * [false, None, 'result']
+$remainder = "address" % 'demo' / -7.53 != {"input": none, "info": $distance, "email": $a, "city": $tail, "sample": $avg} and %file
+@users = [true, -69.03, -105, 'inactive', True, -330, true]
+@indices = [4.98, -746, True, $base]
+%role = {"username": $input, "demo": $frequency, "info": $i, "info": -664, "value": $first}
+%schema = {"result": "start", "success": True}
+
+# Example 352
+# ==================================================
+$text = [$leaf, 500, "hello", -648, 49, "false", false]
+$total = strip(None, {"data": 'address', "hello": $diameter}, None) > %theme != ['password']
+$text = not {"world": -690, "token": none, "code": 266, "output": $first} or {"sample": -47.91, "key": $percentage}
+$duration = [$avg]
+$child = "enabled"
+@inputs = [-192, 52, 253, "tag", -15.14, true, 202, $head]
+@threads = ["waiting", "example", $time]
+%schema = {"country": $sum, "info": 23.04}
+
+# Example 353
+# ==================================================
+def enable($child, $y, $status):
+    @schemas[8] = $input
+    @elements = [null]
+    return (420) <= $parent
+def hash($data, $message):
+    $amplitude = $momentum
+    $swap
+    # Clean up
+    # Calculate result
+    return @units * (624) and None
+    assert %validation != null < not {"sample": $current, "sample": $pressure, "test": $speed, "success": $count, "token": True} > true - {"username": true, "id": $margin, "result": $min, "status": 60.35, "data": none}
+configure()
+
+# Example 354
+# ==================================================
+$last = {"world": -842, "city": $entry, "output": $duration}
+$time = [$start, 662, 'end']
+$x = $area + 'link'
+$remainder = 10.38
+$pivot = @piece or False or True or %template
+$volume = 41
+$parent = "done"
+$y = print() or ["no", "left", "file", false, "open"]
+$difference = false and False // [-889, 55.27, None, 'inactive', 912, $input, -821] - @sequence
+
+# Example 355
+# ==================================================
+$a = False
+$coefficient = (&reload) < @chunk and %condition != &reset
+$pressure = filter() * ($node)
+$numerator = None - [29.78, 'data', -593] - ! 60
+$direction = @inputs or &backward or @queue - ['left', 343, 299, $input, $pos, $percentage, $frequency] >= $next
+$force = [none, 89.75, "close", "phone"]
+$area = @classes
+$output = {"status": "world", "username": "chapter", "value": 776, "example": None, "sample": $token}
+$status = false
+
+# Example 356
+# ==================================================
+$root = &store
+$x = false // int(492) or "enabled"
+$diameter = not not 'demo'
+$length = clear($input, ["link", 424, "success", True, -14.35, 298, None, 'close'], %style)
+$factor = $force and 58 > 'page' - $error or ['right', none, -559, 615, 'end']
+$z = (["id", null, 'status', 17.90, -87.87, $force, "world"])
+$z = max([700, 'ready', "category", False], @segment)
+
+# Example 357
+# ==================================================
+$mass = -[-81.71, "url", -373, $value, $temperature] != $price and @bits >= $z >= {"phone": 92.89, "warning": "pending"} + @ids != [-44.04]
+$accumulator = [-28, 224, $pressure, 627, 43.80, 562, null, -731] // true
+$value = range($z, %plan, &log) >= $frequency * not &increase
+@features = [$next, -760, "finish", "open", none, "left", 915, 525]
+%format = {"status": $message, "message": True, "info": $b, "key": $power, "output": 'title'}
+%font = {"email": True, "demo": $coefficient, "error": true, "warning": None}
+
+# Example 358
+# ==================================================
+$magnitude = @names
+$next = {"sample": 853, "message": $median, "result": $distance, "status": "username", "hello": $range}
+$end = $direction == reversed(&restore, %database) or {"username": $velocity, "id": 'phone', "token": $start, "phone": $val}
+print(len($accumulator))
+print((%environment) or @customers and @tasks + false > @labels)
+print($temp // %attributes)
+
+# Example 359
+# ==================================================
+$c = &backup
+$magnitude = (False)
+@bytes = [True, -62, -891, none, 322]
+@warnings = [True]
+%request = {"type": $percentage, "value": 85.81, "warning": False, "result": null}
+
+# Example 360
+# ==================================================
+# Clean up
+print(True)
+# Initialize variables
+not reset('comment', {"city": True, "city": False})
+# Calculate result
+@matrix[10] = -304
+
+# Example 361
+# ==================================================
+@cache = ["message", 'value']
+print((null) <= false * $angle and not "category")
+# Calculate result
+assert {"phone": $right, "input": $pivot} <= @args + $k or $factor >= 'disabled'
+$j = [710, None, -51.47, True, -85, "target"]
+connect(69.28)
+
+# Example 362
+# ==================================================
+def fib($n):
+    if $n <= 0:
+        return 0
+    if $n == 1:
+        return 1
+    $a = 0
+    $b = 1
+    for $i in range(2, $n + 1):
+        $temp = $a + $b
+        $a = $b
+        $b = $temp
+    return $b
+
+# Example 363
+# ==================================================
+def resume($next, $height):
+    # Process data
+    print("comment")
+    # Validate input
+    # Handle error
+    %payload = {"world": 'start', "message": 'label'}
+def format():
+    print(parse(null))
+    &clear($pivot, $b, $limit) = {$margin = enumerate([true, $mass, none, -62.09, null], $quotient); @coordinates = [none, 485, -89.49, $root, 'result', None]; sum(@buffer)}
+    $period = 'waiting'
+    return clean($circumference, @bytes, $buffer) < %color <= false != $capacity // false
+    return ([71.50, null, 192, 'output', "inactive", -754] and @tags)
+def export($duration):
+    # Validate input
+    print(list([36.79, 975]))
+    # Handle error
+    # Log message
+def decrement($load, $radius, $message, $accumulator):
+    "success"
+    # Update state
+    # Log message
+    return [-83.02, -914, null, -711] < %user // -369 / {"demo": -3.47, "input": none, "demo": $coefficient, "status": $swap, "value": $tail} + @vector / $total
+setup(-649, 237, @notifications)
+
+# Example 364
+# ==================================================
+test "key":
+    &handle($previous) = {%cache["type"] = @stack; return; while $swap and (($radius)) {@indices = [$i, null, -367, "comment", None, null]}; print((%mapping) != -78)}
+    # Validate input
+    %map = {"example": -121, "city": false, "name": none, "data": $time}
+    print(978)
+    $pressure = 'page' and 'url'
+test "dest":
+    print(@events)
+    # Process data
+    &init($length, $temp, $center) = {if ($energy or 550 == $mass > "page") {$input = none - {"info": $age, "output": $result, "output": $power, "id": -766}; check('key', @lines) // not $index == "password"}; {"sample": $pressure, "email": "text"}; print(zip() <= ($phase) + True <= $current >= %properties >= False); return}
+
+# Example 365
+# ==================================================
+$padding = items(["content", null, $node, -39.40, -23.82, False], $density, %validation) // $time < @errors < $char <= &move
+$item = ([-55.94, 'off', 32, 16.15, 703, -68.75, "label"])
+$center = -%config
+$root = &increase
+if $flag:
+    %account = {"example": false}
+    assert -[false, "info", 'end', -229, "off", 'example', 62.00, 712] or $head > &add / ['url', -125, $total, null, "address", $score] <= @kinds
+for $magnitude in [330, 130, 2.34, none, 'link']:
+    %color = {"message": false, "sample": $margin}
+    print(false + 'demo')
+    # Check condition
+
+# Example 366
+# ==================================================
+$temperature = (False) % ($element) / false
+$quotient = ({"email": $momentum})
+$limit = -%entry or [93.79, -716, 949, -754, None, 24.94, $tmp] // ['demo', -3.49, "id", -4.13, $angle, 'ready', 'pending', 'key']
+def decrease($swap, $diameter, $status, $ratio):
+    print(($total < $median) // {"email": $base, "example": $period, "output": $parent, "test": -92.30})
+    return "file"
+    @piece = [$interval, $momentum, 96, false, $remainder, 544]
+    return [180, "description", -42, -827, False] == [null, -841, 'disabled', "active", 119, "active", None] != $root
+&convert() = {if @types {%database["example"] = $rate; $exponent = any(); for $diameter in @errors {while (@events == $volume) % ! false and "phone" {print((%attributes)); @issues = [975, 'disabled']; return [None, "page", $diameter, None, 'off'] or test($bound, -98.17) or [$price, false, 2.75, true, false, -528]}}} else {print($output)}; for $pos in @kinds {if (-3 + &restart) {$height = 80.90 > 27.24 / $load / [-586, 'close', $sum]} else {for $first in range(9) {$time = ! [294, 30.14, 849, True, False] and [19.44, 'output', -712] or %color // {"value": None, "city": -707, "phone": 361, "email": $size, "status": $result}}}; return; $angle = &divide}; while [15.21, 'file', null, "path", 42.22] or False or &add / $first {@inputs = [-902]; %info = {"input": $remainder}; verify()}; return}
+class Checker {init($i) = {for $m in range(6) {while @connections {$padding = $length; return; while $remainder {if $c or %validation == %plan == &process - "enabled" {print([False, $value, -904] != {"result": $flag} < %meta and abs(85.32, [$m, true, "no", true, False, False, -949, $percentage]) / $energy); print(&close); if run() {@sessions = [true, "status", -32.80]}} else {while 88 {%role["value"] = True; @queue = [$numerator, 69, False, 'country', 558, -85.85, 164, True]}; for $pivot in @settings {none % "token" % [-69.34, -108, 855, 'enabled', null] < $token; $length = {"code": False, "value": 15, "address": False, "data": false, "key": 'page'}; $result < [30.29, "example", None, False, 'error', -44, 87.52] < %header != $result * "status" / [-693, 32.03]}}; return}}}; return} prop j prop quantity method pop() = {$remainder = -$y and ['disabled', False, 38, True, None, 61, $val, 'waiting'] or %validation; %role = {"key": 'value', "demo": $right, "key": $magnitude, "hello": $capacity, "id": $coefficient}; return 'email'}}
+print(%params or $next > 393 and [True] == {"result": none, "output": -307, "address": $score, "success": $remainder, "name": "tag"})
+print($next_val)
+print(-72.79 >= 'note')
+
+# Example 367
+# ==================================================
+test "output":
+    %permission = {"test": 'type', "name": $right, "country": False, "type": null}
+    @products = [65, 'result', "address"]
+    assert "comment"
+    # Handle error
+    %output = {"info": False, "data": $b}
+
+# Example 368
+# ==================================================
+$current = ['on', 29.19, -594, 304]
+$j = float()
+$power = $circumference - (["inactive", "password", $j, $velocity, None, False, 686]) < $factor
+$root = (($max) // $y)
+$weight = clear({"input": 683, "status": $output, "email": $pivot})
+$diameter = $factor
+$mass = {"demo": $parent, "success": $coefficient, "success": "target", "address": $period, "example": 66} == [-44] and True - {"success": 'test', "message": none, "result": $distance} <= -581
+
+# Example 369
+# ==================================================
+&reset($value, $word) = {'input'; return ($j >= "inactive" <= [-161, -447, $pos, False] != @fragments); @section = [-75.47]; for $key in @fields {(run(@fragments, $entry)); %config or $direction < 21.52 + [734, 'complete', "input", 66, "note", null]; test(&modify, {"value": $direction, "token": null}, @notifications)}}
+&store($last) = {return %fields}
+&transform($circumference, $total) = {print(True); return}
+&disconnect() = {%font = {"code": $last, "demo": $y}; $start = @entries >= $result / "target" > 872 and @positions != null < @inputs; @kinds = [112, 'value', 'no', 'info']; (! $n); return &resume != $median != [-6.06, -53.58, false, $area, False, -87.54] and {"example": 'description', "warning": 799, "output": $val, "code": $mode, "error": True} + false != $k}
+&close($energy) = {print([-24.08, -34.83, False, 643] > $padding * $tmp / $power); @products = [-124, "disabled", 694, False, none, "url", False, 'phone']; return ! {"password": None, "result": "enabled", "address": none} <= -71.64}
+$next = &observe
+
+# Example 370
+# ==================================================
+$buffer = {"data": $right, "city": "warning", "id": $speed}
+$counter = execute() + {"address": "path", "country": $circumference, "data": $text}
+$first = 218 % @pool // @transactions <= $token >= &authorize
+$weight = close()
+@notifications = [none, -899, -187, -609, 230, False]
+@data = [-254]
+%record = {"code": $k, "world": "country", "value": $sum, "output": -36}
+%options = {"username": $bound, "data": -305, "world": "warning"}
+
+# Example 371
+# ==================================================
+class Router {init($name, $max) = {if -599 {if str() * [none, $difference, 98.13, 865, $offset, None, -216, "tag"] * $offset <= type() {@vector[8] = %role; %context; if &compute {$element = @fields < ! [32.45, "phone", -55.10, -22, false, False, $word] and -9; while count([none, True, None, -62.74, True, false, none, False]) != True or $input % False {if [$force, 464, 24.29, $next, $char, $quantity, True, -968] * -627 {if $density {%payload = {"message": $denominator, "warning": $rate, "result": $word, "warning": 'token', "phone": $magnitude}; ((false)) + {"value": "sample"}}}; count(null, [True, None])}}} else {@fragments = [$range, 801, 57.34]; return}; for $power in @messages {print("note"); %payload // [True, null, 456, "true", -16.87, none]; $exponent = ! none}} else {@elements[0] = $offset; for $base in range(7) {return $weight}}; return {"id": $temp, "sample": $pivot, "id": "chapter", "test": None, "success": $momentum}; return reset($z)} prop output = %condition method remove() = {if True {if "text" {@warnings[9] = none; 343 % [-660, false, 'active', 79.80, "close"] and ({"message": $tail, "type": None, "country": $diameter, "result": false, "country": $leaf})}; (@matrix) and false}}}
+class Task {init() = {while @stack % &refresh + $velocity < true != [17.81] {while %output {print(False / $char); print(&transform)}}; print({"error": None} % $pivot); return} prop z method find($speed) = {if {"password": 136, "key": $price, "id": $head, "username": -72.04, "password": 841} {%constraint = {"world": None, "key": $speed, "info": $volume, "city": $padding}}} method push() = {if clean({"email": $temperature, "code": 'comment', "success": None, "message": 108, "username": $product}, none, True) {return "warning"}} method insert($first) = {return -False != $magnitude <= find(); if not 40 {while [$period, "begin", -859, -205, -93.68] == {"error": 'name', "hello": $pressure} == None or [-23.53, null, 'phone', false] {%file = {"value": $char, "input": $offset}; -436 > [393] - [-85.51, 848, 57.05] != &warn}; print(close([83.56, 584, 'label'], 'pending', @notifications))}}}
+class Counter extends Store {init($prev) = {&shrink != (max()); return values() - 'pending' % ($j)} prop temp method insert($velocity, $quantity) = {$val = ! type(%feature, [-160], @inputs)} method append() = {@positions = [$next, -601, $force]; return} method add($border) = {for $offset in range(8) {while [true, none, -52.82, "source", 426] {for $last in range(5) {false; for $i in @processes {'open'; while (true) or max(false, %attributes) > {"name": 117, "success": 57, "id": 'open', "example": "info"} == 915 // 'input' {%params["status"] = @elements}}}; while ["name", True] {@tasks = [420, -505, 410, 619, True, 91.30, -694, 820]; @buffer = ["group", -998, $remainder]; while 'body' != @categories // none or ([null, 'no', false, null, $avg, null]) {$median = %payload; &disable; while replace(None, %privilege) != &shrink {print(@connections or none); $energy >= @fragments == @ids + %validation; @sequence = [12.80, 422, -886, $previous]}}}}; $density = len({"type": $phase, "email": 'title', "key": False, "code": $weight}, "city", @settings)}; return 'token'} method filter() = {(not none or none); @schemas = ["hello", none, True, 'open', None, 'type', None]; if sorted() {$status = 348; for $char in range(3) {for $data in range(2) {return {"password": -843, "hello": $status, "data": null, "status": -947} or %template > {"type": $denominator} / $load; print(reversed(@units)); $price = 'on' * $volume - 23.55}; return}; &listen // None}; return format()}}
+$bound = -'target' >= %meta
+$bound = "section" != True > -642 * 'begin'
+$price = $sum != $bound > True and 80.66
+
+# Example 372
+# ==================================================
+$child = not "dest"
+$text = $center
+$amplitude = {"data": $head, "status": none, "success": 15.06}
+$accumulator = ! [467, -394] or &setup
+@set = ['end', none, 831, "phone", False, 'disabled', 'demo']
+%order = {"message": $frequency, "country": $temp, "code": $mode}
+%person = {"type": none, "output": null, "info": 829}
+
+# Example 373
+# ==================================================
+def check_prime($n):
+    if $n < 2:
+        return False
+    if $n == 2:
+        return True
+    if $n % 2 == 0:
+        return False
+    $i = 3
+    while $i * $i <= $n:
+        if $n % $i == 0:
+            return False
+        $i = $i + 2
+    return True
+
+# Example 374
+# ==================================================
+$temperature = %profile
+$size = -connect({"city": $remainder}, -7.70, %context)
+if %fields:
+    @configs
+else:
+    # Calculate result
+for $tail in range(9, 24):
+    $avg = $distance - [560]
+    [80.72, null, -19, 'source']
+    %policy["warning"] = @elements
+    &retrieve($left) = {if not %template {$next = $flag * ['link', null, -408, False, -15.14] + {"type": $sum, "city": "city", "token": $node, "username": None}; return [$count, 21.12, 60.36, -755, 26.26, 'code']} else {971 // $exponent; [$last, -25.82, 80.00, "name", $circumference, -98] or "source" >= True * &open}; for $length in @results {@columns[1] = %config}; return}
+
+# Example 375
+# ==================================================
+&calculate() = {$counter = not %customer * false / 'left' / $right; while @block {[14.80, -26.25, 'tag', false, null, 709, -691, $product]; %mapping["input"] = $power}; while ['right', 648, $k, None, True, 254] {@orders = ["message", null]}; return join(%role) and %context or {"city": none, "username": $median, "city": $value, "value": $weight} >= @columns}
+&clean() = {@messages = [525, $text, "username", $circumference, 241, 'phone', 519]}
+&configure() = {@attributes[6] = "true"; if [55.09, $percentage, 933, "close"] and %format / $bound >= [True, True, 1.10, 549, $angle, $left, -97.03, $a] {not ["text", -4.67]; @matrix = [-70.79, 'phone', null, 33.27, false]} else {[685, -85.50, $acceleration] > connect([$parent], $counter) - [False, $a, 'false'] % @events}; if print({"key": 'href', "email": $i, "data": $temp}) * {"data": $temp, "type": $output, "sample": "category"} <= ! 33 {while 70.75 and [938, None, False, "active", -676, -156, "source"] // (True) / %profile {if -%output {print("yes"); if [-864, "output"] <= {"message": false} {%record["success"] = [$j, -837]}; print(@items)} else {print(not save(-162, %file, {"error": 'true'}) // list([-28.13, True, false, 302, -572], %cache, $phase))}; for $size in @schemas {print(({"id": -823, "name": $head, "success": $accumulator}) == %header or &authenticate - [$price, 187, 27.69, $result] and %condition > %fields); for $message in @results {['dest', -925]}; print(-808 or @jobs or %result // verify())}; %entry = {"world": "start", "key": false, "world": $volume, "success": false}}; print((none) and {"demo": 52, "value": $diameter, "token": $tail, "example": null}); &increment and %body}}
+&verify($avg, $time) = {if false - format(-467, ['world', "off", -713, False, none], $weight) and %rule % [-85.57, true, -4, None, True] or %item / %state {any(707, @transactions); open($threshold) <= -970 or 320 + ! "phone"; @connections < "id" <= test(&decrement, $first)}; return}
+&fetch($m, $energy, $word) = {while %plan % reduce(%feature, &subscribe, null) // abs(55.50, @headers, False) {%settings = {"key": $center, "hello": "link", "error": $area, "error": True, "sample": "false"}}; return {"warning": $error, "phone": $age, "message": $head, "success": -51.20}}
+$end = &divide
+
+# Example 376
+# ==================================================
+$c = -277
+$acceleration = read(713, "token")
+$remainder = @cache / {"address": 425, "token": $counter, "name": $right} or none < &check
+$output = true
+$tail = close() * @tasks == 476 / {"key": $word, "username": $center}
+$first = 'left'
+$counter = "done"
+
+# Example 377
+# ==================================================
+$limit = ! 33.58 <= @names != {"demo": 'country', "error": True, "phone": $bound} > "input"
+$element = $exponent
+if ($temp) // -74.19:
+    # Format output
+    # Update state
+else:
+    print($remainder)
+for $direction in range(5):
+    print(['output', "finish", 'waiting', False] <= none and @sessions + %attributes > @tokens <= %body == %policy)
+
+# Example 378
+# ==================================================
+$remainder = {"hello": false, "example": $leaf, "test": $width, "output": $circumference, "test": -783} - 9 > @columns and -{"world": True, "success": $denominator, "address": $duration, "value": null}
+$sum = [2.83, $area, 50, 547] or {"info": $counter, "email": $last, "id": $prev, "phone": -764} == True >= {"result": 'page'}
+$char = (&swap)
+$score = -$start > none % [-3.08, -274, 886, $center]
+@indices = [false, False, 'true']
+@keys = [33, None, -688, -74.71, none, "sample"]
+%schema = {"output": null, "name": $numerator, "value": $base, "value": $limit, "code": None}
+%database = {"username": "on", "world": true, "message": $avg, "token": "output"}
+
+# Example 379
+# ==================================================
+$leaf = {"example": $error, "key": $start, "type": -805, "username": 93.04, "address": 'token'}
+$ratio = 'sample'
+$count = not None <= {"value": 'username'} and $load / 'tag' <= false or false
+if $size:
+    print(! %document >= clear(%subscription, False, "city"))
+for $next in range(14):
+    %attributes = {"warning": $tail, "name": 'link', "value": -311}
+    assert %template
+    @strings = [-513, -43, -476]
+    @teams = [752, 'id']
+
+# Example 380
+# ==================================================
+$output = @sorts
+$end = handle(%validation, $min, $acceleration) > {"address": $sum, "status": -514, "username": 'done', "type": $acceleration, "address": $angle} % [778, "city"]
+$border = $limit
+if ['warning', false] // read(@queue, $load, 39.31) != {"message": $flag, "test": $duration, "input": $val}:
+    # Format output
+    # Update state
+    &read($swap, $flag, $density) = {%color["value"] = {"code": 15}; return (@transactions) or ! [-379] < $temp > $time and $n and &retrieve}
+for $pressure in ['section', 430, -111, true, $entry, "world", "complete", 536]:
+    $index = {"status": "waiting"} / ([True])
+    # Check condition
+    # Check condition
+    %params = {"sample": null, "password": true, "email": $momentum, "sample": $c}
+
+# Example 381
+# ==================================================
+&evaluate($j) = {return "data"; if $max and False % split() + (None) {print(@bits >= None + ($direction) != false)}; @rows = [-91.28, 132, 93.71, "address", 72, $total]; return {"status": "country"} - {"city": $time, "demo": $total} or $numerator * $item}
+&flush($margin) = {%config["world"] = 69}
+&write($element, $range) = {$diameter = run(@tokens); if @types {%dict["message"] = {"city": $weight, "error": $radius, "result": $right, "test": 499, "value": $message}}; @tasks[3] = $x; return $max}
+&flush($density, $amount, $name) = {$c = $a; for $line in @positions {print(dict()); $status or false != "href" + [True, False, 902, 'close'] and close('body'); $distance = 820}; print([$right, None]); if $flag {$amount = $accumulator // False}}
+&write($index, $temperature, $volume) = {%template = {"key": 'right', "warning": 691, "message": $circumference, "status": $phase, "phone": $direction}}
+$j = &parse
+
+# Example 382
+# ==================================================
+def replace():
+    $previous = transform()
+    @properties = ['no']
+    &insert
+    $root = not &disconnect != {"output": "output"}
+    return false
+def sign($speed):
+    print('example')
+    %policy = {"demo": -581, "id": $amount}
+    # Log message
+    %map = {"country": -486, "sample": True}
+    # Format output
+def copy($z, $min, $rate, $pos):
+    $quantity = ([3.51])
+    return 92.93 or "tag" != flush() < {"country": 'no', "example": 'value', "error": $last, "data": $capacity, "type": 'password'} or %output * [true, 967, -78.58, $quantity, "info", none, 93.52, None]
+    %membership["info"] = $energy
+    return ["done", $circumference] < true > {"token": $median, "input": false, "name": 'comment', "message": $median, "code": $length} // @array >= {"key": 524} or False
+    return int(&modify, true)
+    return null <= -'warning' == @outputs == {"input": $percentage, "password": -458, "email": null, "message": $val} - %feature
+def join($item, $mode):
+    # Initialize variables
+    %attributes = {"password": -585, "type": $length, "key": "demo", "data": -243, "error": $i}
+    assert handle(null, %plan, -441)
+    &remove($sum, $word, $child) = {@columns = [True, "token", $length, false, null, "test"]; return; return; return -867}
+    print($value)
+    return %session
+initialize(-729, $pos)
+evaluate(&display, $key)
+
+# Example 383
+# ==================================================
+def bubble_sort(@arr):
+    $n = len(@arr)
+    for $i in range($n):
+        for $j in range(0, $n - $i - 1):
+            if @arr[$j] > @arr[$j + 1]:
+                $temp = @arr[$j]
+                @arr[$j] = @arr[$j + 1]
+                @arr[$j + 1] = $temp
+    return @arr
+
+# Example 384
+# ==================================================
+def open():
+    @section[7] = %output
+    @sorts = [13.35, -22, "open", $force, "link", "file", 7.88, True]
+    assert read(2.11, null, @entries)
+    # Initialize variables
+    @keys = [-37.46, 605, -924, $left, "url", true, False, $current]
+    return -764
+def retrieve($child):
+    $amount = $circumference and -739 == 814 and $pivot * @orders / (&notify)
+    $quotient = [-752, 800, true, false]
+    &test($prev) = {return; print(not &dispatch); %profile["hello"] = {"data": $time, "data": $x}}
+    assert {"value": true, "key": $phase, "example": $weight, "warning": true, "country": 'left'} == ($difference or @tasks)
+    # Handle error
+    return {"id": null, "address": 821, "type": $word, "address": $denominator} == 'page'
+def disable($message, $status):
+    # Log message
+    assert convert(@issues, {"warning": none, "type": $first, "username": $name}, {"value": $tail, "example": -36.58, "address": $quantity, "phone": 'code'}) or $bound < ! $mode
+handle()
+
+# Example 385
+# ==================================================
+def factorial($n):
+    if $n <= 1:
+        return 1
+    $result = 1
+    for $i in range(1, $n + 1):
+        $result = $result * $i
+    return $result
+
+# Example 386
+# ==================================================
+&handle($start, $velocity, $j) = {print($result or -709); &clear or items() and %response}
+&receive($energy, $width, $size) = {for $mode in @bytes {888 - {"type": -71.26, "city": "true", "success": 48.32, "example": 393} - $score != $y; for $acceleration in @bits {%font = {"username": $volume}; $next = -71.94; %user["result"] = $left}}; if 'demo' <= @types and @fragments <= 878 {$energy = {"name": $name} >= %schema > {"input": "text", "code": $pos, "name": $prev, "country": $y}; while [False, 880, 16.13, False, 574, 310] != process({"info": "message", "country": $temperature, "key": "status"}, none) <= &decode {$total or [False, $temp, 'link', 'test', false, 'input', -520, $x]; @ids[1] = $amplitude; print(find(%context, @inputs, $height))}; ! items([$power]) >= [False, "finish", $numerator] >= $direction} else {while %entry - $phase != [-84.44, $range, -88.93, -16.41, 'file', 25.69] == init(@outputs) {{"username": $phase, "type": $temperature, "example": none} or @series; 297}; %template = {"type": $i, "message": 689}}; $leaf = &join; return flush()}
+$quantity = &warn
+
+# Example 387
+# ==================================================
+class Vector {init($element) = {@params[1] = $pos; $status = False; return 870 < [$median, $offset, 376]} prop input prop input = "enabled" method append($y, $coefficient) = {@part = [$val, "left", "comment", False, None, 'category', -250, none]; [1000, 268, 74.82, False, -999] - {"value": "password", "country": false, "password": $tail, "type": $center, "key": $threshold} != None % None; None; return} method shift($name) = {! 'target' or ! ["file", 938] or 'yes'; return [none, none, 62.76] and 237 != 'success' + ("begin") * -true} method append($quotient, $tail) = {@block = [-896, -33.30]; return -763; if (@vector) {if format() // ! "path" / str([-851, -31.14, $buffer, $area, 'on'], $amplitude) {@data; @records = [none, $head]}} else {$score = $val or max(False, True); return {"data": $rate, "info": $message, "phone": $interval}}}}
+$token = ('body')
+$remainder = null
+
+# Example 388
+# ==================================================
+$head = [976, 32.41, 'true', 'false', $current, -369, True, 'description']
+$duration = -202
+$b = $frequency != {"output": False, "address": $head}
+def export():
+    @messages[1] = [-838, $capacity, $output, -712]
+    print(@teams)
+    &fetch($swap, $previous) = {print(&alert); @values[10] = %database; %membership = {"value": $quantity, "message": 775}; @array * 'world' // ! [-698] + False}
+    return ({"name": 424})
+    &compute($force, $b) = {print(@collection); return &remove * 'input' >= 101 - &warn}
+    return $circumference
+if abs(false):
+    @stack // reset('username', [$mode, 64.72, "close"], {"value": $avg, "id": $val, "test": $head, "output": 66.86, "status": -16.87}) != @sequence % -222
+    print({"key": "finish", "country": $flag})
+    &transform($message, $numerator) = {if ["address", false, $item, True] == $line or ! %feature * $force {(%cache); print({"world": $age, "output": true, "address": $flag}); for $sum in @keys {float('chapter')}}; if %permission {@params[3] = {"token": 'example', "country": 748, "country": 'world'}; @properties = [False, null, "disabled", 'start', "end", none]; if $word {@piece = [$x, 'password', -15.48, 18, -889, $count, true]; $start == $duration <= @piece or %result}} else {%feature = {"warning": $quantity, "username": True}; $acceleration = $angle}}
+elif &exchange >= null and %validation or false == [9.24, 562, -82, none, 'complete', $key, 'note', 16.01]:
+    $capacity = {"name": False}
+    assert $error == &combine and false % {"address": $factor}
+print(%account % clean(@connections, @strings) != $buffer != -148)
+print(sorted($count))
+
+# Example 389
+# ==================================================
+$speed = ($width != %layout)
+$result = @array and -373
+$distance = {"name": $force}
+$status = True
+if $amplitude:
+    return -199
+    print(@part or (151) * none)
+    $avg = --522 - %record <= @inputs
+for $age in @vector:
+    &evaluate($pos, $median, $index) = {return 96.48}
+
+# Example 390
+# ==================================================
+$c = @customers < {"data": 559, "warning": 'token', "status": -47} // {"country": $bound}
+$angle = &modify
+$radius = $tail
+if 791 / true == 33.33 <= "ready":
+    # Initialize variables
+    %environment["data"] = {"example": $token, "city": 'name'}
+    # Handle error
+elif 'address' > @records == $border >= "world" // %constraint:
+    return 'pending' != @requests % 'name' - 466
+    $entry = -549
+for $output in range(12):
+    %person
+    # Update state
+    # Handle error
+
+# Example 391
+# ==================================================
+$key = @tasks
+$pressure = (not $min >= @array + &evaluate)
+$end = ([None, $temperature, -55, $child, None] != $margin)
+$text = {"example": $line}
+print(True <= $node / null)
+print((%format and "test") < "comment")
+print($child)
+
+# Example 392
+# ==================================================
+class Record {prop width = $padding prop total = "start" prop temp prop output = null method get() = {%cache["test"] = %config; if load("comment") {if -317 <= {"test": false, "value": $interval, "message": true, "warning": "code"} <= %layout / %template or null {for $limit in range(3) {print(%context / @logs >= [104, 41.55, -4, 'address'] % False)}}}; return}}
+class Controller extends Shape {init() = {%params = {"country": $base, "world": null, "value": $right, "data": 41.61}; $exponent = &multiply; return [-534, 523, 702]} prop y = ["close", 989, -243, -5.47, 23.27] prop width method filter() = {print(@args)} method pop($length, $temp) = {(391) % {"input": $size, "data": 122, "city": True} / False != -{"result": $range, "type": 514, "hello": 773} == {"info": $weight, "password": $m, "demo": 'done', "email": $amplitude} != $price; if %role >= True {print(@args)}; read(["enabled", 702, 816, true, $age, -14.07, none, $angle], {"success": $score, "hello": False, "success": $remainder, "hello": $token, "input": -820}); return "success"} method concat($direction) = {@customers[8] = "message"; print(not False)}}
+class Producer {init($item) = {print($z); @teams = [null, 134, 9.39, 'world', 41.77, None]; return} prop m = @positions prop sum = [$entry, 'link', 730, 'href', "hello", $limit, $direction, 548] method join($total) = {return {"success": true, "token": $tail, "code": $pivot, "demo": $product}; return} method pop($angle, $b) = {if &modify == [396, 'file', $density, -710, 'info'] {(null + 79.19 * "end"); if ({"hello": $item, "info": $size, "warning": $head, "success": 'finish', "demo": $density}) {%rule["key"] = {"password": 462, "address": $min, "type": $item, "phone": $speed, "status": $mass}; return $next; for $area in range(7) {'hello' + {"data": false} % none}}}; return [None, null, true, -698, $output, -732, "data", 907]} method reload($start) = {print({"error": $current}); {"token": null, "value": null, "message": -51.11}; [43, "body", true, 'body']} method join() = {$count = %theme}}
+$amplitude = {"password": -76.70, "warning": $energy, "status": $age, "input": $a, "error": $current} != 539 > {"success": $pivot, "address": 'true', "world": $time, "error": $range} and 'info'
+
+# Example 393
+# ==================================================
+$counter = {"type": $padding, "token": $offset} != {"info": $total, "status": -932, "sample": $buffer, "username": $sum, "phone": $quantity}
+$density = {"example": 'output', "value": $child, "name": $price, "email": $density, "address": null}
+if @positions > check() / False - {"data": $weight, "type": -375, "result": true} > 'value' and -10.43:
+    # Log message
+for $a in @connections:
+    $previous = %context
+    # Clean up
+while 'target':
+    &disconnect($index, $radius) = {print($buffer - $line or 'yes' or convert()); print(739); split($token, 'file', $left)}
+    %order["data"] = none
+
+# Example 394
+# ==================================================
+test "id":
+    &open($pos, $velocity) = {%schema = {"name": $key, "info": "source", "password": $tail, "success": 77.59, "email": None}; if false > &copy == ('url') {if write() {for $val in range(7) {@elements[7] = ["key"]; %condition = {"code": $angle, "key": $margin}}; $previous = ['pending', -875, 'input', True, "warning"]}; if load(null, [$circumference, -452, $leaf, $area, "description", 'status', "false", 657], %context) <= {"world": $difference, "test": $accumulator} {if %table {while False + ([13.06, -807, $status, 'disabled', 90, -85.66]) {return {"warning": $start, "demo": -397}; %options = {"name": true, "address": $load, "world": $size}}; [-229, "note", 473, 859, True, $input]}; &redo; if len([-15.51, "source", false, 164, $threshold]) and [$b, -76.47] - 345 != $diameter <= %file == @elements {return check(12)} else {None * find('close') > "type"}}}; 62 == $total > [$load, 21.06, -187] and (null and 972); return}
+    print($counter)
+    # Validate input
+    {"key": $previous}
+    print(-@stack < 486)
+test "content":
+    %role = {"value": $interval, "country": $difference, "city": $rate}
+    print(initialize(%profile, {"message": 79.07, "status": "true"}, [$sum, "begin", "username"]) < %attributes)
+    # Validate input
+    %map["hello"] = [-260, 58, $next, $difference, $i, 'token', 11.03]
+
+# Example 395
+# ==================================================
+&process($mode, $flag, $line) = {$padding = ([-659, -12.51, -159, 17.00]); $margin = $denominator; print(@results); return}
+&calculate($height, $message) = {if $interval {for $error in @requests {print(-51.93 or ("email") != -821); return False; [True, $j, 949, None, 'type', $diameter]}; if run(True, 496, 'content') == $min {if -79.34 and $exponent or @lines and none or null {$ratio = 'right'} else {$age == none}; @properties; print(%format)}}; print(None or [63.30, -509, true, 97.87, 'group', True, 84.62]); print(-95.30); $counter + [True, none, 939, 834, 36.85] and {"warning": $padding, "token": $rate, "demo": -770} * none - @elements; return parse({"password": $node})}
+$next = &monitor
+
+# Example 396
+# ==================================================
+$temp = not %entry
+$difference = execute([-13.07, $next_val, $amplitude, 138, "key", 'disabled', -26.56, False])
+$name = null
+$numerator = -{"demo": $k, "message": $parent} * [none, -19.51, 'key', 'key', false, 'file', 139]
+@tags = [$age, "token", 23.22, 'result', "complete", -692]
+@cache = [-496, None]
+%output = {"demo": False}
+
+# Example 397
+# ==================================================
+# Handle error
+974
+$i = [-868, $message, $time, "value", False, true]
+
+# Example 398
+# ==================================================
+$coefficient = -"input" or ! {"name": $quotient} - None and $counter
+$threshold = True
+$pos = ['key', 88.03, 'section', -334, -321, -88.64, "text"] <= -35.96
+$y = @fragments
+@issues = [false]
+%data = {"value": True, "error": $x, "info": -51.09}
+
+# Example 399
+# ==================================================
+$percentage = {"world": $text, "username": -78.77}
+$power = [False, "message", "info", null, 'note'] / {"code": 'city'} and "section" != "result" * [$temp]
+$parent = [-39.85, $direction]
+$pivot = "city" * %plan and "left"
+if $energy:
+    return reset($input, %format, [$y, true, $i, 542, -41, 'disabled'])
+    return ([376, True, 'note', 229]) <= (%params) and True / %person
+    print(({"message": null}))
+    @chars - replace()
+for $accumulator in [True, -524]:
+    $item = [null, 'done', -391, False, $exponent]
+    @sessions = [$head, 49.72, -23.43]
+    $previous = @batch
+    $margin = %environment
+while (-371):
+    $value = process()
+    %header = {"result": -854, "key": none, "password": None}
+    # Process data
+    $median = [false, $acceleration, none, -444, none] // $magnitude > 'disabled' >= 36.00
+
+# Example 400
+# ==================================================
+def bubble_sort(@arr):
+    $n = len(@arr)
+    for $i in range($n):
+        for $j in range(0, $n - $i - 1):
+            if @arr[$j] > @arr[$j + 1]:
+                $temp = @arr[$j]
+                @arr[$j] = @arr[$j + 1]
+                @arr[$j + 1] = $temp
+    return @arr
+

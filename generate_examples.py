@@ -1,0 +1,906 @@
+#!/usr/bin/env python3
+"""
+Pyrl Examples Generator
+Generates 10000 example programs in Pyrl language
+"""
+
+import random
+import os
+
+# ===========================================
+# Data for generation
+# ===========================================
+
+VARIABLES = [
+    "name", "age", "count", "total", "sum", "value", "result", "data", "item", "index",
+    "x", "y", "z", "i", "j", "k", "n", "m", "a", "b", "c", "temp", "buffer", "input",
+    "output", "score", "price", "amount", "quantity", "width", "height", "length",
+    "size", "pos", "start", "end", "min", "max", "avg", "median", "mode", "range",
+    "counter", "accumulator", "flag", "status", "error", "message", "text", "line",
+    "word", "char", "token", "key", "val", "entry", "element", "node", "parent",
+    "child", "root", "leaf", "left", "right", "prev", "next", "head", "tail", "first",
+    "last", "current", "previous", "next_val", "tmp", "swap", "pivot", "base",
+    "exponent", "factor", "coefficient", "numerator", "denominator", "quotient",
+    "remainder", "product", "difference", "ratio", "percentage", "rate", "speed",
+    "distance", "time", "duration", "interval", "period", "frequency", "phase",
+    "amplitude", "magnitude", "direction", "angle", "radius", "diameter", "circumference",
+    "area", "volume", "mass", "weight", "density", "pressure", "temperature", "energy",
+    "power", "force", "momentum", "velocity", "acceleration", "capacity", "load",
+    "threshold", "limit", "bound", "offset", "margin", "padding", "border", "center"
+]
+
+ARRAYS = [
+    "items", "list", "array", "data", "elements", "values", "numbers", "strings",
+    "results", "outputs", "inputs", "entries", "records", "rows", "columns", "matrix",
+    "vector", "sequence", "series", "collection", "set", "queue", "stack", "buffer",
+    "cache", "pool", "batch", "chunk", "block", "segment", "section", "part", "piece",
+    "fragments", "tokens", "words", "lines", "chars", "bytes", "bits", "units",
+    "points", "coordinates", "positions", "indices", "keys", "ids", "names", "labels",
+    "tags", "categories", "types", "kinds", "sorts", "classes", "groups", "teams",
+    "members", "users", "customers", "products", "orders", "transactions", "events",
+    "logs", "messages", "notifications", "alerts", "warnings", "errors", "issues",
+    "tasks", "jobs", "processes", "threads", "connections", "sessions", "requests",
+    "responses", "headers", "params", "args", "options", "settings", "configs",
+    "features", "attributes", "properties", "fields", "columns", "schemas", "models"
+]
+
+HASHES = [
+    "config", "options", "settings", "params", "data", "info", "meta", "attributes",
+    "properties", "fields", "mapping", "dict", "map", "table", "record", "entry",
+    "user", "person", "customer", "product", "order", "item", "document", "file",
+    "response", "request", "header", "body", "payload", "result", "output", "state",
+    "context", "environment", "session", "cache", "storage", "database", "schema",
+    "profile", "account", "membership", "subscription", "plan", "feature", "access",
+    "permission", "role", "privilege", "policy", "rule", "condition", "constraint",
+    "validation", "format", "template", "layout", "style", "theme", "color", "font"
+]
+
+FUNCTIONS = [
+    "process", "handle", "execute", "run", "compute", "calculate", "evaluate",
+    "transform", "convert", "parse", "format", "validate", "verify", "check", "test",
+    "init", "setup", "configure", "initialize", "reset", "clear", "clean", "flush",
+    "load", "save", "read", "write", "open", "close", "connect", "disconnect",
+    "send", "receive", "fetch", "retrieve", "store", "delete", "remove", "insert",
+    "update", "modify", "change", "replace", "swap", "exchange", "move", "copy",
+    "clone", "merge", "split", "join", "combine", "separate", "divide", "multiply",
+    "add", "subtract", "increment", "decrement", "increase", "decrease", "grow",
+    "shrink", "expand", "compress", "encode", "decode", "encrypt", "decrypt",
+    "hash", "sign", "verify", "authenticate", "authorize", "login", "logout",
+    "register", "subscribe", "unsubscribe", "notify", "alert", "warn", "error",
+    "debug", "log", "trace", "monitor", "watch", "observe", "listen", "handle",
+    "dispatch", "route", "navigate", "redirect", "forward", "backward", "undo",
+    "redo", "revert", "restore", "backup", "archive", "export", "import", "print",
+    "display", "show", "hide", "toggle", "enable", "disable", "activate", "deactivate",
+    "start", "stop", "pause", "resume", "restart", "reboot", "refresh", "reload"
+]
+
+CLASS_NAMES = [
+    "User", "Person", "Account", "Profile", "Session", "Connection", "Request",
+    "Response", "Handler", "Manager", "Controller", "Service", "Repository", "Model",
+    "View", "Controller", "Component", "Module", "Plugin", "Extension", "Adapter",
+    "Factory", "Builder", "Parser", "Validator", "Formatter", "Converter", "Transformer",
+    "Processor", "Executor", "Runner", "Worker", "Task", "Job", "Process", "Thread",
+    "Server", "Client", "Proxy", "Gateway", "Router", "Dispatcher", "Listener",
+    "Observer", "Subscriber", "Publisher", "Producer", "Consumer", "Provider",
+    "Container", "Registry", "Cache", "Store", "Database", "Table", "Record",
+    "Entity", "Document", "File", "Image", "Video", "Audio", "Stream", "Buffer",
+    "Queue", "Stack", "List", "Set", "Map", "Tree", "Graph", "Node", "Edge",
+    "Shape", "Point", "Line", "Rectangle", "Circle", "Polygon", "Vector", "Matrix",
+    "Calculator", "Counter", "Timer", "Clock", "Calendar", "Scheduler", "Event",
+    "Logger", "Reporter", "Analyzer", "Evaluator", "Tester", "Checker", "Monitor"
+]
+
+METHODS = [
+    "get", "set", "add", "remove", "delete", "update", "find", "search", "filter",
+    "sort", "reverse", "shuffle", "slice", "splice", "concat", "merge", "join",
+    "split", "push", "pop", "shift", "unshift", "insert", "append", "prepend",
+    "clear", "reset", "flush", "refresh", "reload", "clone", "copy", "move",
+    "swap", "exchange", "replace", "substitute", "transform", "convert", "parse",
+    "format", "validate", "verify", "check", "test", "assert", "expect", "ensure",
+    "initialize", "configure", "setup", "startup", "shutdown", "dispose", "destroy",
+    "connect", "disconnect", "open", "close", "read", "write", "send", "receive",
+    "fetch", "load", "save", "store", "cache", "retrieve", "lookup", "query",
+    "execute", "run", "process", "handle", "dispatch", "emit", "broadcast", "publish",
+    "subscribe", "unsubscribe", "listen", "ignore", "watch", "unwatch", "lock", "unlock"
+]
+
+STRINGS = [
+    "hello", "world", "test", "example", "sample", "demo", "data", "info",
+    "success", "error", "warning", "message", "result", "output", "input",
+    "name", "value", "key", "type", "status", "code", "token", "id",
+    "username", "password", "email", "phone", "address", "city", "country",
+    "title", "description", "content", "body", "text", "note", "comment",
+    "tag", "label", "category", "group", "section", "chapter", "page",
+    "file", "path", "url", "link", "href", "source", "target", "dest",
+    "start", "end", "begin", "finish", "open", "close", "left", "right",
+    "true", "false", "yes", "no", "on", "off", "enabled", "disabled",
+    "active", "inactive", "pending", "complete", "done", "ready", "waiting"
+]
+
+COMMENTS = [
+    "# Initialize variables",
+    "# Process data",
+    "# Calculate result",
+    "# Validate input",
+    "# Format output",
+    "# Handle error",
+    "# Check condition",
+    "# Update state",
+    "# Log message",
+    "# Clean up"
+]
+
+# ===========================================
+# Generator functions
+# ===========================================
+
+def gen_scalar_var():
+    return "$" + random.choice(VARIABLES)
+
+def gen_array_var():
+    return "@" + random.choice(ARRAYS)
+
+def gen_hash_var():
+    return "%" + random.choice(HASHES)
+
+def gen_func_var():
+    return "&" + random.choice(FUNCTIONS)
+
+def gen_number():
+    if random.random() < 0.7:
+        return str(random.randint(-1000, 1000))
+    else:
+        return f"{random.uniform(-100, 100):.2f}"
+
+def gen_string():
+    s = random.choice(STRINGS)
+    if random.random() < 0.5:
+        return f'"{s}"'
+    else:
+        return f"'{s}'"
+
+def gen_bool():
+    return random.choice(["True", "False", "true", "false"])
+
+def gen_none():
+    return random.choice(["None", "none", "null"])
+
+def gen_literal():
+    choice = random.random()
+    if choice < 0.35:
+        return gen_number()
+    elif choice < 0.65:
+        return gen_string()
+    elif choice < 0.85:
+        return gen_bool()
+    else:
+        return gen_none()
+
+def gen_array_literal(size=None):
+    if size is None:
+        size = random.randint(1, 8)
+    elements = []
+    for _ in range(size):
+        if random.random() < 0.7:
+            elements.append(gen_literal())
+        elif random.random() < 0.5:
+            elements.append(gen_scalar_var())
+        else:
+            elements.append(gen_number())
+    return "[" + ", ".join(elements) + "]"
+
+def gen_hash_literal(size=None):
+    if size is None:
+        size = random.randint(1, 5)
+    pairs = []
+    for _ in range(size):
+        key = random.choice(STRINGS[:30])
+        if random.random() < 0.5:
+            val = gen_literal()
+        else:
+            val = gen_scalar_var()
+        pairs.append(f'"{key}": {val}')
+    return "{" + ", ".join(pairs) + "}"
+
+def gen_value():
+    choice = random.random()
+    if choice < 0.35:
+        return gen_literal()
+    elif choice < 0.50:
+        return gen_array_literal()
+    elif choice < 0.60:
+        return gen_hash_literal()
+    elif choice < 0.75:
+        return gen_scalar_var()
+    elif choice < 0.85:
+        return gen_array_var()
+    elif choice < 0.95:
+        return gen_hash_var()
+    else:
+        return gen_func_var()
+
+def gen_expression(depth=0):
+    if depth > 2:
+        return gen_value()
+    
+    choice = random.random()
+    
+    if choice < 0.4:
+        return gen_value()
+    elif choice < 0.55:
+        # Binary operation
+        left = gen_expression(depth + 1)
+        right = gen_expression(depth + 1)
+        op = random.choice(["+", "-", "*", "/", "//", "%"])
+        return f"{left} {op} {right}"
+    elif choice < 0.70:
+        # Comparison
+        left = gen_expression(depth + 1)
+        right = gen_expression(depth + 1)
+        op = random.choice(["==", "!=", "<", ">", "<=", ">="])
+        return f"{left} {op} {right}"
+    elif choice < 0.80:
+        # Logical
+        left = gen_expression(depth + 1)
+        right = gen_expression(depth + 1)
+        op = random.choice(["and", "or"])
+        return f"{left} {op} {right}"
+    elif choice < 0.85:
+        # Unary
+        op = random.choice(["-", "not", "!"])
+        expr = gen_expression(depth + 1)
+        if op == "-":
+            return f"-{expr}"
+        else:
+            return f"{op} {expr}"
+    elif choice < 0.92:
+        # Parentheses
+        return f"({gen_expression(depth + 1)})"
+    else:
+        # Function call
+        return gen_function_call()
+
+def gen_function_call():
+    func_name = random.choice(FUNCTIONS[:30])
+    builtin = random.choice(["print", "len", "str", "int", "float", "type", "sum", "min", "max", "abs", "range", "list", "dict", "sorted", "reversed", "map", "filter", "reduce", "any", "all", "zip", "enumerate", "keys", "values", "items", "upper", "lower", "strip", "split", "join", "replace", "find", "count", "format"])
+    
+    name = random.choice([func_name, builtin])
+    num_args = random.randint(0, 3)
+    args = []
+    for _ in range(num_args):
+        args.append(gen_value())
+    return f"{name}({', '.join(args)})"
+
+def gen_method_call():
+    obj = gen_scalar_var()
+    method = random.choice(METHODS[:30])
+    num_args = random.randint(0, 2)
+    args = []
+    for _ in range(num_args):
+        args.append(gen_value())
+    return f"{obj}.{method}({', '.join(args)})"
+
+def gen_simple_assignment():
+    var = gen_scalar_var()
+    val = gen_expression()
+    return f"{var} = {val}"
+
+def gen_array_assignment():
+    var = gen_array_var()
+    val = gen_array_literal()
+    return f"{var} = {val}"
+
+def gen_hash_assignment():
+    var = gen_hash_var()
+    val = gen_hash_literal()
+    return f"{var} = {val}"
+
+def gen_index_assignment():
+    var = gen_array_var()
+    idx = random.randint(0, 10)
+    val = gen_value()
+    return f"{var}[{idx}] = {val}"
+
+def gen_hash_key_assignment():
+    var = gen_hash_var()
+    key = random.choice(STRINGS[:20])
+    val = gen_value()
+    return f'{var}["{key}"] = {val}'
+
+def gen_assignment():
+    choice = random.random()
+    if choice < 0.4:
+        return gen_simple_assignment()
+    elif choice < 0.6:
+        return gen_array_assignment()
+    elif choice < 0.75:
+        return gen_hash_assignment()
+    elif choice < 0.88:
+        return gen_index_assignment()
+    else:
+        return gen_hash_key_assignment()
+
+def gen_print():
+    val = gen_expression()
+    return f"print({val})"
+
+def gen_assertion():
+    left = gen_expression()
+    if random.random() < 0.5:
+        return f"assert {left}"
+    else:
+        op = random.choice(["==", "!=", "<", ">", "<=", ">="])
+        right = gen_expression()
+        return f"assert {left} {op} {right}"
+
+def gen_return():
+    if random.random() < 0.3:
+        return "return"
+    else:
+        val = gen_expression()
+        return f"return {val}"
+
+def gen_if_statement(indent=""):
+    cond = gen_expression()
+    body_stmts = []
+    num_stmts = random.randint(1, 4)
+    for _ in range(num_stmts):
+        body_stmts.append(indent + "    " + gen_simple_stmt())
+    
+    result = f"{indent}if {cond}:\n"
+    result += "\n".join(body_stmts)
+    
+    # Maybe add elif
+    if random.random() < 0.3:
+        cond2 = gen_expression()
+        elif_stmts = []
+        for _ in range(random.randint(1, 3)):
+            elif_stmts.append(indent + "    " + gen_simple_stmt())
+        result += f"\n{indent}elif {cond2}:\n"
+        result += "\n".join(elif_stmts)
+    
+    # Maybe add else
+    if random.random() < 0.3:
+        else_stmts = []
+        for _ in range(random.randint(1, 3)):
+            else_stmts.append(indent + "    " + gen_simple_stmt())
+        result += f"\n{indent}else:\n"
+        result += "\n".join(else_stmts)
+    
+    return result
+
+def gen_for_loop(indent=""):
+    var = gen_scalar_var()
+    iterables = [
+        gen_array_var(),
+        gen_array_literal(),
+        f"range({random.randint(1, 20)})",
+        f"range({random.randint(1, 10)}, {random.randint(11, 30)})",
+    ]
+    iterable = random.choice(iterables)
+    
+    body_stmts = []
+    num_stmts = random.randint(1, 4)
+    for _ in range(num_stmts):
+        body_stmts.append(indent + "    " + gen_simple_stmt())
+    
+    return f"{indent}for {var} in {iterable}:\n" + "\n".join(body_stmts)
+
+def gen_while_loop(indent=""):
+    cond = gen_expression()
+    
+    body_stmts = []
+    num_stmts = random.randint(1, 4)
+    for _ in range(num_stmts):
+        body_stmts.append(indent + "    " + gen_simple_stmt())
+    
+    return f"{indent}while {cond}:\n" + "\n".join(body_stmts)
+
+def gen_function_def(indent=""):
+    name = random.choice(FUNCTIONS)
+    num_params = random.randint(0, 4)
+    params = []
+    for _ in range(num_params):
+        params.append(gen_scalar_var())
+    
+    body_stmts = []
+    num_stmts = random.randint(2, 6)
+    for _ in range(num_stmts):
+        stmt = gen_simple_stmt()
+        body_stmts.append(indent + "    " + stmt)
+    
+    # Add return statement
+    if random.random() < 0.7:
+        body_stmts.append(indent + "    " + gen_return())
+    
+    params_str = ", ".join(params)
+    return f"{indent}def {name}({params_str}):\n" + "\n".join(body_stmts)
+
+def gen_anonymous_func():
+    name = random.choice(FUNCTIONS[:40])
+    num_params = random.randint(0, 3)
+    params = []
+    for _ in range(num_params):
+        params.append(gen_scalar_var())
+    
+    # Block body
+    body_stmts = []
+    num_stmts = random.randint(1, 4)
+    for _ in range(num_stmts):
+        stmt = gen_block_stmt()
+        body_stmts.append(stmt)
+    
+    # Add return
+    if random.random() < 0.6:
+        body_stmts.append(gen_return())
+    
+    params_str = ", ".join(params)
+    body_str = "; ".join(body_stmts)
+    return f"&{name}({params_str}) = {{{body_str}}}"
+
+def gen_block_stmt():
+    choice = random.random()
+    if choice < 0.3:
+        return gen_assignment()
+    elif choice < 0.45:
+        return gen_print()
+    elif choice < 0.55:
+        return gen_return()
+    elif choice < 0.65:
+        return gen_block_if()
+    elif choice < 0.72:
+        return gen_block_for()
+    elif choice < 0.78:
+        return gen_block_while()
+    else:
+        return gen_expression()
+
+def gen_block_if():
+    cond = gen_expression()
+    then_stmts = []
+    for _ in range(random.randint(1, 3)):
+        then_stmts.append(gen_block_stmt())
+    then_str = "; ".join(then_stmts)
+    
+    if random.random() < 0.3:
+        else_stmts = []
+        for _ in range(random.randint(1, 2)):
+            else_stmts.append(gen_block_stmt())
+        else_str = "; ".join(else_stmts)
+        return f"if {cond} {{{then_str}}} else {{{else_str}}}"
+    else:
+        return f"if {cond} {{{then_str}}}"
+
+def gen_block_for():
+    var = gen_scalar_var()
+    iterable = random.choice([gen_array_var(), f"range({random.randint(1, 10)})"])
+    body_stmts = []
+    for _ in range(random.randint(1, 3)):
+        body_stmts.append(gen_block_stmt())
+    body_str = "; ".join(body_stmts)
+    return f"for {var} in {iterable} {{{body_str}}}"
+
+def gen_block_while():
+    cond = gen_expression()
+    body_stmts = []
+    for _ in range(random.randint(1, 3)):
+        body_stmts.append(gen_block_stmt())
+    body_str = "; ".join(body_stmts)
+    return f"while {cond} {{{body_str}}}"
+
+def gen_class():
+    name = random.choice(CLASS_NAMES)
+    
+    members = []
+    
+    # Add init method
+    if random.random() < 0.8:
+        init_params = []
+        for _ in range(random.randint(0, 3)):
+            init_params.append(gen_scalar_var())
+        init_body = []
+        for _ in range(random.randint(1, 3)):
+            init_body.append(gen_block_stmt())
+        init_body.append(gen_return())
+        init_str = "; ".join(init_body)
+        members.append(f"init({', '.join(init_params)}) = {{{init_str}}}")
+    
+    # Add properties
+    num_props = random.randint(1, 4)
+    for _ in range(num_props):
+        prop_name = random.choice(VARIABLES[:30])
+        if random.random() < 0.5:
+            members.append(f"prop {prop_name}")
+        else:
+            val = gen_value()
+            members.append(f"prop {prop_name} = {val}")
+    
+    # Add methods
+    num_methods = random.randint(1, 4)
+    for _ in range(num_methods):
+        method_name = random.choice(METHODS[:30])
+        method_params = []
+        for _ in range(random.randint(0, 2)):
+            method_params.append(gen_scalar_var())
+        method_body = []
+        for _ in range(random.randint(1, 3)):
+            method_body.append(gen_block_stmt())
+        if random.random() < 0.5:
+            method_body.append(gen_return())
+        method_str = "; ".join(method_body)
+        members.append(f"method {method_name}({', '.join(method_params)}) = {{{method_str}}}")
+    
+    members_str = " ".join(members)
+    
+    # Maybe extends
+    if random.random() < 0.2:
+        parent = random.choice(CLASS_NAMES)
+        return f"class {name} extends {parent} {{{members_str}}}"
+    else:
+        return f"class {name} {{{members_str}}}"
+
+def gen_test_block():
+    name = random.choice(STRINGS)
+    body_stmts = []
+    for _ in range(random.randint(2, 5)):
+        body_stmts.append("    " + gen_simple_stmt())
+    
+    return f'test "{name}":\n' + "\n".join(body_stmts)
+
+def gen_simple_stmt():
+    choice = random.random()
+    if choice < 0.35:
+        return gen_assignment()
+    elif choice < 0.50:
+        return gen_print()
+    elif choice < 0.58:
+        return gen_expression()
+    elif choice < 0.65:
+        return gen_assertion()
+    elif choice < 0.70:
+        return gen_return()
+    elif choice < 0.75:
+        return gen_anonymous_func()
+    else:
+        return random.choice(COMMENTS)
+
+# ===========================================
+# Program generators
+# ===========================================
+
+def gen_basic_program():
+    """Generate a basic program with simple statements"""
+    stmts = []
+    num_stmts = random.randint(3, 8)
+    for _ in range(num_stmts):
+        stmts.append(gen_simple_stmt())
+    return "\n".join(stmts)
+
+def gen_variables_program():
+    """Generate program focused on variable assignments"""
+    stmts = []
+    
+    # Scalar assignments
+    for _ in range(random.randint(2, 5)):
+        stmts.append(gen_simple_assignment())
+    
+    # Array assignments
+    for _ in range(random.randint(1, 3)):
+        stmts.append(gen_array_assignment())
+    
+    # Hash assignments
+    for _ in range(random.randint(1, 2)):
+        stmts.append(gen_hash_assignment())
+    
+    return "\n".join(stmts)
+
+def gen_expressions_program():
+    """Generate program focused on expressions"""
+    stmts = []
+    
+    for _ in range(random.randint(5, 10)):
+        var = gen_scalar_var()
+        expr = gen_expression()
+        stmts.append(f"{var} = {expr}")
+    
+    return "\n".join(stmts)
+
+def gen_control_flow_program():
+    """Generate program with control flow"""
+    stmts = []
+    
+    # Some initial assignments
+    for _ in range(random.randint(2, 4)):
+        stmts.append(gen_simple_assignment())
+    
+    # Add if statement
+    stmts.append(gen_if_statement())
+    
+    # Add for loop
+    stmts.append(gen_for_loop())
+    
+    # Maybe add while loop
+    if random.random() < 0.5:
+        stmts.append(gen_while_loop())
+    
+    return "\n".join(stmts)
+
+def gen_functions_program():
+    """Generate program with function definitions"""
+    stmts = []
+    
+    # Add some function definitions
+    for _ in range(random.randint(2, 4)):
+        stmts.append(gen_function_def())
+    
+    # Add some function calls
+    for _ in range(random.randint(1, 3)):
+        stmts.append(gen_function_call())
+    
+    return "\n".join(stmts)
+
+def gen_anonymous_functions_program():
+    """Generate program with anonymous functions"""
+    stmts = []
+    
+    # Add anonymous functions
+    for _ in range(random.randint(2, 5)):
+        stmts.append(gen_anonymous_func())
+    
+    # Add function variable assignments
+    for _ in range(random.randint(1, 3)):
+        var = gen_scalar_var()
+        func = gen_func_var()
+        stmts.append(f"{var} = {func}")
+    
+    return "\n".join(stmts)
+
+def gen_oop_program():
+    """Generate program with class definitions"""
+    stmts = []
+    
+    # Add class definitions
+    for _ in range(random.randint(1, 3)):
+        stmts.append(gen_class())
+    
+    # Add some usage
+    for _ in range(random.randint(1, 3)):
+        stmts.append(gen_simple_assignment())
+    
+    return "\n".join(stmts)
+
+def gen_mixed_program():
+    """Generate a mixed program with various constructs"""
+    stmts = []
+    
+    # Variables
+    for _ in range(random.randint(2, 4)):
+        stmts.append(gen_simple_assignment())
+    
+    # Maybe a function
+    if random.random() < 0.5:
+        stmts.append(gen_function_def())
+    
+    # Maybe an anonymous function
+    if random.random() < 0.4:
+        stmts.append(gen_anonymous_func())
+    
+    # Control flow
+    if random.random() < 0.6:
+        stmts.append(gen_if_statement())
+    
+    if random.random() < 0.5:
+        stmts.append(gen_for_loop())
+    
+    # Maybe a class
+    if random.random() < 0.3:
+        stmts.append(gen_class())
+    
+    # Some prints
+    for _ in range(random.randint(1, 3)):
+        stmts.append(gen_print())
+    
+    return "\n".join(stmts)
+
+def gen_algorithm_program():
+    """Generate algorithm-like programs"""
+    algorithms = [
+        gen_factorial_like,
+        gen_fibonacci_like,
+        gen_sum_algorithm,
+        gen_search_algorithm,
+        gen_sort_algorithm,
+        gen_string_algorithm,
+        gen_math_algorithm,
+    ]
+    return random.choice(algorithms)()
+
+def gen_factorial_like():
+    name = random.choice(["factorial", "fact", "factorial_calc"])
+    return f"""def {name}($n):
+    if $n <= 1:
+        return 1
+    $result = 1
+    for $i in range(1, $n + 1):
+        $result = $result * $i
+    return $result"""
+
+def gen_fibonacci_like():
+    name = random.choice(["fibonacci", "fib", "fib_seq"])
+    return f"""def {name}($n):
+    if $n <= 0:
+        return 0
+    if $n == 1:
+        return 1
+    $a = 0
+    $b = 1
+    for $i in range(2, $n + 1):
+        $temp = $a + $b
+        $a = $b
+        $b = $temp
+    return $b"""
+
+def gen_sum_algorithm():
+    name = random.choice(["sum_array", "total_sum", "calc_sum"])
+    return f"""def {name}(@arr):
+    $total = 0
+    for $item in @arr:
+        $total = $total + $item
+    return $total"""
+
+def gen_search_algorithm():
+    name = random.choice(["linear_search", "find_item", "search"])
+    return f"""def {name}(@arr, $target):
+    for $item in @arr:
+        if $item == $target:
+            return True
+    return False"""
+
+def gen_sort_algorithm():
+    name = random.choice(["bubble_sort", "simple_sort", "sort_list"])
+    return f"""def {name}(@arr):
+    $n = len(@arr)
+    for $i in range($n):
+        for $j in range(0, $n - $i - 1):
+            if @arr[$j] > @arr[$j + 1]:
+                $temp = @arr[$j]
+                @arr[$j] = @arr[$j + 1]
+                @arr[$j + 1] = $temp
+    return @arr"""
+
+def gen_string_algorithm():
+    name = random.choice(["reverse_string", "string_reverse", "rev_str"])
+    return f"""def {name}($str):
+    $reversed = ""
+    $len = len($str)
+    for $i in range($len - 1, -1, -1):
+        $reversed = $reversed + $str[$i]
+    return $reversed"""
+
+def gen_math_algorithm():
+    name = random.choice(["is_prime", "check_prime", "prime_test"])
+    return f"""def {name}($n):
+    if $n < 2:
+        return False
+    if $n == 2:
+        return True
+    if $n % 2 == 0:
+        return False
+    $i = 3
+    while $i * $i <= $n:
+        if $n % $i == 0:
+            return False
+        $i = $i + 2
+    return True"""
+
+def gen_test_program():
+    """Generate a test program"""
+    stmts = []
+    num_tests = random.randint(1, 3)
+    
+    for _ in range(num_tests):
+        stmts.append(gen_test_block())
+    
+    return "\n".join(stmts)
+
+# ===========================================
+# Main generator
+# ===========================================
+
+def generate_example(index):
+    """Generate a single example"""
+    generators = [
+        (gen_basic_program, 15),
+        (gen_variables_program, 12),
+        (gen_expressions_program, 12),
+        (gen_control_flow_program, 15),
+        (gen_functions_program, 12),
+        (gen_anonymous_functions_program, 10),
+        (gen_oop_program, 10),
+        (gen_mixed_program, 12),
+        (gen_algorithm_program, 8),
+        (gen_test_program, 4),
+    ]
+    
+    # Weighted random selection
+    total_weight = sum(w for _, w in generators)
+    r = random.random() * total_weight
+    cumulative = 0
+    for gen, weight in generators:
+        cumulative += weight
+        if r <= cumulative:
+            return gen()
+    
+    return gen_basic_program()
+
+def generate_all_examples(count=10000):
+    """Generate all examples"""
+    examples = []
+    for i in range(count):
+        example = generate_example(i)
+        examples.append((i + 1, example))
+        if (i + 1) % 1000 == 0:
+            print(f"Generated {i + 1}/{count} examples...")
+    return examples
+
+def save_examples(examples, output_dir):
+    """Save examples to files"""
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Split into multiple files (100 examples per file)
+    files_count = (len(examples) + 99) // 100
+    
+    for file_idx in range(files_count):
+        start_idx = file_idx * 100
+        end_idx = min(start_idx + 100, len(examples))
+        
+        filename = f"examples_{file_idx * 100 + 1:05d}_{end_idx:05d}.pyrl"
+        filepath = os.path.join(output_dir, filename)
+        
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write("# Pyrl Language Examples\n")
+            f.write(f"# Part {file_idx + 1} of {files_count}\n")
+            f.write(f"# Examples {start_idx + 1} - {end_idx}\n\n")
+            
+            for idx, example in examples[start_idx:end_idx]:
+                f.write(f"# Example {idx}\n")
+                f.write("# " + "=" * 50 + "\n")
+                f.write(example)
+                f.write("\n\n")
+    
+    # Create index file
+    index_path = os.path.join(output_dir, "INDEX.md")
+    with open(index_path, 'w', encoding='utf-8') as f:
+        f.write("# Pyrl Examples Index\n\n")
+        f.write(f"Total examples: {len(examples)}\n\n")
+        f.write("## Files\n\n")
+        for file_idx in range(files_count):
+            start_idx = file_idx * 100 + 1
+            end_idx = min(start_idx + 99, len(examples))
+            filename = f"examples_{start_idx:05d}_{end_idx:05d}.pyrl"
+            f.write(f"- [{filename}](./{filename}) - Examples {start_idx} to {end_idx}\n")
+    
+    return files_count
+
+def main():
+    print("=" * 60)
+    print("Pyrl Examples Generator")
+    print("=" * 60)
+    print()
+    
+    random.seed(42)  # For reproducibility
+    
+    count = 10000
+    output_dir = "/home/z/my-project/pyrl/examples"
+    
+    print(f"Generating {count} Pyrl examples...")
+    examples = generate_all_examples(count)
+    
+    print(f"\nSaving examples to {output_dir}...")
+    files_count = save_examples(examples, output_dir)
+    
+    print(f"\nDone! Generated {len(examples)} examples in {files_count} files.")
+    print(f"Index file: {output_dir}/INDEX.md")
+
+if __name__ == "__main__":
+    main()

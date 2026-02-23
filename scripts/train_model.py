@@ -7,7 +7,7 @@ Usage:
     python scripts/train_model.py
     python scripts/train_model.py --examples examples/10000_examples.pyrl
     python scripts/train_model.py --epochs 20 --batch-size 64
-    python scripts/train_model.py --config training_config.json
+    python scripts/train_model.py --config trainingconfig.json
 """
 import os
 import sys
@@ -26,12 +26,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.config import get_config
 
 # Get config
-_config = get_config()
+config = get_config()
 
 # Configuration from config
-DATA_DIR = _config.examples_dir
-MODELS_DIR = _config.model_path
-CHECKPOINTS_DIR = _config.cache_dir / "checkpoints"
+config.examples_dir = config.examples_dir
+config.model_path = config.model_path
+config_checkpoints = config.cache_dir / "checkpoints"
 
 
 # ============================================
@@ -43,7 +43,7 @@ class PyrlTokenizer:
     Custom tokenizer for Pyrl language.
     Handles sigils, keywords, operators, and general code tokens.
     """
-    
+
     # Special tokens
     SPECIAL_TOKENS = {
         "<pad>": 0,
@@ -55,7 +55,7 @@ class PyrlTokenizer:
         "<indent>": 6,
         "<dedent>": 7,
     }
-    
+
     # Sigils
     SIGILS = {
         "$": 10,  # Scalar
@@ -63,7 +63,7 @@ class PyrlTokenizer:
         "%": 12,  # Hash
         "&": 13,  # Function reference
     }
-    
+
     # Keywords
     KEYWORDS = {
         "if": 20, "elif": 21, "else": 22,
@@ -80,7 +80,7 @@ class PyrlTokenizer:
         "global": 51, "nonlocal": 52,
         "assert": 53, "del": 54,
     }
-    
+
     # Operators
     OPERATORS = {
         "+": 60, "-": 61, "*": 62, "/": 63,
@@ -90,7 +90,7 @@ class PyrlTokenizer:
         "=": 73, "+=": 74, "-=": 75, "*=": 76, "/=": 77,
         "->": 78, "=>": 79,
     }
-    
+
     # Delimiters
     DELIMITERS = {
         "(": 80, ")": 81,
@@ -101,7 +101,7 @@ class PyrlTokenizer:
         "\"": 90, "'": 91,
         "#": 92, "@": 93,
     }
-    
+
     # Built-in functions
     BUILTINS = {
         "print": 100, "len": 101, "range": 102,
@@ -120,7 +120,7 @@ class PyrlTokenizer:
         "json_parse": 145, "json_stringify": 146,
         "re_match": 147, "re_search": 148, "re_findall": 149, "re_sub": 150,
     }
-    
+
     # Common identifiers
     COMMON_WORDS = [
         "name", "value", "result", "data", "item", "key", "index", "count",
@@ -138,53 +138,53 @@ class PyrlTokenizer:
         "file", "path", "dir", "name",
         "line", "column", "token", "node", "ast",
     ]
-    
+
     def __init__(self):
         self.vocab = {}
         self.reverse_vocab = {}
         self._build_vocab()
-    
+
     def _build_vocab(self):
         """Build vocabulary from all token types."""
         self.vocab = {}
-        
+
         # Add special tokens
         self.vocab.update(self.SPECIAL_TOKENS)
-        
+
         # Add sigils
         self.vocab.update(self.SIGILS)
-        
+
         # Add keywords
         self.vocab.update(self.KEYWORDS)
-        
+
         # Add operators
         self.vocab.update(self.OPERATORS)
-        
+
         # Add delimiters
         self.vocab.update(self.DELIMITERS)
-        
+
         # Add built-ins
         self.vocab.update(self.BUILTINS)
-        
+
         # Add common words
         idx = 200
         for word in self.COMMON_WORDS:
             if word not in self.vocab:
                 self.vocab[word] = idx
                 idx += 1
-        
+
         # Add numbers 0-1000
         for i in range(1001):
             self.vocab[str(i)] = 1000 + i
-        
+
         # Build reverse vocab
         self.reverse_vocab = {v: k for k, v in self.vocab.items()}
-    
+
     def tokenize(self, code: str) -> List[int]:
         """Tokenize Pyrl code into token IDs."""
         tokens = []
         lines = code.split('\n')
-        
+
         for line_idx, line in enumerate(lines):
             # Handle indentation
             indent = 0
@@ -193,7 +193,7 @@ class PyrlTokenizer:
                 indent = len(line) - len(stripped)
                 for _ in range(indent // 4):
                     tokens.append(self.vocab["<indent>"])
-            
+
             # Tokenize line content
             i = 0
             while i < len(stripped):
@@ -201,11 +201,11 @@ class PyrlTokenizer:
                 if stripped[i].isspace():
                     i += 1
                     continue
-                
+
                 # Check for comments
                 if stripped[i] == '#':
                     break  # Rest of line is comment
-                
+
                 # Check for strings
                 if stripped[i] in '"\'':
                     quote = stripped[i]
@@ -222,7 +222,7 @@ class PyrlTokenizer:
                     tokens.append(self._get_or_add_token(string_token))
                     i = j
                     continue
-                
+
                 # Check for multi-char operators
                 if i + 1 < len(stripped):
                     two_char = stripped[i:i+2]
@@ -230,39 +230,39 @@ class PyrlTokenizer:
                         tokens.append(self.vocab[two_char])
                         i += 2
                         continue
-                
+
                 # Check for single-char operators
                 if stripped[i] in self.OPERATORS:
                     tokens.append(self.vocab[stripped[i]])
                     i += 1
                     continue
-                
+
                 # Check for delimiters
                 if stripped[i] in self.DELIMITERS:
                     tokens.append(self.vocab[stripped[i]])
                     i += 1
                     continue
-                
+
                 # Check for sigils
                 if stripped[i] in self.SIGILS:
                     tokens.append(self.vocab[stripped[i]])
                     i += 1
                     continue
-                
+
                 # Check for identifiers and keywords
                 if stripped[i].isalpha() or stripped[i] == '_':
                     j = i
                     while j < len(stripped) and (stripped[j].isalnum() or stripped[j] == '_'):
                         j += 1
                     word = stripped[i:j]
-                    
+
                     if word in self.vocab:
                         tokens.append(self.vocab[word])
                     else:
                         tokens.append(self._get_or_add_token(word))
                     i = j
                     continue
-                
+
                 # Check for numbers
                 if stripped[i].isdigit():
                     j = i
@@ -275,27 +275,27 @@ class PyrlTokenizer:
                         tokens.append(self._get_or_add_token(num))
                     i = j
                     continue
-                
+
                 # Unknown character
                 tokens.append(self.vocab["<unk>"])
                 i += 1
-            
+
             # Add newline token
             tokens.append(self.vocab["<newline>"])
-        
+
         return tokens
-    
+
     def _get_or_add_token(self, token: str) -> int:
         """Get token ID or add new token to vocabulary."""
         if token in self.vocab:
             return self.vocab[token]
-        
+
         # Add new token
         new_id = len(self.vocab)
         self.vocab[token] = new_id
         self.reverse_vocab[new_id] = token
         return new_id
-    
+
     def decode(self, token_ids: List[int]) -> str:
         """Decode token IDs back to code."""
         tokens = []
@@ -313,15 +313,15 @@ class PyrlTokenizer:
             else:
                 tokens.append("<unk>")
         return "".join(tokens)
-    
+
     def save(self, path: Path):
         """Save tokenizer to files."""
         path.mkdir(parents=True, exist_ok=True)
-        
+
         # Save vocab
         with open(path / "vocab.json", "w") as f:
             json.dump(self.vocab, f, indent=2)
-        
+
         # Save tokenizer config
         config = {
             "tokenizer_class": "PyrlTokenizer",
@@ -333,9 +333,9 @@ class PyrlTokenizer:
             "model_max_length": 2048,
             "vocab_size": len(self.vocab),
         }
-        with open(path / "tokenizer_config.json", "w") as f:
+        with open(path / "tokenizerconfig.json", "w") as f:
             json.dump(config, f, indent=2)
-        
+
         # Save special tokens map
         special_tokens = {
             "bos_token": "<bos>",
@@ -346,7 +346,7 @@ class PyrlTokenizer:
         }
         with open(path / "special_tokens_map.json", "w") as f:
             json.dump(special_tokens, f, indent=2)
-    
+
     def load(self, path: Path):
         """Load tokenizer from files."""
         with open(path / "vocab.json", "r") as f:
@@ -360,23 +360,23 @@ class PyrlTokenizer:
 
 class PyrlDataset:
     """Dataset for Pyrl language model training."""
-    
+
     def __init__(self, tokenizer: PyrlTokenizer, max_length: int = 512):
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.examples = []
         self.token_counts = Counter()
-    
+
     def load_examples(self, path: Path):
         """Load examples from a .pyrl file."""
         print(f"Loading examples from {path}...")
-        
+
         with open(path, "r", encoding="utf-8") as f:
             content = f.read()
-        
+
         # Split into individual examples (by comment headers)
         sections = content.split("# Example ")
-        
+
         for section in sections[1:]:  # Skip first empty section
             lines = section.strip().split("\n")
             if len(lines) > 1:
@@ -388,14 +388,14 @@ class PyrlDataset:
                         "code": example_code,
                         "length": len(example_code)
                     })
-        
+
         print(f"  Loaded {len(self.examples)} examples")
         return self.examples
-    
+
     def load_directory(self, path: Path):
         """Load all .pyrl files from directory."""
         print(f"Loading examples from {path}...")
-        
+
         for pyrl_file in path.glob("*.pyrl"):
             with open(pyrl_file, "r", encoding="utf-8") as f:
                 content = f.read()
@@ -404,45 +404,45 @@ class PyrlDataset:
                 "code": content,
                 "length": len(content)
             })
-        
+
         print(f"  Loaded {len(self.examples)} examples")
         return self.examples
-    
+
     def tokenize_all(self):
         """Tokenize all examples."""
         print("Tokenizing examples...")
-        
+
         tokenized = []
         for example in self.examples:
             tokens = self.tokenizer.tokenize(example["code"])
-            
+
             # Truncate or pad
             if len(tokens) > self.max_length:
                 tokens = tokens[:self.max_length]
-            
+
             # Count tokens
             self.token_counts.update(tokens)
-            
+
             tokenized.append({
                 "id": example["id"],
                 "tokens": tokens,
                 "length": len(tokens)
             })
-        
+
         print(f"  Tokenized {len(tokenized)} examples")
         print(f"  Total tokens: {sum(e['length'] for e in tokenized)}")
         print(f"  Vocabulary size: {len(self.tokenizer.vocab)}")
-        
+
         return tokenized
-    
+
     def split_dataset(self, train_ratio: float = 0.8, val_ratio: float = 0.1):
         """Split dataset into train/val/test."""
         tokenized = self.tokenize_all()
-        
+
         total = len(tokenized)
         train_size = int(total * train_ratio)
         val_size = int(total * val_ratio)
-        
+
         return {
             "train": tokenized[:train_size],
             "val": tokenized[train_size:train_size + val_size],
@@ -456,14 +456,14 @@ class PyrlDataset:
 
 class PyrlTrainer:
     """Trainer for Pyrl language model."""
-    
+
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.tokenizer = PyrlTokenizer()
         self.dataset = PyrlDataset(self.tokenizer, config.get("max_length", 512))
         self.history = []
         self.best_loss = float('inf')
-    
+
     def load_data(self, examples_path: Optional[Path] = None, examples_dir: Optional[Path] = None):
         """Load training data."""
         if examples_path and examples_path.exists():
@@ -477,50 +477,50 @@ class PyrlTrainer:
                 self.dataset.load_examples(default_path)
             else:
                 raise FileNotFoundError("No training data found")
-    
+
     def train(self, dataset: Dict[str, List]) -> Dict[str, Any]:
         """Train the model."""
         print("\n" + "=" * 50)
         print("Starting Training")
         print("=" * 50)
-        
+
         epochs = self.config.get("epochs", 10)
         learning_rate = self.config.get("learning_rate", 1e-4)
         batch_size = self.config.get("batch_size", 32)
-        
+
         train_data = dataset["train"]
         val_data = dataset["val"]
-        
+
         print(f"Train examples: {len(train_data)}")
         print(f"Val examples: {len(val_data)}")
         print(f"Epochs: {epochs}")
         print(f"Batch size: {batch_size}")
         print(f"Learning rate: {learning_rate}")
         print()
-        
+
         # Training simulation (actual training would use PyTorch/TensorFlow)
         for epoch in range(epochs):
             # Simulate training
             train_loss = self._simulate_epoch(train_data, epoch, "train")
             val_loss = self._simulate_epoch(val_data, epoch, "val")
-            
+
             # Record history
             self.history.append({
                 "epoch": epoch + 1,
                 "train_loss": train_loss,
                 "val_loss": val_loss,
             })
-            
+
             # Print progress
             print(f"Epoch {epoch + 1}/{epochs} - "
                   f"Train Loss: {train_loss:.4f} - "
                   f"Val Loss: {val_loss:.4f}")
-            
+
             # Save best model
             if val_loss < self.best_loss:
                 self.best_loss = val_loss
                 self._save_checkpoint(epoch + 1, val_loss)
-        
+
         print("\nTraining complete!")
         return {
             "final_train_loss": self.history[-1]["train_loss"],
@@ -528,25 +528,25 @@ class PyrlTrainer:
             "best_val_loss": self.best_loss,
             "epochs_trained": epochs,
         }
-    
+
     def _simulate_epoch(self, data: List, epoch: int, phase: str) -> float:
         """Simulate training epoch (placeholder for actual ML training)."""
         import random
         random.seed(42 + epoch)
-        
+
         # Simulate loss based on epoch and data
         base_loss = 2.0 - (epoch * 0.15)  # Decreasing loss
         noise = random.gauss(0, 0.05)
-        
+
         if phase == "val":
             base_loss += 0.05  # Slightly higher validation loss
-        
+
         return max(0.1, base_loss + noise)
-    
+
     def _save_checkpoint(self, epoch: int, val_loss: float):
         """Save model checkpoint."""
-        CHECKPOINTS_DIR.mkdir(parents=True, exist_ok=True)
-        
+        config_checkpoints.mkdir(parents=True, exist_ok=True)
+
         checkpoint = {
             "epoch": epoch,
             "val_loss": val_loss,
@@ -554,22 +554,22 @@ class PyrlTrainer:
             "vocab_size": len(self.tokenizer.vocab),
             "timestamp": datetime.now().isoformat(),
         }
-        
-        path = CHECKPOINTS_DIR / f"checkpoint_epoch_{epoch}.json"
+
+        path = config_checkpoints / f"checkpoint_epoch_{epoch}.json"
         with open(path, "w") as f:
             json.dump(checkpoint, f, indent=2)
-        
+
         print(f"  Saved checkpoint: {path}")
-    
+
     def save_model(self, output_path: Path):
         """Save the trained model."""
         output_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Save tokenizer
         self.tokenizer.save(output_path)
-        
+
         # Save model config
-        model_config = {
+        modelconfig = {
             "model_type": "pyrl-transformer",
             "architectures": ["PyrlForCausalLM"],
             "vocab_size": len(self.tokenizer.vocab),
@@ -588,10 +588,10 @@ class PyrlTrainer:
             "training_history": self.history[-5:] if self.history else [],
             "best_val_loss": self.best_loss,
         }
-        
+
         with open(output_path / "config.json", "w") as f:
-            json.dump(model_config, f, indent=2)
-        
+            json.dump(modelconfig, f, indent=2)
+
         # Save training stats
         stats = {
             "total_examples": len(self.dataset.examples),
@@ -601,39 +601,39 @@ class PyrlTrainer:
         }
         with open(output_path / "training_stats.json", "w") as f:
             json.dump(stats, f, indent=2)
-        
+
         print(f"Model saved to {output_path}")
-    
+
     def generate_weights(self, output_path: Path):
         """Generate model weights file."""
         import struct
         import random
-        
+
         random.seed(42)
-        
+
         hidden_size = self.config.get("hidden_size", 768)
         vocab_size = len(self.tokenizer.vocab)
         num_layers = self.config.get("num_layers", 12)
-        
+
         weights_path = output_path / "pytorch_model.bin"
-        
+
         with open(weights_path, "wb") as f:
             # Header
             f.write(b"PYRL_MODEL_V2.0")
-            
+
             # Dimensions
             f.write(struct.pack("I", vocab_size))
             f.write(struct.pack("I", hidden_size))
             f.write(struct.pack("I", num_layers))
-            
+
             # Weights (placeholder)
             weight_count = 50000
             f.write(struct.pack("I", weight_count))
-            
+
             for _ in range(weight_count):
                 value = random.gauss(0, 0.02)
                 f.write(struct.pack("f", value))
-        
+
         print(f"  Saved weights: {weights_path} ({weights_path.stat().st_size:,} bytes)")
 
 
@@ -648,7 +648,7 @@ def parse_args():
                        help="Path to examples file")
     parser.add_argument("--examples-dir", type=Path, default=None,
                        help="Path to examples directory")
-    parser.add_argument("--output", type=Path, default=MODELS_DIR,
+    parser.add_argument("--output", type=Path, default=config.model_path,
                        help="Output model directory")
     parser.add_argument("--epochs", type=int, default=10,
                        help="Number of training epochs")
@@ -670,12 +670,12 @@ def parse_args():
 def main():
     """Main training entry point."""
     args = parse_args()
-    
+
     print("=" * 60)
     print("   Pyrl Language Model Training")
     print("=" * 60)
     print()
-    
+
     # Build config
     config = {
         "epochs": args.epochs,
@@ -687,33 +687,33 @@ def main():
         "num_layers": args.layers,
         "attention_heads": args.heads,
     }
-    
+
     print("Configuration:")
     for k, v in config.items():
         print(f"  {k}: {v}")
     print()
-    
+
     # Create trainer
     trainer = PyrlTrainer(config)
-    
+
     # Load data
     try:
         trainer.load_data(args.examples, args.examples_dir)
     except FileNotFoundError as e:
         print(f"Error: {e}")
         return 1
-    
+
     # Prepare dataset
     dataset = trainer.dataset.split_dataset()
-    
+
     # Train
     results = trainer.train(dataset)
-    
+
     # Save model
     print("\nSaving model...")
     trainer.save_model(args.output)
     trainer.generate_weights(args.output)
-    
+
     # Print results
     print("\n" + "=" * 60)
     print("   Training Results")
@@ -725,7 +725,7 @@ def main():
     print(f"  Vocabulary Size: {len(trainer.tokenizer.vocab)}")
     print(f"  Model Saved To: {args.output}")
     print("=" * 60)
-    
+
     return 0
 
 

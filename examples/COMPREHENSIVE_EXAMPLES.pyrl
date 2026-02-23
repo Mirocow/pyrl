@@ -1,0 +1,909 @@
+# ============================================
+# ПОЛНОЕ ДЕМОНСТРАЦИЯ ЯЗЫКА PYRL
+# Pyrl Language Comprehensive Examples
+# ============================================
+
+# ============================================
+# 1. ПЕРЕМЕННЫЕ И ТИПЫ ДАННЫХ
+# ============================================
+
+# Скалярные переменные ($)
+$name = "Alice"
+$age = 30
+$price = 19.99
+$active = True
+$empty = None
+
+# Массивы (@)
+@numbers = [1, 2, 3, 4, 5]
+@fruits = ["apple", "banana", "cherry"]
+@mixed = [1, "hello", True, None, 3.14]
+@empty_array = []
+
+# Хеши (%)
+%person = {"name": "Bob", "age": 25, "city": "Moscow"}
+%config = {
+    "host": "localhost",
+    "port": 8080,
+    "debug": True
+}
+%nested = {
+    "user": {"name": "John", "email": "john@example.com"},
+    "settings": {"theme": "dark", "lang": "ru"}
+}
+
+# Функциональные переменные (&)
+$callback = &handler
+$mapper = &transform
+
+# ============================================
+# 2. ОПЕРАТОРЫ И ВЫРАЖЕНИЯ
+# ============================================
+
+# Арифметические операторы
+$sum = 10 + 20
+$diff = 100 - 35
+$product = 7 * 8
+$quotient = 100 / 4
+$floor_div = 17 // 3
+$modulo = 17 % 5
+$power = 2 ^ 10
+$neg = -$price
+
+# Операторы сравнения
+$equal = $age == 30
+$not_equal = $name != "Bob"
+$less = $price < 20
+$greater = $age > 18
+$less_eq = $sum <= 100
+$greater_eq = $product >= 50
+
+# Логические операторы
+$and_result = True and False
+$or_result = True or False
+$not_result = not False
+$bang_result = !$active
+
+# Комбинированные выражения
+$complex = ($a + $b) * ($c - $d) / $e
+$logical = ($x > 0) and ($y < 100) or ($z == 50)
+
+# ============================================
+# 3. ДОСТУП К ЭЛЕМЕНТАМ
+# ============================================
+
+# Доступ к элементам массива по индексу
+$first = @numbers[0]
+$last = @numbers[-1]
+$third = @fruits[2]
+
+# Доступ к элементам хеша по ключу
+$person_name = %person["name"]
+$person_age = %person["age"]
+$config_port = %config["port"]
+
+# Изменение элементов
+@numbers[0] = 100
+%person["age"] = 31
+%config["debug"] = False
+
+# Вложенный доступ
+$user_name = %nested["user"]["name"]
+$theme = %nested["settings"]["theme"]
+
+# ============================================
+# 4. УПРАВЛЯЮЩИЕ КОНСТРУКЦИИ
+# ============================================
+
+# Условные операторы if/elif/else
+if $age >= 18:
+    $status = "adult"
+elif $age >= 13:
+    $status = "teenager"
+else:
+    $status = "child"
+
+# Вложенные условия
+if $active:
+    if $age > 25:
+        $category = "senior_active"
+    else:
+        $category = "junior_active"
+else:
+    $category = "inactive"
+
+# Цикл for
+for $item in @numbers:
+    print($item)
+
+for $fruit in @fruits:
+    print("Fruit: " + $fruit)
+
+for $i in range(10):
+    print($i)
+
+for $i in range(5, 15):
+    print($i)
+
+for $i in range(0, 100, 5):
+    print($i)
+
+# Цикл while
+$count = 0
+while $count < 10:
+    print($count)
+    $count = $count + 1
+
+# Цикл с условием выхода
+$running = True
+$iterations = 0
+while $running:
+    $iterations = $iterations + 1
+    if $iterations >= 5:
+        $running = False
+
+# ============================================
+# 5. ФУНКЦИИ (ОПРЕДЕЛЕНИЯ)
+# ============================================
+
+# Простая функция без параметров
+def greet():
+    print("Hello, World!")
+
+# Функция с параметрами
+def greet_person($name):
+    print("Hello, " + $name + "!")
+
+# Функция с несколькими параметрами
+def add($a, $b):
+    return $a + $b
+
+# Функция со значением по умолчанию
+def greet_formal($name, $title):
+    print($title + " " + $name)
+
+# Функция с возвратом значения
+def square($x):
+    return $x * $x
+
+# Функция с несколькими return
+def classify_number($n):
+    if $n < 0:
+        return "negative"
+    elif $n == 0:
+        return "zero"
+    else:
+        return "positive"
+
+# Функция с массивом как параметром
+def sum_array(@arr):
+    $total = 0
+    for $item in @arr:
+        $total = $total + $item
+    return $total
+
+# Функция с хешем как параметром
+def get_user_info(%user):
+    return %user["name"] + " (" + %user["email"] + ")"
+
+# Рекурсивная функция
+def factorial($n):
+    if $n <= 1:
+        return 1
+    return $n * factorial($n - 1)
+
+# Функция Фибоначчи
+def fibonacci($n):
+    if $n <= 0:
+        return 0
+    if $n == 1:
+        return 1
+    return fibonacci($n - 1) + fibonacci($n - 2)
+
+# ============================================
+# 6. АНОНИМНЫЕ ФУНКЦИИ (Block Syntax)
+# ============================================
+
+# Анонимная функция с блоком
+&greet($name) = {
+    print("Hello, " + $name + "!")
+}
+
+# Анонимная функция с вычислениями
+&double($x) = {
+    return $x * 2
+}
+
+# Анонимная функция с условием
+&abs($x) = {
+    if $x < 0 {
+        return -$x
+    }
+    return $x
+}
+
+# Анонимная функция с циклом
+&sum_range($start, $end) = {
+    $total = 0
+    for $i in range($start, $end + 1) {
+        $total = $total + $i
+    }
+    return $total
+}
+
+# Анонимная функция со вложенными условиями
+&classify($value) = {
+    if $value < 0 {
+        return "negative"
+    } else {
+        if $value == 0 {
+            return "zero"
+        }
+        return "positive"
+    }
+}
+
+# Анонимная функция для работы с массивом
+&first_element(@arr) = {
+    return @arr[0]
+}
+
+# Анонимная функция для работы с хешем
+&get_key(%hash, $key) = {
+    return %hash[$key]
+}
+
+# Присваивание функции переменной
+$my_func = &double
+$result = $my_func(5)
+
+# ============================================
+# 7. КЛАССЫ (OOP)
+# ============================================
+
+# Простой класс
+class Person {
+    init($name, $age) = {
+        $name = $name
+        $age = $age
+    }
+    
+    prop name
+    prop age
+    
+    method greet() = {
+        print("Hello, I'm " + $name)
+    }
+    
+    method get_age() = {
+        return $age
+    }
+}
+
+# Класс с наследованием
+class Animal {
+    init($name) = {
+        $name = $name
+    }
+    
+    prop name
+    
+    method speak() = {
+        print("...")
+    }
+}
+
+class Dog extends Animal {
+    init($name, $breed) = {
+        $name = $name
+        $breed = $breed
+    }
+    
+    prop breed = "unknown"
+    
+    method speak() = {
+        print("Woof!")
+    }
+    
+    method fetch() = {
+        print($name + " fetches the ball!")
+    }
+}
+
+# Класс с вычисляемыми свойствами
+class Rectangle {
+    init($width, $height) = {
+        $width = $width
+        $height = $height
+    }
+    
+    prop width = 0
+    prop height = 0
+    
+    method area() = {
+        return $width * $height
+    }
+    
+    method perimeter() = {
+        return 2 * ($width + $height)
+    }
+    
+    method is_square() = {
+        return $width == $height
+    }
+}
+
+# Класс для работы с данными
+class Calculator {
+    init() = {
+        $result = 0
+    }
+    
+    prop result = 0
+    
+    method add($value) = {
+        $result = $result + $value
+        return $result
+    }
+    
+    method subtract($value) = {
+        $result = $result - $value
+        return $result
+    }
+    
+    method multiply($value) = {
+        $result = $result * $value
+        return $result
+    }
+    
+    method divide($value) = {
+        if $value == 0 {
+            return None
+        }
+        $result = $result / $value
+        return $result
+    }
+    
+    method reset() = {
+        $result = 0
+    }
+}
+
+# Класс для стека
+class Stack {
+    init() = {
+        @items = []
+    }
+    
+    prop items = []
+    
+    method push($item) = {
+        @items[@items.length] = $item
+    }
+    
+    method pop() = {
+        if len(@items) == 0 {
+            return None
+        }
+        $last = @items[-1]
+        return $last
+    }
+    
+    method peek() = {
+        if len(@items) == 0 {
+            return None
+        }
+        return @items[-1]
+    }
+    
+    method is_empty() = {
+        return len(@items) == 0
+    }
+}
+
+# ============================================
+# 8. ВСТРОЕННЫЕ ФУНКЦИИ
+# ============================================
+
+# Строковые функции
+$upper = upper("hello")
+$lower = lower("WORLD")
+$stripped = strip("  hello  ")
+$parts = split("a,b,c", ",")
+$joined = join(["x", "y", "z"], "-")
+$replaced = replace("hello world", "world", "Pyrl")
+$found = find("hello", "ll")
+$counted = count("hello", "l")
+$formatted = format("Name: {}, Age: {}", $name, $age)
+
+# Математические функции
+$abs_val = abs(-42)
+$min_val = min([3, 1, 4, 1, 5])
+$max_val = max([3, 1, 4, 1, 5])
+$sum_val = sum([1, 2, 3, 4, 5])
+$rounded = round(3.14159, 2)
+$floored = floor(3.9)
+$ceiled = ceil(3.1)
+
+# Функции преобразования типов
+$num = int("42")
+$float_val = float("3.14")
+$str_val = str(123)
+$type = type($name)
+
+# Функции для работы с коллекциями
+@sorted_arr = sorted([3, 1, 4, 1, 5])
+@reversed_arr = reversed([1, 2, 3])
+$len_arr = len(@numbers)
+$len_str = len($name)
+@keys = keys(%person)
+@values = values(%person)
+@items = items(%person)
+
+# Функции высшего порядка
+@doubled = map(@numbers, &double)
+@filtered = filter(@numbers, &is_positive)
+$reduced = reduce(@numbers, &add, 0)
+
+# Проверки
+$is_any = any([False, True, False])
+$is_all = all([True, True, True])
+$in_range = in_range(5, 1, 10)
+
+# ============================================
+# 9. РЕГУЛЯРНЫЕ ВЫРАЖЕНИЯ
+# ============================================
+
+# Regex литералы
+$email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+$phone_pattern = r"^\d{3}-\d{3}-\d{4}$"
+$date_pattern = r"\d{4}-\d{2}-\d{2}"
+
+# Операторы сопоставления с regex
+$is_match = $email =~ $email_pattern
+$is_not_match = $phone !~ $phone_pattern
+
+# ============================================
+# 10. БЛОКОВЫЕ ВЫРАЖЕНИЯ
+# ============================================
+
+# Простой блок
+$block_result = {
+    $temp = 10
+    $temp = $temp * 2
+    return $temp
+}
+
+# Блок с условиями
+$conditional_block = {
+    if $x > 0 {
+        return "positive"
+    } else {
+        return "non-positive"
+    }
+}
+
+# Блок с циклом
+$loop_block = {
+    $sum = 0
+    for $i in range(1, 11) {
+        $sum = $sum + $i
+    }
+    return $sum
+}
+
+# ============================================
+# 11. TEST BLOCKS
+# ============================================
+
+test "Basic arithmetic":
+    assert 2 + 2 == 4
+    assert 10 - 3 == 7
+    assert 5 * 6 == 30
+    assert 20 / 4 == 5
+
+test "String operations":
+    assert len("hello") == 5
+    assert upper("test") == "TEST"
+    assert lower("TEST") == "test"
+
+test "Array operations":
+    @arr = [1, 2, 3, 4, 5]
+    assert len(@arr) == 5
+    assert sum(@arr) == 15
+    assert @arr[0] == 1
+
+test "Hash operations":
+    %hash = {"a": 1, "b": 2}
+    assert %hash["a"] == 1
+    assert len(%hash) == 2
+
+test "Function definitions":
+    assert square(4) == 16
+    assert factorial(5) == 120
+    assert fibonacci(10) == 55
+
+test "Class instantiation":
+    $rect = Rectangle(5, 10)
+    assert $rect.area() == 50
+    assert $rect.perimeter() == 30
+
+# ============================================
+# 12. АЛГОРИТМЫ
+# ============================================
+
+# Бинарный поиск
+def binary_search(@arr, $target):
+    $left = 0
+    $right = len(@arr) - 1
+    
+    while $left <= $right:
+        $mid = ($left + $right) // 2
+        if @arr[$mid] == $target:
+            return $mid
+        elif @arr[$mid] < $target:
+            $left = $mid + 1
+        else:
+            $right = $mid - 1
+    
+    return -1
+
+# Сортировка пузырьком
+def bubble_sort(@arr):
+    $n = len(@arr)
+    for $i in range($n):
+        for $j in range(0, $n - $i - 1):
+            if @arr[$j] > @arr[$j + 1]:
+                $temp = @arr[$j]
+                @arr[$j] = @arr[$j + 1]
+                @arr[$j + 1] = $temp
+    return @arr
+
+# Быстрая сортировка (имитация)
+def quick_sort(@arr):
+    if len(@arr) <= 1:
+        return @arr
+    
+    $pivot = @arr[0]
+    @less = []
+    @equal = []
+    @greater = []
+    
+    for $item in @arr:
+        if $item < $pivot:
+            @less[@less.length] = $item
+        elif $item == $pivot:
+            @equal[@equal.length] = $item
+        else:
+            @greater[@greater.length] = $item
+    
+    @result = quick_sort(@less)
+    for $item in @equal:
+        @result[@result.length] = $item
+    for $item in quick_sort(@greater):
+        @result[@result.length] = $item
+    
+    return @result
+
+# Проверка на палинindrome
+def is_palindrome($str):
+    $reversed = ""
+    $len = len($str)
+    for $i in range($len - 1, -1, -1):
+        $reversed = $reversed + $str[$i]
+    return $str == $reversed
+
+# Проверка на простое число
+def is_prime($n):
+    if $n < 2:
+        return False
+    if $n == 2:
+        return True
+    if $n % 2 == 0:
+        return False
+    
+    $i = 3
+    while $i * $i <= $n:
+        if $n % $i == 0:
+            return False
+        $i = $i + 2
+    
+    return True
+
+# НОД (наибольший общий делитель)
+def gcd($a, $b):
+    while $b != 0:
+        $temp = $b
+        $b = $a % $b
+        $a = $temp
+    return $a
+
+# НОК (наименьшее общее кратное)
+def lcm($a, $b):
+    return ($a * $b) / gcd($a, $b)
+
+# Обратная строка
+def reverse_string($str):
+    $result = ""
+    $len = len($str)
+    for $i in range($len - 1, -1, -1):
+        $result = $result + $str[$i]
+    return $result
+
+# Подсчет символов
+def count_chars($str):
+    %counts = {}
+    for $char in $str:
+        if %counts[$char]:
+            %counts[$char] = %counts[$char] + 1
+        else:
+            %counts[$char] = 1
+    return %counts
+
+# ============================================
+# 13. РАБОТА С ДАННЫМИ
+# ============================================
+
+# Фильтрация массива
+def filter_positive(@arr):
+    @result = []
+    for $item in @arr:
+        if $item > 0:
+            @result[@result.length] = $item
+    return @result
+
+# Трансформация массива
+def double_all(@arr):
+    @result = []
+    for $item in @arr:
+        @result[@result.length] = $item * 2
+    return @result
+
+# Поиск максимума
+def find_max(@arr):
+    if len(@arr) == 0:
+        return None
+    
+    $max = @arr[0]
+    for $item in @arr:
+        if $item > $max:
+            $max = $item
+    return $max
+
+# Поиск минимума
+def find_min(@arr):
+    if len(@arr) == 0:
+        return None
+    
+    $min = @arr[0]
+    for $item in @arr:
+        if $item < $min:
+            $min = $item
+    return $min
+
+# Среднее значение
+def average(@arr):
+    if len(@arr) == 0:
+        return 0
+    return sum(@arr) / len(@arr)
+
+# Медиана
+def median(@arr):
+    @sorted = bubble_sort(@arr)
+    $n = len(@sorted)
+    $mid = $n // 2
+    
+    if $n % 2 == 0:
+        return (@sorted[$mid - 1] + @sorted[$mid]) / 2
+    else:
+        return @sorted[$mid]
+
+# Уникальные элементы
+def unique(@arr):
+    @result = []
+    for $item in @arr:
+        $found = False
+        for $existing in @result:
+            if $existing == $item:
+                $found = True
+        if not $found:
+            @result[@result.length] = $item
+    return @result
+
+# Группировка по ключу
+def group_by(@items, $key_func):
+    %groups = {}
+    for $item in @items:
+        $key = $key_func($item)
+        if not %groups[$key]:
+            %groups[$key] = []
+        %groups[$key][len(%groups[$key])] = $item
+    return %groups
+
+# ============================================
+# 14. КОМПЛЕКСНЫЕ ПРИМЕРЫ
+# ============================================
+
+# Конфигурация приложения
+%app_config = {
+    "app_name": "Pyrl Application",
+    "version": "1.0.0",
+    "debug": True,
+    "database": {
+        "host": "localhost",
+        "port": 5432,
+        "name": "pyrl_db"
+    },
+    "cache": {
+        "enabled": True,
+        "ttl": 3600
+    }
+}
+
+# Обработчик запросов (имитация)
+&handle_request($method, $path, %params) = {
+    %response = {
+        "status": 200,
+        "headers": {"Content-Type": "application/json"},
+        "body": {}
+    }
+    
+    if $method == "GET" {
+        if $path == "/users" {
+            %response["body"] = {"users": @users}
+        } elif $path == "/health" {
+            %response["body"] = {"status": "ok"}
+        }
+    } elif $method == "POST" {
+        if $path == "/users" {
+            %response["status"] = 201
+            %response["body"] = {"created": True}
+        }
+    }
+    
+    return %response
+}
+
+# Валидатор данных
+&validate_user(%user) = {
+    @errors = []
+    
+    if not %user["name"] {
+        @errors[len(@errors)] = "Name is required"
+    }
+    
+    if not %user["email"] {
+        @errors[len(@errors)] = "Email is required"
+    } elif not (%user["email"] =~ r"^[^@]+@[^@]+\.[^@]+$") {
+        @errors[len(@errors)] = "Invalid email format"
+    }
+    
+    if %user["age"] and %user["age"] < 0 {
+        @errors[len(@errors)] = "Age must be positive"
+    }
+    
+    return @errors
+}
+
+# Пагинация
+&paginate(@items, $page, $per_page) = {
+    $total = len(@items)
+    $pages = ($total + $per_page - 1) / $per_page
+    $start = ($page - 1) * $per_page
+    $end = $start + $per_page
+    
+    @page_items = []
+    for $i in range($start, $end):
+        if $i < $total {
+            @page_items[len(@page_items)] = @items[$i]
+        }
+    
+    return {
+        "items": @page_items,
+        "page": $page,
+        "per_page": $per_page,
+        "total": $total,
+        "pages": $pages
+    }
+}
+
+# Логгер
+class Logger {
+    init($level) = {
+        $level = $level
+        @logs = []
+    }
+    
+    prop level = "INFO"
+    prop logs = []
+    
+    method log($level, $message) = {
+        %entry = {
+            "level": $level,
+            "message": $message,
+            "timestamp": now()
+        }
+        @logs[len(@logs)] = %entry
+        print("[" + $level + "] " + $message)
+    }
+    
+    method info($message) = {
+        log("INFO", $message)
+    }
+    
+    method warn($message) = {
+        log("WARN", $message)
+    }
+    
+    method error($message) = {
+        log("ERROR", $message)
+    }
+    
+    method get_logs() = {
+        return @logs
+    }
+}
+
+# ============================================
+# 15. ИСПОЛЬЗОВАНИЕ ВСЕХ ВОЗМОЖНОСТЕЙ
+# ============================================
+
+# Полный пример приложения
+class Application {
+    init(%config) = {
+        %config = %config
+        %routes = {}
+        @middleware = []
+        $running = False
+    }
+    
+    prop config = {}
+    prop routes = {}
+    prop middleware = []
+    prop running = False
+    
+    method route($path, $handler) = {
+        %routes[$path] = $handler
+    }
+    
+    method use($middleware) = {
+        @middleware[len(@middleware)] = $middleware
+    }
+    
+    method start() = {
+        $running = True
+        print("Application started on port " + %config["port"])
+    }
+    
+    method stop() = {
+        $running = False
+        print("Application stopped")
+    }
+    
+    method handle($path, %params) = {
+        $handler = %routes[$path]
+        if $handler {
+            return $handler(%params)
+        }
+        return {"error": "Not found"}
+    }
+}
+
+# Создание и запуск приложения
+$app = Application(%app_config)
+
+# Определение маршрутов
+$app.route("/", &home_handler)
+$app.route("/api/users", &users_handler)
+$app.route("/api/products", &products_handler)
+
+# Добавление middleware
+$app.use(&logging_middleware)
+$app.use(&auth_middleware)
+
+# Запуск
+$app.start()
+
+# ============================================
+# END OF COMPREHENSIVE EXAMPLES
+# ============================================

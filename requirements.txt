@@ -1,6 +1,9 @@
 # Pyrl Requirements
 # Core dependencies
 
+# Parser
+lark>=1.1.0
+
 # Web framework
 fastapi>=0.100.0
 uvicorn>=0.23.0

@@ -20,6 +20,15 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
+# Try to use Lark-based parser first (primary)
+try:
+    from src.core.vm_lark import PyrlLarkVM, PyrlRuntimeError
+    from src.core.lark_parser import print_ast as lark_print_ast
+    LARK_AVAILABLE = True
+except ImportError:
+    LARK_AVAILABLE = False
+
+# Fallback to legacy parser
 from src.core.vm import PyrlVM
 from src.core.lexer import tokenize
 from src.core.parser import parse
@@ -27,18 +36,27 @@ from src.core.exceptions import PyrlError
 from src.core.builtins import load_builtin_plugins, get_loaded_plugins
 
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __author__ = "Pyrl Team"
 
 
 class PyrlCLI:
     """Command Line Interface for Pyrl."""
     
-    def __init__(self, debug: bool = False):
-        self.vm = PyrlVM(debug=debug)
+    def __init__(self, debug: bool = False, use_lark: bool = True):
         self.debug = debug
-        # Load built-in plugins
-        load_builtin_plugins(self.vm.env)
+        self.use_lark = use_lark and LARK_AVAILABLE
+        
+        if self.use_lark:
+            self.vm = PyrlLarkVM()
+            self.env = self.vm.global_env
+            if debug:
+                print("\033[90mUsing Lark-based parser\033[0m")
+        else:
+            self.vm = PyrlVM(debug=debug)
+            self.env = self.vm.env
+            # Load built-in plugins for legacy VM
+            load_builtin_plugins(self.vm.env)
     
     def run_repl(self) -> None:
         """Start interactive REPL session."""
@@ -66,6 +84,8 @@ class PyrlCLI:
                     
             except KeyboardInterrupt:
                 print("\n\nInterrupted. Press Ctrl+C again to exit or type 'exit' to quit.")
+            except PyrlRuntimeError as e:
+                print(f"\033[91mError:\033[0m {e}")
             except PyrlError as e:
                 print(f"\033[91mError:\033[0m {e}")
             except Exception as e:
@@ -361,7 +381,10 @@ class PyrlCLI:
             # Register in VM environment
             for name, value in exports.items():
                 full_name = f"{plugin_name}_{name}"
-                self.vm.env.define(full_name, value)
+                if hasattr(self.env, 'define'):
+                    self.env.define(full_name, value)
+                else:
+                    self.env[full_name] = value
             
             print(f"\033[92mPlugin '{plugin_name}' loaded successfully.\033[0m")
             print(f"\033[90mExported functions: {', '.join(exports.keys())}\033[0m")
@@ -533,6 +556,9 @@ class PyrlCLI:
             
             result = self.vm.run_file(str(path))
             return 0
+        except PyrlRuntimeError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return 1
         except PyrlError as e:
             print(f"Error: {e}", file=sys.stderr)
             return 1
@@ -550,6 +576,9 @@ class PyrlCLI:
             if result is not None:
                 print(result)
             return 0
+        except PyrlRuntimeError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return 1
         except PyrlError as e:
             print(f"Error: {e}", file=sys.stderr)
             return 1
@@ -680,6 +709,12 @@ For more information, visit: https://github.com/pyrl-lang/pyrl
     )
     
     parser.add_argument(
+        '--legacy',
+        action='store_true',
+        help='Use legacy parser instead of Lark'
+    )
+    
+    parser.add_argument(
         '-v', '--version',
         action='version',
         version=f'Pyrl {__version__}'
@@ -704,7 +739,8 @@ def main() -> int:
         os.environ['NO_COLOR'] = '1'
     
     # Create CLI instance
-    cli = PyrlCLI(debug=args.debug)
+    use_lark = not args.legacy
+    cli = PyrlCLI(debug=args.debug, use_lark=use_lark)
     
     # Handle different modes
     if args.code:

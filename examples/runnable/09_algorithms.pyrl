@@ -1,0 +1,67 @@
+# ============================================
+# 09. АЛГОРИТМЫ
+# ============================================
+
+print("=== Factorial ===")
+def factorial($n):
+    if $n <= 1:
+        return 1
+    return $n * factorial($n - 1)
+
+print("factorial(5) = " + str(factorial(5)))
+print("factorial(10) = " + str(factorial(10)))
+
+print("=== Fibonacci ===")
+def fibonacci($n):
+    if $n <= 0:
+        return 0
+    if $n == 1:
+        return 1
+    return fibonacci($n - 1) + fibonacci($n - 2)
+
+print("fibonacci(10) = " + str(fibonacci(10)))
+print("fibonacci(15) = " + str(fibonacci(15)))
+
+print("=== Is Prime ===")
+def is_prime($n):
+    if $n < 2:
+        return False
+    if $n == 2:
+        return True
+    if $n % 2 == 0:
+        return False
+
+    $i = 3
+    while $i * $i <= $n:
+        if $n % $i == 0:
+            return False
+        $i = $i + 2
+
+    return True
+
+print("is_prime(7) = " + str(is_prime(7)))
+print("is_prime(17) = " + str(is_prime(17)))
+print("is_prime(20) = " + str(is_prime(20)))
+
+print("=== Sum List ===")
+def sum_list($items):
+    $total = 0
+    for $item in $items:
+        $total = $total + $item
+    return $total
+
+@nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+print("sum_list([1..10]) = " + str(sum_list(@nums)))
+
+print("=== GCD ===")
+def gcd($a, $b):
+    while $b != 0:
+        $temp = $b
+        $b = $a % $b
+        $a = $temp
+    return $a
+
+print("gcd(48, 18) = " + str(gcd(48, 18)))
+print("gcd(100, 25) = " + str(gcd(100, 25)))
+
+print("=== Algorithms Demo Complete ===")

@@ -1,0 +1,40 @@
+# ============================================
+# 08. ВСТРОЕННЫЕ ФУНКЦИИ
+# ============================================
+
+print("=== String Functions ===")
+$upper = upper("hello")
+print("upper('hello') = " + $upper)
+
+$lower = lower("WORLD")
+print("lower('WORLD') = " + $lower)
+
+$len_str = len("hello")
+print("len('hello') = " + str($len_str))
+
+print("=== Math Functions ===")
+$abs_val = abs(-42)
+print("abs(-42) = " + str($abs_val))
+
+$min_val = min([3, 1, 4, 1, 5])
+print("min([3,1,4,1,5]) = " + str($min_val))
+
+$max_val = max([3, 1, 4, 1, 5])
+print("max([3,1,4,1,5]) = " + str($max_val))
+
+$sum_val = sum([1, 2, 3, 4, 5])
+print("sum([1,2,3,4,5]) = " + str($sum_val))
+
+print("=== Type Conversion ===")
+$num = int("42")
+print("int('42') = " + str($num))
+
+$str_val = str(123)
+print("str(123) = " + $str_val)
+
+print("=== Collection Functions ===")
+@arr = [3, 1, 4, 1, 5, 9, 2, 6]
+$len_arr = len(@arr)
+print("len([3,1,4,1,5,9,2,6]) = " + str($len_arr))
+
+print("=== Builtins Demo Complete ===")

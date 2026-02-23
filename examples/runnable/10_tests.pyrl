@@ -1,0 +1,31 @@
+# ============================================
+# 10. TEST BLOCKS
+# ============================================
+
+print("=== Running Tests ===")
+
+test "Arithmetic":
+    assert 2 + 2 == 4
+    assert 10 - 3 == 7
+    assert 5 * 6 == 30
+    assert 20 / 4 == 5
+    print("Arithmetic tests passed!")
+
+test "Comparisons":
+    assert 10 > 5
+    assert 5 < 10
+    assert 10 == 10
+    assert 5 != 10
+    print("Comparison tests passed!")
+
+test "Logical":
+    assert True and True
+    assert True or False
+    assert not False
+    print("Logical tests passed!")
+
+test "String":
+    assert len("hello") == 5
+    print("String tests passed!")
+
+print("=== All Tests Passed ===")

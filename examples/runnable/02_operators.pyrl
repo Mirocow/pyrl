@@ -1,0 +1,50 @@
+# ============================================
+# 02. ОПЕРАТОРЫ И ВЫРАЖЕНИЯ
+# ============================================
+
+print("=== Arithmetic Operators ===")
+$sum = 10 + 20
+print("10 + 20 = " + str($sum))
+
+$diff = 100 - 35
+print("100 - 35 = " + str($diff))
+
+$product = 7 * 8
+print("7 * 8 = " + str($product))
+
+$quotient = 100 / 4
+print("100 / 4 = " + str($quotient))
+
+$floor_div = 17 // 3
+print("17 // 3 = " + str($floor_div))
+
+$modulo = 17 % 5
+print("17 % 5 = " + str($modulo))
+
+$neg = -42
+print("-42 = " + str($neg))
+
+print("=== Comparison Operators ===")
+$equal = 30 == 30
+print("30 == 30: " + str($equal))
+
+$not_equal = "hello" != "world"
+print("hello != world: " + str($not_equal))
+
+$less = 10 < 20
+print("10 < 20: " + str($less))
+
+$greater = 50 > 25
+print("50 > 25: " + str($greater))
+
+print("=== Logical Operators ===")
+$and_result = True and False
+print("True and False: " + str($and_result))
+
+$or_result = True or False
+print("True or False: " + str($or_result))
+
+$not_result = not False
+print("not False: " + str($not_result))
+
+print("=== Operators Demo Complete ===")

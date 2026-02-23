@@ -1,0 +1,31 @@
+# ============================================
+# 03. ДОСТУП К ЭЛЕМЕНТАМ
+# ============================================
+
+print("=== Array Access ===")
+@numbers = [10, 20, 30, 40, 50]
+
+$first = @numbers[0]
+print("First element: " + str($first))
+
+$third = @numbers[2]
+print("Third element: " + str($third))
+
+# Изменение элемента
+@numbers[0] = 100
+print("After change: " + str(@numbers))
+
+print("=== Hash Access ===")
+%person = {"name": "Bob", "age": 25}
+
+$name = %person["name"]
+print("Name: " + str($name))
+
+$age = %person["age"]
+print("Age: " + str($age))
+
+# Изменение значения
+%person["age"] = 26
+print("After age change: " + str(%person))
+
+print("=== Access Demo Complete ===")

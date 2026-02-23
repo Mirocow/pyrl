@@ -1,0 +1,65 @@
+# ============================================
+# 07. КЛАССЫ (OOP)
+# ============================================
+
+print("=== Simple Class ===")
+
+class Person {
+    prop name
+    prop age
+    
+    init($n, $a) = {
+        $name = $n;
+        $age = $a
+    }
+    
+    method greet() = {
+        print("Hello from " + $name)
+    }
+}
+
+print("=== Calculator Class ===")
+
+class Calculator {
+    prop result = 0
+    
+    init() = {
+        $result = 0
+    }
+    
+    method add($value) = {
+        $result = $result + $value;
+        return $result
+    }
+    
+    method subtract($value) = {
+        $result = $result - $value;
+        return $result
+    }
+    
+    method reset() = {
+        $result = 0
+    }
+}
+
+print("=== Rectangle Class ===")
+
+class Rectangle {
+    prop width = 0
+    prop height = 0
+    
+    init($w, $h) = {
+        $width = $w;
+        $height = $h
+    }
+    
+    method area() = {
+        return $width * $height
+    }
+    
+    method perimeter() = {
+        return 2 * ($width + $height)
+    }
+}
+
+print("=== Classes Demo Complete ===")

@@ -622,7 +622,13 @@ class PyrlTransformer(Transformer):
         for c in children:
             if isinstance(c, tuple) and len(c) == 2:
                 key, value = c
-                if isinstance(key, IdentRef): key = key.name
+                # Convert key to string if it's an AST node
+                if isinstance(key, IdentRef):
+                    key = key.name
+                elif isinstance(key, StringLiteral):
+                    key = key.value
+                elif isinstance(key, Token):
+                    key = key.value
                 pairs[key] = value
         return HashLiteral(pairs=pairs)
 
@@ -636,6 +642,9 @@ class PyrlTransformer(Transformer):
         # Handle IdentRef for hash keys
         elif isinstance(key, IdentRef):
             key = key.name
+        # Handle StringLiteral for hash keys
+        elif isinstance(key, StringLiteral):
+            key = key.value
         return (key, children[1])
 
     def regex_literal(self, children):

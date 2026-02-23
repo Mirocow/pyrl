@@ -1,0 +1,30 @@
+# ============================================
+# 04. УПРАВЛЯЮЩИЕ КОНСТРУКЦИИ
+# ============================================
+
+print("=== If/Elif/Else ===")
+$age = 25
+
+if $age >= 18:
+    print("Adult")
+elif $age >= 13:
+    print("Teenager")
+else:
+    print("Child")
+
+print("=== For Loop ===")
+for $i in range(5):
+    print("Iteration: " + str($i))
+
+print("=== For Loop with Array ===")
+@fruits = ["apple", "banana", "cherry"]
+for $fruit in @fruits:
+    print("Fruit: " + $fruit)
+
+print("=== While Loop ===")
+$count = 0
+while $count < 3:
+    print("Count: " + str($count))
+    $count = $count + 1
+
+print("=== Control Flow Demo Complete ===")

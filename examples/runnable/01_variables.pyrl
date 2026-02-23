@@ -1,0 +1,35 @@
+# ============================================
+# 01. ПЕРЕМЕННЫЕ И ТИПЫ ДАННЫХ
+# ============================================
+
+# Скалярные переменные ($)
+$name = "Alice"
+$age = 30
+$price = 19.99
+$active = True
+$empty = None
+
+print("=== Scalar Variables ===")
+print($name)
+print($age)
+print($price)
+print($active)
+print($empty)
+
+# Массивы (@)
+@numbers = [1, 2, 3, 4, 5]
+@fruits = ["apple", "banana", "cherry"]
+
+print("=== Array Variables ===")
+print(@numbers)
+print(@fruits)
+
+# Хеши (%)
+%person = {"name": "Bob", "age": 25}
+%config = {"host": "localhost", "port": 8080}
+
+print("=== Hash Variables ===")
+print(%person)
+print(%config)
+
+print("=== Variables Demo Complete ===")

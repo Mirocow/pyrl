@@ -74,26 +74,22 @@ print("Fibonacci(10) = " + str(fibonacci(10)))
 def get_grade($score):
     if $score >= 90:
         return "A"
-    elif $score >= 80:
+    if $score >= 80:
         return "B"
-    elif $score >= 70:
+    if $score >= 70:
         return "C"
-    elif $score >= 60:
+    if $score >= 60:
         return "D"
-    else:
-        return "F"
+    return "F"
 
 @scores = [95, 82, 67, 78, 55, 91]
 for $score in @scores:
     $grade = get_grade($score)
-    print("Score " + str($score) + " -> Grade " + $grade)
+    print("Score " + str($score) + " -> Grade " + str($grade))
 
 # ===========================================
 # HIGHER-ORDER FUNCTIONS
 # ===========================================
-
-def apply_operation($x, $y, $operation):
-    return $operation($x, $y)
 
 def multiply($a, $b):
     return $a * $b
@@ -101,11 +97,11 @@ def multiply($a, $b):
 def subtract($a, $b):
     return $a - $b
 
-$multiply_func = &multiply
-$subtract_func = &subtract
+def apply_operation($x, $y, $func):
+    return $func($x, $y)
 
-print("Apply multiply: " + str(apply_operation(10, 5, $multiply_func)))
-print("Apply subtract: " + str(apply_operation(10, 5, $subtract_func)))
+print("Apply multiply: " + str(apply_operation(10, 5, multiply)))
+print("Apply subtract: " + str(apply_operation(10, 5, subtract)))
 
 # ===========================================
 # UTILITY FUNCTIONS

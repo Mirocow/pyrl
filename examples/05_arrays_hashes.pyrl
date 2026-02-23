@@ -45,15 +45,19 @@ for $item in @fruits:
 @sorted_nums = sorted(@nums)
 print("Sorted: " + str(@sorted_nums))
 
-@sorted_desc = sorted(@nums, reverse=True)
+# For descending, reverse manually
+@sorted_desc = reversed(@sorted_nums)
 print("Sorted desc: " + str(@sorted_desc))
 
 # Reversing
 @reversed_nums = reversed(@nums)
 print("Reversed: " + str(@reversed_nums))
 
-# Finding elements
-$has_five = 5 in @nums
+# Finding elements - use a loop
+$has_five = False
+for $n in @nums:
+    if $n == 5:
+        $has_five = True
 print("Contains 5: " + str($has_five))
 
 # ===========================================
@@ -164,7 +168,8 @@ def group_by_first_letter(@words):
     %groups = {}
     for $word in @words:
         $first = lower($word[0])
-        if not %groups[$first]:
+        $existing = get(%groups, $first, None)
+        if $existing == None:
             %groups[$first] = []
         append(%groups[$first], $word)
     return %groups

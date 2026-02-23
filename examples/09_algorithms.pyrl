@@ -18,8 +18,6 @@ def bubble_sort(@arr):
                 @result[$j] = @result[$j + 1]
                 @result[$j + 1] = $temp
                 $swapped = True
-        if not $swapped:
-            break
     
     return @result
 
@@ -220,8 +218,9 @@ print("  " + str(@primes))
 %fib_cache = {}
 
 def fib_memo($n):
-    if $n in keys(%fib_cache):
-        return %fib_cache[$n]
+    $cached = get(%fib_cache, $n, None)
+    if $cached != None:
+        return $cached
     
     if $n <= 1:
         %fib_cache[$n] = $n

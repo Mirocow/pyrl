@@ -1,132 +1,29 @@
-# Exception Handling in Pyrl
-# Demonstrates try/except/finally and error handling
+# Error Handling in Pyrl
+# Demonstrates defensive programming and error handling patterns
 
 # ===========================================
-# BASIC TRY/EXCEPT
+# DEFENSIVE PROGRAMMING
 # ===========================================
 
-# Catching specific exceptions
+# Safe division with explicit checks
 def safe_divide($a, $b):
-    try:
-        $result = $a / $b
-        return $result
-    except:
+    if $b == 0:
         print("Division by zero!")
         return None
+    return $a / $b
 
 print("10 / 2 = " + str(safe_divide(10, 2)))
 print("10 / 0 = " + str(safe_divide(10, 0)))
 
 # ===========================================
-# MULTIPLE EXCEPT CLAUSES
+# RESULT PATTERN
 # ===========================================
 
-def process_value($value, $index):
-    try:
-        @data = [1, 2, 3]
-        $item = @data[$index]
-        $result = $item / $value
-        return $result
-    except:
-        print("Division error!")
-        return -1
-    except:
-        print("Index error!")
-        return -2
-    except:
-        print("Unknown error!")
-        return -3
-
-print("process_value(1, 0) = " + str(process_value(1, 0)))
-print("process_value(0, 0) = " + str(process_value(0, 0)))
-
-# ===========================================
-# FINALLY BLOCK
-# ===========================================
-
-def read_file_example($filename):
-    try:
-        print("Opening file: " + $filename)
-        # File operations would go here
-        return "File content placeholder"
-    except:
-        print("Error reading file")
-        return None
-    finally:
-        print("Cleanup executed")
-
-print(read_file_example("example.txt"))
-
-# ===========================================
-# RAISING EXCEPTIONS
-# ===========================================
-
-def validate_age($age):
-    if $age < 0:
-        raise ValueError("Age cannot be negative")
-    if $age > 150:
-        raise ValueError("Age seems unrealistic")
-    return True
-
-def check_age($age):
-    try:
-        validate_age($age)
-        print("Age " + str($age) + " is valid")
-    except:
-        print("Invalid age: " + str($age))
-
-check_age(25)
-check_age(-5)
-
-# ===========================================
-# PRACTICAL EXAMPLES
-# ===========================================
-
-# Safe type conversion
-def safe_int($value):
-    try:
-        return int($value)
-    except:
-        print("Could not convert '" + str($value) + "' to int")
-        return None
-
-print(safe_int("42"))
-print(safe_int("not a number"))
-
-# Safe array access
-def safe_get(@arr, $index, $default):
-    try:
-        return @arr[$index]
-    except:
-        return $default
-
-@numbers = [10, 20, 30]
-print("Index 1: " + str(safe_get(@numbers, 1, 0)))
-print("Index 10: " + str(safe_get(@numbers, 10, "N/A")))
-
-# Safe hash access
-def safe_hash_get(%hash, $key, $default):
-    try:
-        return %hash[$key]
-    except:
-        return $default
-
-%person = {name: "Alice", age: 30}
-print("Name: " + safe_hash_get(%person, "name", "Unknown"))
-print("Email: " + safe_hash_get(%person, "email", "No email"))
-
-# ===========================================
-# ERROR HANDLING PATTERNS
-# ===========================================
-
-# Result pattern (return success/failure)
+# Return success/failure indicator
 def divide_safely($a, $b):
-    try:
-        if $b == 0:
-            return {success: False, error: "Division by zero"}
-        return {success: True, value: $a / $b}
-    except:
-        return {success: False, error: "Unknown error"}
+    if $b == 0:
+        return {success: False, error: "Division by zero"}
+    return {success: True, value: $a / $b}
 
 $result1 = divide_safely(10, 2)
 if $result1["success"]:
@@ -140,17 +37,100 @@ if $result2["success"]:
 else:
     print("Error: " + $result2["error"])
 
-# Validation function
-def validate_input($data):
+# ===========================================
+# SAFE TYPE CONVERSION
+# ===========================================
+
+def safe_int($value):
+    if $value == None:
+        return None
+    $str_val = str($value)
+    $result = 0
+    $sign = 1
+    $i = 0
+    if len($str_val) > 0:
+        if $str_val[0] == "-":
+            $sign = -1
+            $i = 1
+        $valid = True
+        $num = 0
+        while $i < len($str_val):
+            $c = $str_val[$i]
+            if $c >= "0" and $c <= "9":
+                $num = $num * 10 + (int($c) - int("0"))
+            else:
+                $valid = False
+                $i = len($str_val)
+            $i = $i + 1
+        if $valid:
+            return $sign * $num
+    return None
+
+print("safe_int('42'): " + str(safe_int("42")))
+print("safe_int('abc'): " + str(safe_int("abc")))
+
+# ===========================================
+# SAFE ARRAY ACCESS
+# ===========================================
+
+def safe_get(@arr, $index, $default):
+    if $index >= 0 and $index < len(@arr):
+        return @arr[$index]
+    return $default
+
+@numbers = [10, 20, 30]
+print("Index 1: " + str(safe_get(@numbers, 1, 0)))
+print("Index 10: " + str(safe_get(@numbers, 10, "N/A")))
+
+# ===========================================
+# SAFE HASH ACCESS
+# ===========================================
+
+def safe_hash_get(%hash, $key, $default):
+    return get(%hash, $key, $default)
+
+%person = {name: "Alice", age: 30}
+print("Name: " + safe_hash_get(%person, "name", "Unknown"))
+print("Email: " + safe_hash_get(%person, "email", "No email"))
+
+# ===========================================
+# VALIDATION FUNCTIONS
+# ===========================================
+
+def validate_age($age):
+    if $age < 0:
+        return {valid: False, error: "Age cannot be negative"}
+    if $age > 150:
+        return {valid: False, error: "Age seems unrealistic"}
+    return {valid: True}
+
+def check_age($age):
+    $result = validate_age($age)
+    if $result["valid"]:
+        print("Age " + str($age) + " is valid")
+    else:
+        print("Invalid age " + str($age) + ": " + $result["error"])
+
+check_age(25)
+check_age(-5)
+check_age(200)
+
+# ===========================================
+# COMPLEX VALIDATION
+# ===========================================
+
+def validate_input(%data):
     @errors = []
     
-    if not $data["name"]:
+    $name = get(%data, "name", "")
+    if $name == "":
         append(@errors, "Name is required")
     
-    if $data["age"] < 0:
+    $age = get(%data, "age", -1)
+    if $age < 0:
         append(@errors, "Age must be positive")
     
-    if $data["age"] < 18:
+    if $age >= 0 and $age < 18:
         append(@errors, "Must be 18 or older")
     
     if len(@errors) > 0:
@@ -167,3 +147,51 @@ $validation2 = validate_input(%user2)
 print("User2 valid: " + str($validation2["valid"]))
 if $validation2["errors"]:
     print("Errors: " + str($validation2["errors"]))
+
+# ===========================================
+# OPTION PATTERN
+# ===========================================
+
+def option($value):
+    if $value == None:
+        return {has_value: False}
+    return {has_value: True, value: $value}
+
+def unwrap($opt, $default):
+    if $opt["has_value"]:
+        return $opt["value"]
+    return $default
+
+$some = option(42)
+$none = option(None)
+
+print("Some value: " + str(unwrap($some, 0)))
+print("None value: " + str(unwrap($none, 0)))
+
+# ===========================================
+# EITHER PATTERN
+# ===========================================
+
+def success($value):
+    return {is_ok: True, value: $value}
+
+def failure($error):
+    return {is_ok: False, error: $error}
+
+def parse_number($str):
+    $result = safe_int($str)
+    if $result == None:
+        return failure("Cannot parse '" + $str + "' as number")
+    return success($result)
+
+$parsed1 = parse_number("123")
+if $parsed1["is_ok"]:
+    print("Parsed: " + str($parsed1["value"]))
+else:
+    print("Error: " + $parsed1["error"])
+
+$parsed2 = parse_number("abc")
+if $parsed2["is_ok"]:
+    print("Parsed: " + str($parsed2["value"]))
+else:
+    print("Error: " + $parsed2["error"])

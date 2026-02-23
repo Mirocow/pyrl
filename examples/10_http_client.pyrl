@@ -10,7 +10,6 @@
 
 # Simple GET request
 def http_get($url):
-    # Placeholder for HTTP GET implementation
     print("GET " + $url)
     return {
         status: 200,
@@ -50,93 +49,6 @@ def http_post_json($url, %data):
     }
 
 # ===========================================
-# API CLIENT CLASS
-# ===========================================
-
-class ApiClient:
-    def __init__($self, $base_url):
-        $self.base_url = $base_url
-        %self.headers = {
-            "Content-Type": "application/json"
-        }
-    
-    def set_header($self, $key, $value):
-        %self.headers[$key] = $value
-    
-    def get($self, $endpoint):
-        $url = $self.base_url + $endpoint
-        return http_get_with_headers($url, %self.headers)
-    
-    def post($self, $endpoint, %data):
-        $url = $self.base_url + $endpoint
-        return http_post_json($url, %data)
-
-# Usage example
-$client = ApiClient("https://api.example.com")
-$client.set_header("Authorization", "Bearer token123")
-
-print("=== API Client Example ===")
-$get_response = $client.get("/users")
-print("GET Response: " + str($get_response))
-
-%new_user = {name: "Alice", email: "alice@example.com"}
-$post_response = $client.post("/users", %new_user)
-print("POST Response: " + str($post_response))
-
-# ===========================================
-# REST API PATTERNS
-# ===========================================
-
-class RestApiClient:
-    def __init__($self, $base_url, $api_key):
-        $self.base_url = $base_url
-        $self.api_key = $api_key
-    
-    def _build_url($self, $endpoint):
-        return $self.base_url + $endpoint
-    
-    def _default_headers($self):
-        return {
-            "Authorization": "Bearer " + $self.api_key,
-            "Content-Type": "application/json"
-        }
-    
-    def list($self, $resource):
-        $url = $self._build_url("/" + $resource)
-        print("GET " + $url)
-        return {status: 200, data: []}
-    
-    def get($self, $resource, $id):
-        $url = $self._build_url("/" + $resource + "/" + str($id))
-        print("GET " + $url)
-        return {status: 200, data: {id: $id}}
-    
-    def create($self, $resource, %data):
-        $url = $self._build_url("/" + $resource)
-        print("POST " + $url)
-        return {status: 201, data: %data}
-    
-    def update($self, $resource, $id, %data):
-        $url = $self._build_url("/" + $resource + "/" + str($id))
-        print("PUT " + $url)
-        return {status: 200, data: %data}
-    
-    def delete($self, $resource, $id):
-        $url = $self._build_url("/" + $resource + "/" + str($id))
-        print("DELETE " + $url)
-        return {status: 204}
-
-print("\n=== REST API Client ===")
-$api = RestApiClient("https://api.example.com/v1", "secret_key")
-
-# CRUD Operations
-$api.list("users")
-$api.get("users", 123)
-$api.create("users", {name: "Bob"})
-$api.update("users", 123, {name: "Bob Updated"})
-$api.delete("users", 123)
-
-# ===========================================
 # WEBHOOK HANDLER SIMULATION
 # ===========================================
 
@@ -145,12 +57,11 @@ def handle_webhook($event_type, %payload):
     
     if $event_type == "user.created":
         return handle_user_created(%payload)
-    elif $event_type == "user.deleted":
+    if $event_type == "user.deleted":
         return handle_user_deleted(%payload)
-    elif $event_type == "order.placed":
+    if $event_type == "order.placed":
         return handle_order_placed(%payload)
-    else:
-        return {status: 400, message: "Unknown event type"}
+    return {status: 400, message: "Unknown event type"}
 
 def handle_user_created(%data):
     print("Creating user: " + %data["name"])
@@ -163,6 +74,40 @@ def handle_user_deleted(%data):
 def handle_order_placed(%data):
     print("Processing order: " + str(%data["order_id"]))
     return {status: 200, message: "Order processed"}
+
+# ===========================================
+# API CLIENT (using functions)
+# ===========================================
+
+def create_client($base_url):
+    return {
+        base_url: $base_url,
+        headers: {"Content-Type": "application/json"}
+    }
+
+def client_get(%client, $endpoint):
+    $url = %client["base_url"] + $endpoint
+    return http_get_with_headers($url, %client["headers"])
+
+def client_post(%client, $endpoint, %data):
+    $url = %client["base_url"] + $endpoint
+    return http_post_json($url, %data)
+
+def set_client_header(%client, $key, $value):
+    %client["headers"][$key] = $value
+    return %client
+
+# Usage example
+print("=== API Client Example ===")
+$client = create_client("https://api.example.com")
+$client = set_client_header($client, "Authorization", "Bearer token123")
+
+$get_response = client_get($client, "/users")
+print("GET Response: " + str($get_response))
+
+%new_user = {name: "Alice", email: "alice@example.com"}
+$post_response = client_post($client, "/users", %new_user)
+print("POST Response: " + str($post_response))
 
 print("\n=== Webhook Handler ===")
 handle_webhook("user.created", {name: "Charlie", email: "charlie@example.com"})

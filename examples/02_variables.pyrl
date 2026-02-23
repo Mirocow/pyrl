@@ -10,7 +10,7 @@
 $integer = 42
 $float_num = 3.14159
 $negative = -100
-$scientific = 1.5e10
+$big_num = 15000000000
 
 print("Integer: " + str($integer))
 print("Float: " + str($float_num))
@@ -74,5 +74,4 @@ print("Person age: " + str(%person["age"]))
 def greet($name):
     return "Hello, " + $name + "!"
 
-$greeter = &greet
-print($greeter("World"))
+print(greet("World"))

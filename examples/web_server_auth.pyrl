@@ -1,0 +1,898 @@
+# ============================================================
+# Pyrl Web Server Example - Frontend & Backend with Auth
+# Demonstrates: HTTP Server, Login Form, Auth, Dashboard
+# ============================================================
+
+# Server configuration
+%config = {
+    host: "0.0.0.0",
+    port: 8080,
+    secret_key: "pyrl_secret_key_2024",
+    session_timeout: 3600
+}
+
+# Users database (in-memory)
+%users = {
+    "admin": {password: "admin123", role: "administrator", name: "Administrator"},
+    "user": {password: "user123", role: "user", name: "Regular User"},
+    "guest": {password: "guest123", role: "guest", name: "Guest User"}
+}
+
+# Sessions storage
+%sessions = {}
+
+# ============================================================
+# HTML Templates (Frontend)
+# ============================================================
+
+# Login page template
+$login_page = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pyrl Admin - Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            color: #1a1a2e;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        .logo span {
+            color: #e94560;
+        }
+        .logo p {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #e94560;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+        }
+        .error-message {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #d63031;
+            display: none;
+        }
+        .success-message {
+            background: #e6ffe6;
+            color: #27ae60;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #27ae60;
+            display: none;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #e94560 0%, #c23a51 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 0.85em;
+        }
+        .footer a {
+            color: #e94560;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>Pyrl<span>Admin</span></h1>
+            <p>Web Application Dashboard</p>
+        </div>
+        
+        <div class="error-message" id="errorBox">
+            <strong>Error!</strong> Invalid username or password.
+        </div>
+        
+        <form id="loginForm" method="POST" action="/login">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn">Sign In</button>
+        </form>
+        
+        <div class="footer">
+            <p>Powered by <a href="#">Pyrl Language</a></p>
+            <p>Demo: admin / admin123</p>
+        </div>
+    </div>
+    
+    <script>
+        // Error display on page load if needed
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error') === '1') {
+            document.getElementById('errorBox').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+"""
+
+# Dashboard template
+$dashboard_page = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pyrl Admin - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            font-size: 1.8em;
+        }
+        .header span {
+            color: #e94560;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: #e94560;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .user-details {
+            text-align: right;
+        }
+        .user-name {
+            font-weight: 600;
+        }
+        .user-role {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .welcome-banner {
+            background: linear-gradient(135deg, #e94560 0%, #c23a51 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+        }
+        .welcome-banner h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .welcome-banner p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        .stat-icon.users { background: #e3f2fd; color: #2196f3; }
+        .stat-icon.posts { background: #e8f5e9; color: #4caf50; }
+        .stat-icon.views { background: #fff3e0; color: #ff9800; }
+        .stat-icon.storage { background: #fce4ec; color: #e91e63; }
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        .card-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 0.9em;
+        }
+        .activity-icon.login { background: #e3f2fd; color: #2196f3; }
+        .activity-icon.create { background: #e8f5e9; color: #4caf50; }
+        .activity-icon.update { background: #fff3e0; color: #ff9800; }
+        .activity-icon.delete { background: #fce4ec; color: #e91e63; }
+        .activity-text {
+            flex: 1;
+        }
+        .activity-time {
+            color: #999;
+            font-size: 0.85em;
+        }
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .action-btn {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.95em;
+        }
+        .action-btn:hover {
+            background: #e94560;
+            color: white;
+        }
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Pyrl<span>Admin</span></h1>
+        <div class="user-info">
+            <div class="user-details">
+                <div class="user-name">{{USERNAME}}</div>
+                <div class="user-role">{{ROLE}}</div>
+            </div>
+            <div class="user-avatar">{{AVATAR}}</div>
+            <form action="/logout" method="POST">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="welcome-banner">
+            <h2>Congratulations, {{USERNAME}}!</h2>
+            <p>Welcome to your admin dashboard. You are logged in as <strong>{{ROLE}}</strong>.</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon users">👥</div>
+                <div class="stat-value">1,234</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon posts">📝</div>
+                <div class="stat-value">567</div>
+                <div class="stat-label">Posts Created</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon views">👁️</div>
+                <div class="stat-value">89.5K</div>
+                <div class="stat-label">Page Views</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon storage">💾</div>
+                <div class="stat-value">2.4 GB</div>
+                <div class="stat-label">Storage Used</div>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="card">
+                <div class="card-header">Recent Activity</div>
+                <div class="card-body">
+                    <div class="activity-item">
+                        <div class="activity-icon login">🔐</div>
+                        <div class="activity-text">User <strong>admin</strong> logged in</div>
+                        <div class="activity-time">Just now</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon create">➕</div>
+                        <div class="activity-text">New user <strong>john_doe</strong> registered</div>
+                        <div class="activity-time">5 min ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon update">✏️</div>
+                        <div class="activity-text">Settings updated by <strong>admin</strong></div>
+                        <div class="activity-time">1 hour ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon delete">🗑️</div>
+                        <div class="activity-text">Post <strong>#1234</strong> deleted</div>
+                        <div class="activity-time">2 hours ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon create">📄</div>
+                        <div class="activity-text">New page <strong>About Us</strong> created</div>
+                        <div class="activity-time">3 hours ago</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Quick Actions</div>
+                <div class="card-body">
+                    <div class="quick-actions">
+                        <button class="action-btn">➕ Add New User</button>
+                        <button class="action-btn">📝 Create New Post</button>
+                        <button class="action-btn">⚙️ System Settings</button>
+                        <button class="action-btn">📊 View Reports</button>
+                        <button class="action-btn">🔧 Manage Plugins</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+# Error page template
+$error_page = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error - Pyrl Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .error-container {
+            text-align: center;
+        }
+        .error-code {
+            font-size: 8em;
+            font-weight: 700;
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .btn-home {
+            background: #e94560;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-home:hover {
+            background: #c23a51;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">{{CODE}}</div>
+        <div class="error-message">{{MESSAGE}}</div>
+        <a href="/" class="btn-home">Go to Login</a>
+    </div>
+</body>
+</html>
+"""
+
+# ============================================================
+# Backend - HTTP Server Implementation
+# ============================================================
+
+# Pyrl HTTP Server class
+class PyrlServer:
+    def __init__($self, %config):
+        $self.host = %config{host}
+        $self.port = %config{port}
+        $self.secret_key = %config{secret_key}
+        $self.session_timeout = %config{session_timeout}
+        $self.routes = {}
+        $self.running = False
+    
+    def route($self, $path, $method, &handler):
+        # Register route handler
+        $key = $method + ":" + $path
+        %{$self.routes}{$key} = &handler
+        print("Registered route: " + $key)
+    
+    def handle_request($self, $method, $path, %headers, $body):
+        # Find matching route
+        $key = $method + ":" + $path
+        
+        if $key in $self.routes:
+            $handler = $self.routes{$key}
+            return $handler(%headers, $body)
+        
+        # Check for wildcard routes
+        for $route_key in keys($self.routes):
+            if startswith($path, $route_key):
+                $handler = $self.routes{$route_key}
+                return $handler($path, %headers, $body)
+        
+        # 404 Not Found
+        return $self.error_response(404, "Page Not Found")
+    
+    def error_response($self, $code, $message):
+        $body = $error_page
+        $body = replace($body, "{{CODE}}", str($code))
+        $body = replace($body, "{{MESSAGE}}", $message)
+        
+        return {
+            status: $code,
+            headers: {"Content-Type": "text/html"},
+            body: $body
+        }
+    
+    def html_response($self, $content):
+        return {
+            status: 200,
+            headers: {"Content-Type": "text/html; charset=utf-8"},
+            body: $content
+        }
+    
+    def redirect_response($self, $location):
+        return {
+            status: 302,
+            headers: {"Location": $location},
+            body: ""
+        }
+    
+    def start($self):
+        print("=" * 50)
+        print("Pyrl Web Server Starting...")
+        print("=" * 50)
+        print("Host: " + $self.host)
+        print("Port: " + str($self.port))
+        print("")
+        print("Routes:")
+        for $key in keys($self.routes):
+            print("  - " + $key)
+        print("")
+        print("Server ready! Press Ctrl+C to stop.")
+        print("=" * 50)
+        $self.running = True
+
+# ============================================================
+# Authentication Functions
+# ============================================================
+
+# Generate session token
+def generate_token($username):
+    $timestamp = str(time())
+    $data = $username + ":" + $timestamp + ":" + %config{secret_key}
+    $token = hash($data)
+    return $token
+
+# Verify user credentials
+def verify_user($username, $password):
+    if $username in %users:
+        $user = %users{$username}
+        if $user{password} == $password:
+            return {success: True, user: $user}
+    return {success: False, error: "Invalid username or password"}
+
+# Create session
+def create_session($username):
+    $token = generate_token($username)
+    %sessions{$token} = {
+        username: $username,
+        created: time(),
+        expires: time() + %config{session_timeout}
+    }
+    return $token
+
+# Validate session
+def validate_session($token):
+    if $token in %sessions:
+        $session = %sessions{$token}
+        if $session{expires} > time():
+            return {valid: True, username: $session{username}}
+        else:
+            # Session expired, remove it
+            popitem(%sessions, $token)
+    return {valid: False}
+
+# ============================================================
+# Route Handlers
+# ============================================================
+
+# GET / - Login page
+def handle_login_page(%headers, $body):
+    print("[GET /] Serving login page")
+    return $server.html_response($login_page)
+
+# POST /login - Process login
+def handle_login_post(%headers, $body):
+    print("[POST /login] Processing login attempt")
+    
+    # Parse form data (simplified)
+    @params = split($body, "&")
+    %form_data = {}
+    
+    for $param in @params:
+        @parts = split($param, "=")
+        if len(@parts) == 2:
+            $key = @parts[0]
+            $value = @parts[1]
+            # URL decode (simplified)
+            $value = replace($value, "+", " ")
+            %form_data{$key} = $value
+    
+    $username = %form_data{username}
+    $password = %form_data{password}
+    
+    print("  Username: " + $username)
+    print("  Password: " + "*" * len($password))
+    
+    # Verify credentials
+    $result = verify_user($username, $password)
+    
+    if $result{success}:
+        print("  Result: SUCCESS - Redirecting to dashboard")
+        
+        # Create session
+        $token = create_session($username)
+        
+        # Redirect to dashboard with session cookie
+        return {
+            status: 302,
+            headers: {
+                "Location": "/dashboard",
+                "Set-Cookie": "session=" + $token + "; HttpOnly; Path=/"
+            },
+            body: ""
+        }
+    else:
+        print("  Result: FAILED - Invalid credentials")
+        
+        # Redirect back to login with error
+        return {
+            status: 302,
+            headers: {"Location": "/?error=1"},
+            body: ""
+        }
+
+# GET /dashboard - Admin dashboard
+def handle_dashboard(%headers, $body):
+    print("[GET /dashboard] Serving dashboard")
+    
+    # Check for session cookie
+    $cookie = %headers{Cookie}
+    $token = None
+    
+    if $cookie:
+        @cookies = split($cookie, ";")
+        for $c in @cookies:
+            $c = strip($c)
+            if startswith($c, "session="):
+                $token = replace($c, "session=", "")
+                break
+    
+    # Validate session
+    if $token:
+        $session_result = validate_session($token)
+        
+        if $session_result{valid}:
+            $username = $session_result{username}
+            $user = %users{$username}
+            
+            print("  User: " + $username)
+            print("  Role: " + $user{role})
+            
+            # Build dashboard HTML
+            $html = $dashboard_page
+            $html = replace($html, "{{USERNAME}}", $user{name})
+            $html = replace($html, "{{ROLE}}", $user{role})
+            $html = replace($html, "{{AVATAR}}", upper($username[0]))
+            
+            return $server.html_response($html)
+    
+    # Not authenticated - redirect to login
+    print("  Not authenticated - redirecting to login")
+    return $server.redirect_response("/")
+
+# POST /logout - Logout user
+def handle_logout(%headers, $body):
+    print("[POST /logout] Logging out user")
+    
+    # Invalidate session (simplified)
+    # In real implementation, would remove session from %sessions
+    
+    return {
+        status: 302,
+        headers: {
+            "Location": "/",
+            "Set-Cookie": "session=; HttpOnly; Path=/; Max-Age=0"
+        },
+        body: ""
+    }
+
+# GET /api/status - API endpoint
+def handle_api_status(%headers, $body):
+    print("[GET /api/status] API status check")
+    
+    %response = {
+        status: "ok",
+        version: "1.0.0",
+        language: "Pyrl",
+        uptime: time(),
+        users_registered: len(%users),
+        active_sessions: len(%sessions)
+    }
+    
+    return {
+        status: 200,
+        headers: {"Content-Type": "application/json"},
+        body: json_stringify(%response)
+    }
+
+# ============================================================
+# Server Initialization
+# ============================================================
+
+print("")
+print("=" * 60)
+print("  Pyrl Web Application Server - Authentication Demo")
+print("=" * 60)
+print("")
+
+# Create server instance
+$server = PyrlServer(%config)
+
+# Register routes
+$server.route("/", "GET", &handle_login_page)
+$server.route("/login", "POST", &handle_login_post)
+$server.route("/dashboard", "GET", &handle_dashboard)
+$server.route("/logout", "POST", &handle_logout)
+$server.route("/api/status", "GET", &handle_api_status)
+
+# Start server
+$server.start()
+
+# ============================================================
+# Demonstration of authentication flow
+# ============================================================
+
+print("")
+print("=" * 60)
+print("  Authentication Flow Demonstration")
+print("=" * 60)
+print("")
+
+# Test 1: Failed login
+print("Test 1: Failed login attempt")
+print("-" * 40)
+$result1 = verify_user("admin", "wrong_password")
+if $result1{success}:
+    print("  Login successful (unexpected!)")
+else:
+    print("  Login failed: " + $result1{error})
+print("")
+
+# Test 2: Successful login
+print("Test 2: Successful login attempt")
+print("-" * 40)
+$result2 = verify_user("admin", "admin123")
+if $result2{success}:
+    print("  Login successful!")
+    print("  User: " + $result2{user}{name})
+    print("  Role: " + $result2{user}{role})
+    
+    # Create session
+    $token = create_session("admin")
+    print("  Session token: " + $token)
+    
+    # Validate session
+    $session = validate_session($token)
+    if $session{valid}:
+        print("  Session valid for: " + $session{username})
+else:
+    print("  Login failed: " + $result2{error})
+print("")
+
+# Test 3: API status
+print("Test 3: API Status endpoint")
+print("-" * 40)
+print("  Registered users: " + str(len(%users)))
+print("  Active sessions: " + str(len(%sessions)))
+print("")
+
+# List users (for demo)
+print("Registered Users:")
+for $username in keys(%users):
+    $user = %users{$username}
+    print("  - " + $username + " (" + $user{role} + "): " + $user{name})
+print("")
+
+# ============================================================
+# Summary
+# ============================================================
+
+print("=" * 60)
+print("  Server Summary")
+print("=" * 60)
+print("")
+print("This Pyrl example demonstrates:")
+print("")
+print("  1. HTTP Server with multiple routes")
+print("  2. Login form (frontend HTML)")
+print("  3. Authentication logic (backend)")
+print("  4. Session management")
+print("  5. Dashboard with user info")
+print("  6. Error handling")
+print("  7. API endpoints")
+print("")
+print("Routes available:")
+print("  GET  /              - Login page")
+print("  POST /login         - Process authentication")
+print("  GET  /dashboard     - Admin dashboard (requires auth)")
+print("  POST /logout        - Logout user")
+print("  GET  /api/status    - API status endpoint")
+print("")
+print("Test credentials:")
+print("  admin / admin123    - Administrator")
+print("  user  / user123     - Regular user")
+print("  guest / guest123    - Guest user")
+print("")
+print("=" * 60)

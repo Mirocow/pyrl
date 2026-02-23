@@ -839,6 +839,163 @@ if $response{"status"} == 200:
 
 ---
 
+## Web Server with Authentication
+
+A complete web application example in Pyrl with frontend and backend is available at `examples/web_server_auth.pyrl`.
+
+### Application Structure
+
+```pyrl
+# Server configuration
+%config = {
+    host: "0.0.0.0",
+    port: 8080,
+    secret_key: "pyrl_secret_key_2024",
+    session_timeout: 3600
+}
+
+# User database (in-memory)
+%users = {
+    "admin": {password: "admin123", role: "administrator", name: "Administrator"},
+    "user": {password: "user123", role: "user", name: "Regular User"}
+}
+
+# Session storage
+%sessions = {}
+```
+
+### HTTP Server Class
+
+```pyrl
+class PyrlServer:
+    def __init__($self, %config):
+        $self.host = %config{host}
+        $self.port = %config{port}
+        $self.routes = {}
+    
+    def route($self, $path, $method, &handler):
+        $key = $method + ":" + $path
+        %{$self.routes}{$key} = &handler
+    
+    def handle_request($self, $method, $path, %headers, $body):
+        $key = $method + ":" + $path
+        if $key in $self.routes:
+            $handler = $self.routes{$key}
+            return $handler(%headers, $body)
+        return $self.error_response(404, "Not Found")
+```
+
+### Application Routes
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/` | Login page |
+| POST | `/login` | Process authentication |
+| GET | `/dashboard` | Admin dashboard (requires auth) |
+| POST | `/logout` | Logout user |
+| GET | `/api/status` | API status endpoint |
+
+### Authentication Function
+
+```pyrl
+def verify_user($username, $password):
+    if $username in %users:
+        $user = %users{$username}
+        if $user{password} == $password:
+            return {success: True, user: $user}
+    return {success: False, error: "Invalid credentials"}
+
+def create_session($username):
+    $token = generate_token($username)
+    %sessions{$token} = {
+        username: $username,
+        created: time(),
+        expires: time() + %config{session_timeout}
+    }
+    return $token
+```
+
+### Login Handler
+
+```pyrl
+def handle_login_post(%headers, $body):
+    # Parse form data
+    @params = split($body, "&")
+    %form_data = {}
+    for $param in @params:
+        @parts = split($param, "=")
+        %form_data{@parts[0]} = @parts[1]
+    
+    $username = %form_data{username}
+    $password = %form_data{password}
+    
+    # Verify credentials
+    $result = verify_user($username, $password)
+    
+    if $result{success}:
+        $token = create_session($username)
+        return {
+            status: 302,
+            headers: {
+                "Location": "/dashboard",
+                "Set-Cookie": "session=" + $token
+            },
+            body: ""
+        }
+    else:
+        return {
+            status: 302,
+            headers: {"Location": "/?error=1"},
+            body: ""
+        }
+```
+
+### HTML Templates (Frontend)
+
+**Login Page:**
+- Form with username and password fields
+- Error display for invalid credentials
+- Modern CSS styling
+
+**Dashboard:**
+- Welcome message with user name
+- Statistics (users, posts, views)
+- Activity history
+- Quick actions
+
+### Running the Server
+
+```bash
+# Execute the example
+python pyrl_cli.py examples/web_server_auth.pyrl
+
+# Or via REPL
+pyrl> run examples/web_server_auth.pyrl
+```
+
+### Test Credentials
+
+| Login | Password | Role |
+|-------|----------|------|
+| admin | admin123 | Administrator |
+| user | user123 | Regular User |
+| guest | guest123 | Guest User |
+
+### Authentication Flow
+
+```
+1. GET /               → Display login form
+2. POST /login         → Verify credentials
+   ├─ Success          → Create session, redirect /dashboard
+   └─ Failed           → Redirect /?error=1
+3. GET /dashboard      → Check session
+   ├─ Valid session    → Display dashboard
+   └─ Invalid/None     → Redirect /
+4. POST /logout        → Remove session, redirect /
+```
+
+---
+
 ## Constants
 
 | Constant | Value | Description |

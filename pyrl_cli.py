@@ -254,8 +254,9 @@ class PyrlCLI:
     load <file> - Load and execute file
     plugins  - Show loaded plugins
     plugin <name> - Load a plugin
-    train    - Train model with examples
-    train --epochs 20 --batch-size 64 - Train with options
+    train    - Train model with default examples
+    train --example=<path> - Train from specific file
+    train --epochs=20 --batch-size=64 - Train with options
     exit     - Exit REPL
 
 \033[93mKeyboard Shortcuts:\033[0m
@@ -374,6 +375,7 @@ class PyrlCLI:
     def _train_model_with_args(self, args: str) -> None:
         """Train model with specified arguments."""
         import subprocess
+        import shlex
         
         print("\033[96m" + "═" * 50)
         print("   Pyrl Model Training")
@@ -382,29 +384,140 @@ class PyrlCLI:
         # Build command
         cmd = [sys.executable, "scripts/train_model.py"]
         
-        # Parse arguments
-        if args:
-            parts = args.split()
-            for part in parts:
-                if part.startswith("--"):
-                    cmd.append(part)
-                elif "=" in part:
-                    cmd.append(part)
-                else:
-                    cmd.append(part)
+        # Parse arguments with proper handling
+        examples_path = None
+        epochs = None
+        batch_size = None
+        learning_rate = None
+        hidden_size = None
+        layers = None
+        output_path = None
         
-        # Add default examples path if not specified
-        if "--examples" not in args and "--examples-dir" not in args:
-            default_examples = Path("examples/10000_examples.pyrl")
+        if args:
+            # Split args properly (handles quoted strings)
+            try:
+                parts = shlex.split(args)
+            except:
+                parts = args.split()
+            
+            i = 0
+            while i < len(parts):
+                part = parts[i]
+                
+                # Handle --example= or --examples=
+                if part.startswith("--example="):
+                    examples_path = part.split("=", 1)[1]
+                elif part.startswith("--examples="):
+                    examples_path = part.split("=", 1)[1]
+                elif part in ("--example", "--examples"):
+                    if i + 1 < len(parts):
+                        examples_path = parts[i + 1]
+                        i += 1
+                
+                # Handle --epochs=
+                elif part.startswith("--epochs="):
+                    epochs = part.split("=", 1)[1]
+                elif part == "--epochs":
+                    if i + 1 < len(parts):
+                        epochs = parts[i + 1]
+                        i += 1
+                
+                # Handle --batch-size=
+                elif part.startswith("--batch-size="):
+                    batch_size = part.split("=", 1)[1]
+                elif part == "--batch-size":
+                    if i + 1 < len(parts):
+                        batch_size = parts[i + 1]
+                        i += 1
+                
+                # Handle --learning-rate=
+                elif part.startswith("--learning-rate="):
+                    learning_rate = part.split("=", 1)[1]
+                elif part == "--learning-rate":
+                    if i + 1 < len(parts):
+                        learning_rate = parts[i + 1]
+                        i += 1
+                
+                # Handle --hidden-size=
+                elif part.startswith("--hidden-size="):
+                    hidden_size = part.split("=", 1)[1]
+                elif part == "--hidden-size":
+                    if i + 1 < len(parts):
+                        hidden_size = parts[i + 1]
+                        i += 1
+                
+                # Handle --layers=
+                elif part.startswith("--layers="):
+                    layers = part.split("=", 1)[1]
+                elif part == "--layers":
+                    if i + 1 < len(parts):
+                        layers = parts[i + 1]
+                        i += 1
+                
+                # Handle --output=
+                elif part.startswith("--output="):
+                    output_path = part.split("=", 1)[1]
+                elif part == "--output":
+                    if i + 1 < len(parts):
+                        output_path = parts[i + 1]
+                        i += 1
+                
+                # Pass through other args
+                elif part.startswith("--"):
+                    cmd.append(part)
+                
+                i += 1
+        
+        # Add examples path
+        if examples_path:
+            # Resolve path
+            examples_file = Path(examples_path)
+            if not examples_file.is_absolute():
+                examples_file = Path(__file__).parent / examples_path
+            if examples_file.exists():
+                cmd.extend(["--examples", str(examples_file)])
+                print(f"\033[93mExamples file: {examples_file}\033[0m")
+            else:
+                print(f"\033[91mWarning: Examples file not found: {examples_path}\033[0m")
+                # Try default
+                default_examples = Path(__file__).parent / "examples/10000_examples.pyrl"
+                if default_examples.exists():
+                    cmd.extend(["--examples", str(default_examples)])
+                    print(f"\033[93mUsing default: {default_examples}\033[0m")
+        else:
+            # Use default examples
+            default_examples = Path(__file__).parent / "examples/10000_examples.pyrl"
             if default_examples.exists():
                 cmd.extend(["--examples", str(default_examples)])
+                print(f"\033[93mExamples file: {default_examples}\033[0m")
         
-        print(f"\033[90mRunning: {' '.join(cmd)}\033[0m\n")
+        # Add other parameters
+        if epochs:
+            cmd.extend(["--epochs", epochs])
+            print(f"\033[93mEpochs: {epochs}\033[0m")
+        if batch_size:
+            cmd.extend(["--batch-size", batch_size])
+            print(f"\033[93mBatch size: {batch_size}\033[0m")
+        if learning_rate:
+            cmd.extend(["--learning-rate", learning_rate])
+            print(f"\033[93mLearning rate: {learning_rate}\033[0m")
+        if hidden_size:
+            cmd.extend(["--hidden-size", hidden_size])
+            print(f"\033[93mHidden size: {hidden_size}\033[0m")
+        if layers:
+            cmd.extend(["--layers", layers])
+            print(f"\033[93mLayers: {layers}\033[0m")
+        if output_path:
+            cmd.extend(["--output", output_path])
+            print(f"\033[93mOutput: {output_path}\033[0m")
+        
+        print(f"\n\033[90mRunning: {' '.join(cmd)}\033[0m\n")
         
         try:
             result = subprocess.run(cmd, cwd=str(Path(__file__).parent))
             if result.returncode == 0:
                 print(f"\n\033[92mTraining completed successfully!\033[0m")
+                print(f"\033[90mModel saved to: models/pyrl-model/\033[0m")
             else:
                 print(f"\n\033[91mTraining failed with code {result.returncode}\033[0m")
         except Exception as e:

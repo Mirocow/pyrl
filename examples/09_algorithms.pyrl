@@ -43,7 +43,7 @@ def selection_sort(@arr):
     
     return @result
 
-print("\nSelection sort:")
+print("Selection sort:")
 print("  Output: " + str(selection_sort(@unsorted)))
 
 # ===========================================
@@ -52,13 +52,15 @@ print("  Output: " + str(selection_sort(@unsorted)))
 
 # Linear Search
 def linear_search(@arr, $target):
-    for $i in range(len(@arr)):
-        if @arr[$i] == $target:
-            return $i
+    $idx = 0
+    for $item in @arr:
+        if $item == $target:
+            return $idx
+        $idx = $idx + 1
     return -1
 
 @search_data = [10, 20, 30, 40, 50]
-print("\nLinear search for 30:")
+print("Linear search for 30:")
 print("  Index: " + str(linear_search(@search_data, 30)))
 
 # Binary Search (requires sorted array)
@@ -79,92 +81,8 @@ def binary_search(@arr, $target):
     return -1
 
 @sorted_data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-print("\nBinary search for 7:")
+print("Binary search for 7:")
 print("  Index: " + str(binary_search(@sorted_data, 7)))
-
-# ===========================================
-# RECURSIVE ALGORITHMS
-# ===========================================
-
-# Quick Sort
-def quick_sort(@arr):
-    if len(@arr) <= 1:
-        return @arr
-    
-    $pivot = @arr[len(@arr) // 2]
-    @left = []
-    @middle = []
-    @right = []
-    
-    for $x in @arr:
-        if $x < $pivot:
-            append(@left, $x)
-        elif $x == $pivot:
-            append(@middle, $x)
-        else:
-            append(@right, $x)
-    
-    @sorted_left = quick_sort(@left)
-    @sorted_right = quick_sort(@right)
-    
-    @result = []
-    extend(@result, @sorted_left)
-    extend(@result, @middle)
-    extend(@result, @sorted_right)
-    
-    return @result
-
-print("\nQuick sort:")
-@quick_test = [3, 6, 8, 10, 1, 2, 1]
-print("  Input: " + str(@quick_test))
-print("  Output: " + str(quick_sort(@quick_test)))
-
-# Merge Sort
-def merge(@left, @right):
-    @result = []
-    $i = 0
-    $j = 0
-    
-    while $i < len(@left) and $j < len(@right):
-        if @left[$i] <= @right[$j]:
-            append(@result, @left[$i])
-            $i = $i + 1
-        else:
-            append(@result, @right[$j])
-            $j = $j + 1
-    
-    while $i < len(@left):
-        append(@result, @left[$i])
-        $i = $i + 1
-    
-    while $j < len(@right):
-        append(@result, @right[$j])
-        $j = $j + 1
-    
-    return @result
-
-def merge_sort(@arr):
-    if len(@arr) <= 1:
-        return @arr
-    
-    $mid = len(@arr) // 2
-    @left = []
-    @right = []
-    
-    for $i in range($mid):
-        append(@left, @arr[$i])
-    for $i in range($mid, len(@arr)):
-        append(@right, @arr[$i])
-    
-    @sorted_left = merge_sort(@left)
-    @sorted_right = merge_sort(@right)
-    
-    return merge(@sorted_left, @sorted_right)
-
-print("\nMerge sort:")
-@merge_test = [38, 27, 43, 3, 9, 82, 10]
-print("  Input: " + str(@merge_test))
-print("  Output: " + str(merge_sort(@merge_test)))
 
 # ===========================================
 # MATHEMATICAL ALGORITHMS
@@ -178,13 +96,13 @@ def gcd($a, $b):
         $a = $temp
     return $a
 
-print("\nGCD(48, 18) = " + str(gcd(48, 18)))
+print("GCD(48, 18) -> " + str(gcd(48, 18)))
 
 # LCM (Least Common Multiple)
 def lcm($a, $b):
     return abs($a * $b) // gcd($a, $b)
 
-print("LCM(12, 18) = " + str(lcm(12, 18)))
+print("LCM(12, 18) -> " + str(lcm(12, 18)))
 
 # Prime check
 def is_prime($n):
@@ -203,34 +121,12 @@ def is_prime($n):
     
     return True
 
-print("\nPrime numbers up to 20:")
+print("Prime numbers up to 20:")
 @primes = []
 for $n in range(2, 21):
     if is_prime($n):
         append(@primes, $n)
 print("  " + str(@primes))
-
-# ===========================================
-# DYNAMIC PROGRAMMING
-# ===========================================
-
-# Fibonacci with memoization
-%fib_cache = {}
-
-def fib_memo($n):
-    $cached = get(%fib_cache, $n, None)
-    if $cached != None:
-        return $cached
-    
-    if $n <= 1:
-        %fib_cache[$n] = $n
-        return $n
-    
-    $result = fib_memo($n - 1) + fib_memo($n - 2)
-    %fib_cache[$n] = $result
-    return $result
-
-print("\nFibonacci(20) = " + str(fib_memo(20)))
 
 # ===========================================
 # STRING ALGORITHMS
@@ -239,22 +135,30 @@ print("\nFibonacci(20) = " + str(fib_memo(20)))
 # Palindrome check
 def is_palindrome($s):
     $s = lower($s)
-    $reversed = ""
-    for $i in range(len($s) - 1, -1, -1):
-        $reversed = $reversed + $s[$i]
-    return $s == $reversed
+    $len = len($s)
+    $i = 0
+    $j = $len - 1
+    while $i < $j:
+        if $s[$i] != $s[$j]:
+            return False
+        $i = $i + 1
+        $j = $j - 1
+    return True
 
-print("\nPalindrome check:")
+print("Palindrome check:")
 print("  'radar': " + str(is_palindrome("radar")))
 print("  'hello': " + str(is_palindrome("hello")))
 
 # Count character frequency
 def char_frequency($s):
     %freq = {}
-    for $char in $s:
+    for $i in range(len($s)):
+        $char = $s[$i]
         $current = get(%freq, $char, 0)
         %freq[$char] = $current + 1
     return %freq
 
-print("\nCharacter frequency of 'hello world':")
-print("  " + str(char_frequency("hello world")))
+print("Character frequency of 'hello':")
+print("  " + str(char_frequency("hello")))
+
+print("=== Algorithms Demo Complete ===")

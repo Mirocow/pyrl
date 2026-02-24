@@ -1,340 +1,282 @@
-# Pyrl Language
-
-**Pyrl** — гибридный язык программирования, вдохновлённый Python и Perl. Сочетает чистый синтаксис Python с мощной системой сигилов Perl.
-
-> **Примечание**: Весь код проекта сгенерирован моделью **GLN-5 от z.ai**
-
-## Ключевые особенности
-
-- **Сигилы переменных**: `$scalar`, `@array`, `%hash`, `&function`
-- **Python-синтаксис**: отступы вместо фигурных скобок
-- **Анонимные функции**: `&name($params) = { body }`
-- **ООП**: классы, методы, свойства
-- **Динамическая типизация**: типы проверяются во время выполнения
-- **Богатая стандартная библиотека**: математика, строки, списки, хеши
-- **HTTP/JSON**: встроенная поддержка веб-запросов
-- **Lark-парсер**: грамматика на основе EBNF
-
-## Установка
-
-```bash
-# Клонирование репозитория
-git clone http://178.140.10.58:8082/ai/pyrl-project.git
-cd pyrl-project
-
-# Установка зависимостей
-pip install -r requirements.txt
-```
-
-## Быстрый старт
-
-### Hello World
-
-```pyrl
-print("Hello, World!")
-```
-
-### Переменные
-
-```pyrl
-$name = "Alice"
-$age = 30
-@scores = [95, 87, 92, 88]
-%person = {name: "Bob", age: 25}
-```
-
-### Функции
-
-```pyrl
-# Традиционный синтаксис
-def greet($name):
-    print("Привет, " + $name + "!")
-
-greet("Мир")
-
-# Анонимные функции
-&double($x) = {
-    return $x * 2
-}
-
-print(&double(5))  # 10
-
-# Ссылка на функцию
-$func = &double
-print($func(7))  # 14
-```
-
-### Анонимные функции с блоками
-
-```pyrl
-&reverse_string($str) = {
-    $reversed = "";
-    $len = len($str);
-    $i = $len - 1;
-    while $i >= 0 {
-        $reversed = $reversed + $str[$i];
-        $i = $i - 1
-    };
-    return $reversed
-}
-
-print(&reverse_string("hello"))  # "olleh"
-
-# Проверка палиндрома
-&is_palindrome($str) = {
-    $clean = lower($str);
-    $rev = &reverse_string($clean);
-    return $clean == $rev
-}
-
-print(&is_palindrome("racecar"))  # True
-print(&is_palindrome("hello"))    # False
-```
-
-### ООП - Классы
-
-```pyrl
-class Person {
-    prop name = "Unknown"
-    prop age = 0
-    
-    init($name, $age) = {
-        $name = $name;
-        $age = $age
-    }
-    
-    method get_name() = {
-        return $name
-    }
-    
-    method greet() = {
-        return "Привет, я " + $name
-    }
-}
-
-# Создание экземпляра
-$p = Person("Alice", 30)
-print($p.get_name())  # "Alice"
-print($p.greet())     # "Привет, я Alice"
-```
-
-### Циклы
-
-```pyrl
-for $i in range(5):
-    print($i)
-
-# Цикл внутри блока
-&print_numbers($n) = {
-    $i = 0;
-    while $i < $n {
-        print($i);
-        $i = $i + 1
-    }
-}
-
-&print_numbers(5)
-```
-
-## Синтаксис
-
-### Сигилы
-
-| Сигил | Тип | Пример |
-|-------|-----|--------|
-| `$` | Скаляр | `$name = "Alice"` |
-| `@` | Массив | `@items = [1, 2, 3]` |
-| `%` | Хеш | `%person = {name: "Bob"}` |
-| `&` | Функция | `&func = &greet` |
-
-### Доступ к элементам
-
-```pyrl
-# Массивы - квадратные скобки
-$first = @numbers[0]
-
-# Хеши - квадратные скобки (Python-style)
-$name = %person["name"]
-```
-
-### Управляющие конструкции
-
-```pyrl
-if $x > 0:
-    print("Положительное")
-elif $x < 0:
-    print("Отрицательное")
-else:
-    print("Ноль")
-```
-
-### Блочный синтаксис
-
-```pyrl
-# Условия внутри блоков
-&abs($x) = {
-    if $x < 0 {
-        return -$x
-    };
-    return $x
-}
-
-# Циклы внутри блоков
-&sum_to($n) = {
-    $sum = 0;
-    for $i in range($n + 1) {
-        $sum = $sum + $i
-    };
-    return $sum
-}
-```
-
-## CLI
-
-```bash
-# Запуск файла
-python pyrl_cli.py examples/01_hello_world.pyrl
-
-# Интерактивный REPL
-python pyrl_cli.py
-
-# Выполнение кода из строки
-python pyrl_cli.py -c '$x = 10; print($x)'
-
-# Показать AST
-python pyrl_cli.py -p script.pyrl
-
-# Режим отладки
-python pyrl_cli.py -d script.pyrl
-
-# Запуск веб-сервера
-python scripts/run_web_app.py
-
-# Запуск примеров
-python scripts/run_examples.py
-
-# Генерация примеров
-python scripts/generate_examples.py
-
-# Обучение модели
-python scripts/train_model.py
-```
-
-## API Server
-
-```bash
-# Запуск сервера
-python scripts/pyrl_server.py
-
-# Или через uvicorn
-uvicorn scripts.pyrl_server:app --host 0.0.0.0 --port 8000
-
-# Выполнение кода
-curl -X POST http://localhost:8000/execute \
-    -H "Content-Type: application/json" \
-    -d '{"code": "$x = 10\nprint($x)"}'
-```
-
-## Примеры
-
-### Факториал
-
-```pyrl
-def factorial($n):
-    if $n <= 1:
-        return 1
-    return $n * factorial($n - 1)
-
-print(factorial(5))  # 120
-```
-
-### Числа Фибоначчи
-
-```pyrl
-def fibonacci($n):
-    if $n <= 1:
-        return $n
-    return fibonacci($n - 1) + fibonacci($n - 2)
-
-for $i in range(10):
-    print(fibonacci($i))
-```
-
-### Фильтрация списка
-
-```pyrl
-&filter_positive(@numbers) = {
-    @result = [];
-    for $n in @numbers {
-        if $n > 0 {
-            append(@result, $n)
-        }
-    };
-    return @result
-}
-
-@nums = [-2, 5, -1, 8, 0, 3]
-@positive = &filter_positive(@nums)
-print(@positive)  # [5, 8, 3]
-```
-
-## Структура проекта
-
-```
-pyrl/
-├── pyrl_cli.py           # CLI интерфейс
-├── src/
-│   ├── config.py         # Централизованная конфигурация
-│   └── core/
-│       ├── lark_parser.py    # Lark-парсер с грамматикой
-│       ├── exceptions.py     # Исключения
-│       └── vm/               # Виртуальная машина
-│           ├── vm.py             # Главная VM
-│           ├── environment.py    # Управление областями видимости
-│           ├── objects.py        # OOP объекты
-│           ├── builtins.py       # Встроенные функции
-│           ├── builtins_http.py  # HTTP функции
-│           ├── builtins_db.py    # SQLite функции
-│           └── builtins_crypto.py # Криптография
-├── scripts/              # Скрипты утилиты
-│   ├── generate_examples.py  # Генератор примеров
-│   ├── generate_model.py     # Генератор модели
-│   ├── run_examples.py       # Запуск примеров
-│   ├── run_web_app.py        # Веб-сервер
-│   └── train_model.py        # Обучение модели
-├── examples/             # Примеры кода
-├── tests/                # Тесты pytest (321 тест)
-├── models/               # ML модель
-├── data/                 # Runtime данные
-├── cache/                # Кэш и чекпоинты
-├── docker/               # Docker конфигурации
-└── documents/            # Документация
-```
-
-## Запуск тестов
-
-```bash
-# Все тесты
-pytest tests/ -v
-
-# С покрытием кода
-pytest tests/ --cov=src --cov-report=term-missing
-```
-
-## Новое в версии 2.0.0
-
-- **Анонимные функции**: `&name($params) = { body }`
-- **ООП**: классы с методами и свойствами
-- **Блочный синтаксис**: `{ stmt; stmt }`
-- **Исправлено затенение переменных**: переменные не затеняют встроенные функции
-
-## Лицензия
-
-MIT License
+<p align="center">
+  <img src="docs/images/pyrl_banner.png" alt="Pyrl Banner" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/images/pyrl_logo.png" alt="Pyrl Logo" width="150">
+</p>
+
+<h1 align="center">Pyrl — Hybrid Python + Perl Programming Language</h1>
+
+<p align="center">
+  <strong>Power of Perl. Simplicity of Python. One Language.</strong>
+</p>
+
+<p align="center">
+  <a href="#-features">Features</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-documentation">Documentation</a> •
+  <a href="#-examples">Examples</a> •
+  <a href="#-tools">Tools</a>
+</p>
+
+<p align="center">
+  <strong>English</strong> | <a href="README_RU.md">Русский</a>
+</p>
 
 ---
 
-**Pyrl Team**  
-Репозиторий: http://178.140.10.58:8082/ai/pyrl-project.git
+## 🎯 About
 
-*Код сгенерирован моделью GLN-5 от z.ai*
+**Pyrl** (Python + Perl) is a modern hybrid programming language that combines Perl's expressive power with Python's readability and simplicity. The language uses Perl's sigil-based variable system (`$scalar`, `@array`, `%hash`, `&function`) together with Python's control flow syntax and indentation.
+
+### Key Features
+
+- 🔥 **Sigil Variables** — intuitive type recognition by prefix
+- 🐍 **Python Syntax** — familiar `if`, `for`, `while`, `def` constructs
+- 🐪 **Perl Power** — regular expressions, built-in operators
+- 🗄️ **SQLite Integration** — native database operations
+- 🌐 **Web Server** — built-in HTTP server with REST API
+- 🤖 **AI Model** — pretrained model for code generation
+
+---
+
+## ✨ Features
+
+### Sigil-Based Variables
+
+```pyrl
+$name = "Pyrl"          # Scalar ($)
+@numbers = [1, 2, 3]    # Array (@)
+%config = {             # Hash (%)
+    "host": "localhost",
+    "port": 8080
+}
+&handler = {            # Function (&)
+    return "Hello!"
+}
+```
+
+### Python-Like Syntax
+
+```pyrl
+def greet($name):
+    if $name:
+        return "Hello, " + $name + "!"
+    else:
+        return "Hello, World!"
+
+for $i in range(5):
+    print($i)
+```
+
+### Perl-Style Regular Expressions
+
+```pyrl
+$text = "Hello, World!"
+if $text =~ m/World/:
+    print("Found!")
+
+$result = $text =~ s/World/Pyrl/
+```
+
+### Web Applications
+
+```pyrl
+$app = {
+    handle: &handle_request
+}
+
+def handle_request($req):
+    %response = {
+        "status": 200,
+        "body": "Hello from Pyrl!"
+    }
+    return %response
+```
+
+---
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/pyrl-lang/pyrl.git
+cd pyrl
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Running
+
+```bash
+# Interactive console
+python pyrl_cli.py
+
+# Execute file
+python pyrl_cli.py examples/01_hello_world.pyrl
+
+# Web server
+python scripts/run_web_app.py examples/web_server_auth.pyrl
+```
+
+### Docker
+
+```bash
+# Start server
+docker-compose up -d server
+
+# Console
+docker-compose run console
+```
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [**Language Documentation (EN)**](documents/DOCUMENTATION_EN.md) | Complete syntax and features reference |
+| [**Документация языка (RU)**](documents/DOCUMENTATION_RU.md) | Полное описание синтаксиса и возможностей |
+| [**VSCode Extension**](documents/VSCODE_PLUGIN.md) | Extension installation and usage |
+| [**AI Model**](documents/AI_MODEL.md) | Model training and inference |
+| [**Docker Services**](docker/README.md) | Containerization and deployment |
+| [**Project Roadmap**](PROJECT_ROADMAP.md) | Development plans |
+| [**CHANGELOG**](CHANGELOG.md) | Version history |
+
+---
+
+## 🛠️ Tools
+
+### VSCode Extension
+
+Plugin for Visual Studio Code with syntax highlighting, autocompletion, and snippets.
+
+```bash
+cd vscode-pyrl
+code --install-extension .
+```
+
+**Features:**
+- 🎨 Syntax highlighting
+- 📝 Quick construction snippets
+- 🔍 Variable autocompletion
+
+### AI Model Generator
+
+Train your own model for Pyrl code generation:
+
+```bash
+# Generate model
+python scripts/generate_model.py
+
+# Training
+python scripts/train_model.py --epochs 10
+
+# Inference
+python scripts/model_inference.py
+```
+
+### Pretrained Model
+
+The repository includes a pretrained model:
+- **Location:** `models/pyrl-model/`
+- **Tokenizer:** BPE, 10,000 tokens
+- **Architecture:** Transformer-based
+
+---
+
+## 📁 Project Structure
+
+```
+pyrl/
+├── src/
+│   └── core/
+│       ├── lark_parser.py      # LALR parser
+│       └── vm/
+│           ├── vm.py           # Virtual machine
+│           ├── builtins.py     # Built-in functions
+│           ├── builtins_db.py  # SQLite functions
+│           └── builtins_http.py # HTTP functions
+├── vscode-pyrl/                # VSCode extension
+├── scripts/
+│   ├── generate_model.py       # Model generator
+│   └── train_model.py          # Model training
+├── models/pyrl-model/          # Pretrained model
+├── examples/                   # Code examples
+├── docker/                     # Docker configs
+└── documents/                  # Documentation
+```
+
+---
+
+## 📋 Examples
+
+| File | Description |
+|------|-------------|
+| [01_hello_world.pyrl](examples/01_hello_world.pyrl) | Hello World |
+| [01_variables.pyrl](examples/01_variables.pyrl) | Variables |
+| [04_functions.pyrl](examples/04_functions.pyrl) | Functions |
+| [06_classes.pyrl](examples/06_classes.pyrl) | Classes |
+| [08_builtins.pyrl](examples/08_builtins.pyrl) | Built-in functions |
+| [20_perl_regex.pyrl](examples/20_perl_regex.pyrl) | Regular expressions |
+| [web_server_auth.pyrl](examples/web_server_auth.pyrl) | Auth web server |
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+make test
+
+# Specific test
+python -m pytest tests/test_vm.py -v
+```
+
+---
+
+## 🗺️ Roadmap
+
+See [PROJECT_ROADMAP.md](PROJECT_ROADMAP.md) for development plans.
+
+### Current Version: 2.3.0
+
+- ✅ SQLite integration
+- ✅ Web server with REST API
+- ✅ AI model for code generation
+- ✅ VSCode extension
+
+### Planned
+
+- 🔄 JIT compilation
+- 🔄 Standard library
+- 🔄 Package manager
+- 🔄 Debugger
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions!
+
+1. Fork the repository
+2. Create a branch (`git checkout -b feature/amazing`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+MIT License — use freely for any purpose.
+
+---
+
+<p align="center">
+  <strong>Pyrl</strong> — bringing the best of Python and Perl together
+</p>

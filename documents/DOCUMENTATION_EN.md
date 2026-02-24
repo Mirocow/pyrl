@@ -1182,11 +1182,96 @@ pyrl> run examples/web_server_auth.pyrl
 
 ---
 
+## VSCode Extension *(NEW v2.0)*
+
+Pyrl has an official extension for Visual Studio Code.
+
+### Installation
+
+```bash
+cd vscode-pyrl
+code --install-extension .
+```
+
+### Features
+
+| Feature | Description |
+|---------|----------|
+| 🎨 Syntax Highlighting | All Pyrl language constructs |
+| 📝 Snippets | Quick code templates |
+| 🔍 Autocompletion | Variables and keywords |
+| ⚙️ Configuration | Auto-closing brackets, comments |
+
+### Snippets
+
+| Prefix | Result |
+|---------|-----------|
+| `pyrl-def` | Function definition |
+| `pyrl-class` | Class definition |
+| `pyrl-if` | If statement |
+| `pyrl-for` | For loop |
+| `pyrl-while` | While loop |
+| `pyrl-web` | Web handler |
+
+### Full Documentation
+
+See [VSCODE_PLUGIN.md](VSCODE_PLUGIN.md) for complete extension documentation.
+
+---
+
+## AI Model *(NEW v2.2)*
+
+Pyrl includes a pretrained model for code generation.
+
+### Model Structure
+
+```
+models/pyrl-model/
+├── config.json              # Configuration
+├── vocab.json               # Token vocabulary (10,000)
+├── tokenizer_config.json    # Tokenizer settings
+├── special_tokens_map.json  # Special tokens
+└── training_stats.json      # Training statistics
+```
+
+### Usage
+
+```python
+from scripts.model_inference import PyrlModel
+
+model = PyrlModel.load("models/pyrl-model")
+code = model.generate("def fibonacci($n):")
+print(code)
+```
+
+### Training Your Own Model
+
+```bash
+# Generate examples
+python scripts/generate_examples.py --count 10000
+
+# Training
+python scripts/train_model.py --epochs 20 --batch-size 32
+```
+
+### Docker for Training
+
+```bash
+# With GPU
+docker-compose --profile training up -d training
+```
+
+### Full Documentation
+
+See [AI_MODEL.md](AI_MODEL.md) for complete model documentation.
+
+---
+
 ## License
 
 MIT License
 
 ---
 
-**Pyrl Team**  
+**Pyrl Team**
 Repository: http://178.140.10.58:8082/ai/pyrl-project.git

@@ -180,14 +180,13 @@ regex_literal: "r" STRING
 
 // Perl-style regex (match, quote, substitute)
 // m/pattern/mods - match, qr/pattern/mods - quote, s/pat/repl/mods - substitute
-// Also shorthand: /pattern/mods (without m)
+// Note: shorthand /pattern/ removed to avoid conflict with division operator
 PERL_REGEX.2: /m\/[^\/]+\/[imsxg]*/
             | /m~[^~]+~[imsxg]*/
             | /qr\/[^\/]+\/[imsxg]*/
             | /qr~[^~]+~[imsxg]*/
             | /s\/[^\/]*\/[^\/]*\/[imsxg]*/
             | /s~[^~]*~[^~]*~[imsxg]*/
-            | /\/[^\/]+\/[imsxg]*/
 
 conditional: IF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
            | IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]
@@ -1082,23 +1081,29 @@ class PyrlTransformer(Transformer):
         if not children:
             return None
 
-        # Filter out None values
-        children = [c for c in children if c is not None]
+        # Filter out None values and skip FOR/WHILE/IN tokens
+        filtered = []
+        for c in children:
+            if c is None:
+                continue
+            if isinstance(c, Token) and c.type in ('FOR', 'WHILE', 'IN'):
+                continue
+            filtered.append(c)
 
-        # For loop: first child is ScalarVar (loop variable)
-        # While loop: first child is expression (condition)
-        if children and isinstance(children[0], ScalarVar):
+        # For loop: first filtered child is ScalarVar (loop variable)
+        # While loop: first filtered child is expression (condition)
+        if filtered and isinstance(filtered[0], ScalarVar):
             # This is a for loop: for $var in iterable: body
-            var = children[0].name
+            var = filtered[0].name
             iterable = None
             body = []
 
             # Second child should be the iterable expression
-            if len(children) > 1:
-                iterable = children[1]
+            if len(filtered) > 1:
+                iterable = filtered[1]
 
             # Remaining children are body statements
-            for c in children[2:]:
+            for c in filtered[2:]:
                 if isinstance(c, list):
                     body.extend(self._filter_tokens(c))
                 elif not isinstance(c, Token):
@@ -1110,11 +1115,11 @@ class PyrlTransformer(Transformer):
             condition = None
             body = []
 
-            if children:
-                condition = children[0]
+            if filtered:
+                condition = filtered[0]
 
             # Remaining children are body statements
-            for c in children[1:]:
+            for c in filtered[1:]:
                 if isinstance(c, list):
                     body.extend(self._filter_tokens(c))
                 elif not isinstance(c, Token):
@@ -1123,7 +1128,14 @@ class PyrlTransformer(Transformer):
             return WhileLoop(condition=condition, body=body)
 
     def return_statement(self, children):
-        return ReturnStatement(value=children[0] if children and children[0] is not None else None)
+        # Skip the RETURN token, get the expression
+        value = None
+        for child in children:
+            if isinstance(child, Token) and child.type == 'RETURN':
+                continue
+            value = child
+            break
+        return ReturnStatement(value=value)
 
     def print_statement(self, children):
         """Transform print statement with multiple arguments."""
@@ -1132,6 +1144,9 @@ class PyrlTransformer(Transformer):
             if isinstance(child, list):
                 values.extend([c for c in child if c is not None])
             elif child is not None:
+                # Skip the 'print' identifier itself
+                if isinstance(child, IdentRef) and child.name == 'print':
+                    continue
                 values.append(child)
         return PrintStatement(values=values)
 

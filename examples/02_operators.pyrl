@@ -1,24 +1,28 @@
+# ============================================
+# 02. ОПЕРАТОРЫ И ВЫРАЖЕНИЯ
+# ============================================
+
 print("=== Arithmetic Operators ===")
 $sum = 10 + 20
-print("sum 10 + 20 = " + str($sum))
+print("10 + 20 = " + str($sum))
 
 $diff = 100 - 35
-print("diff 100 - 35 = " + str($diff))
+print("100 - 35 = " + str($diff))
 
 $product = 7 * 8
-print("product 7 * 8 = " + str($product))
+print("7 * 8 = " + str($product))
 
-$q = 25.0
-print("quotient 100/4 = " + str($q))
+$quotient = 100 / 4
+print("100 / 4 = " + str($quotient))
 
-$fd = 5
-print("floordiv 17//3 = " + str($fd))
+$floor_div = 17 // 3
+print("17 // 3 = " + str($floor_div))
 
 $modulo = 17 % 5
-print("modulo = " + str($modulo))
+print("17 % 5 = " + str($modulo))
 
 $neg = -42
-print("negative = " + str($neg))
+print("-42 = " + str($neg))
 
 print("=== Comparison Operators ===")
 $equal = 30 == 30

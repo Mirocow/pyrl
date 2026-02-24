@@ -60,7 +60,7 @@ function_definition: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statem
 
 // Block syntax for anonymous functions
 // Statements separated by newlines or semicolons
-block: "{" [block_stmt (block_sep block_stmt)* [block_sep]] "}"
+block: "{" block_stmt* "}"
 block_sep: _NL+ | ";"+ 
 block_stmt: assignment
           | return_statement
@@ -102,6 +102,7 @@ assign_target: SCALAR_VAR
              | HASH_VAR
              | FUNC_VAR
              | index_access
+             | attribute_access
 
 ?expression: or_expr
 
@@ -127,7 +128,11 @@ power_expr: unary_expr (POW_OP unary_expr)*
              | function_call
              | method_call
              | index_access
+             | attribute_access
              | var_ref
+
+// Attribute access: $obj.attr
+attribute_access: primary_expr "." IDENT
 
 // FIXED: Added IDENT to support built-in functions (str, len, int, etc.)
 ?var_ref: SCALAR_VAR
@@ -361,6 +366,13 @@ class ArrayAccess:
     """Array access with [] brackets: @array[0]"""
     obj: Any
     index: Any
+
+
+@dataclass
+class AttributeAccess:
+    """Attribute access: $obj.attr"""
+    obj: Any
+    attr: str
 
 
 @dataclass
@@ -717,6 +729,14 @@ class PyrlTransformer(Transformer):
 
     def array_access(self, children):
         return ArrayAccess(obj=children[0], index=children[1]) if len(children) >= 2 else (children[0] if children else None)
+
+    def attribute_access(self, children):
+        """Transform attribute access: $obj.attr"""
+        if len(children) >= 2:
+            obj = children[0]
+            attr = children[1].value if isinstance(children[1], Token) else str(children[1])
+            return AttributeAccess(obj=obj, attr=attr)
+        return children[0] if children else None
 
     def assign_target(self, children): return children[0] if children else None
 
@@ -1287,7 +1307,7 @@ class PyrlTransformer(Transformer):
         for child in children:
             if isinstance(child, Token):
                 if child.type in ('IDENT', 'INIT'):
-                    if child.value == 'init':
+                    if child.value in ('init', '__init__'):
                         name = 'init'
                     elif name is None:
                         name = child.value
@@ -1295,13 +1315,17 @@ class PyrlTransformer(Transformer):
                 name = child.name
             elif isinstance(child, list):
                 # Check if this is a param list
-                is_param_list = all(isinstance(p, (ScalarVar, FuncVar)) for p in child if p is not None)
+                is_param_list = all(isinstance(p, (ScalarVar, FuncVar, HashVar, ArrayVar)) for p in child if p is not None)
                 if is_param_list:
                     for p in child:
                         if isinstance(p, ScalarVar):
                             params.append(('$' + p.name, 'scalar'))
                         elif isinstance(p, FuncVar):
                             params.append(('&' + p.name, 'func'))
+                        elif isinstance(p, HashVar):
+                            params.append(('%' + p.name, 'hash'))
+                        elif isinstance(p, ArrayVar):
+                            params.append(('@' + p.name, 'array'))
                 else:
                     body = self._filter_tokens(child)
             elif isinstance(child, Block):
@@ -1310,6 +1334,10 @@ class PyrlTransformer(Transformer):
                 params.append(('$' + child.name, 'scalar'))
             elif isinstance(child, FuncVar):
                 params.append(('&' + child.name, 'func'))
+            elif isinstance(child, HashVar):
+                params.append(('%' + child.name, 'hash'))
+            elif isinstance(child, ArrayVar):
+                params.append(('@' + child.name, 'array'))
             elif child is not None and not isinstance(child, Token):
                 body.append(child)
 

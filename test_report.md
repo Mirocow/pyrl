@@ -1,24 +1,113 @@
 # Pyrl Examples Test Report
 
-**Generated:** 2026-02-24 02:39:03
+**Generated:** 2026-02-24 02:43:39
 
 ## Summary
 
 | Metric | Count |
 |--------|-------|
 | Total | 127 |
-| Passed | 25 |
-| Failed | 102 |
+| Passed | 22 |
+| Failed | 105 |
 | Timeout | 0 |
-| Success Rate | 19.7% |
+| Success Rate | 17.3% |
 
 ## Category Breakdown
 
 | Category | Total | Passed | Failed | Rate |
 |----------|-------|--------|--------|------|
-| root | 127 | 25 | 102 | 19.7% |
+| root | 127 | 22 | 105 | 17.3% |
 
 ## Failed Examples
+
+### 06_anonymous_functions.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.52s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 22, Column 15
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+19 | 
+20 | print("=== Anonymous Function with Loop ===")
+21 | &sum_range($start, $end) = {
+22 |     $total = 0;
+[91m                   ^[0m
+23 |     for $i in range($start, $end + 1) {
+24 |         $total = $total + $i
+25 |     };
+
+[91m=========...
+```
+
+### 06_classes.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.50s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 13, Column 22
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+10 |     prop age = 0
+11 |     
+12 |     init($name, $age) = {
+13 |         $name = $name;
+[91m                          ^[0m
+14 |         $age = $age
+15 |     }
+16 |     
+
+[91m============================================================[0m
+
+```
+
+### 07_classes.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.52s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 12, Column 19
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 9 |     prop age
+10 |     
+11 |     init($n, $a) = {
+12 |         $name = $n;
+[91m                       ^[0m
+13 |         $age = $a
+14 |     }
+15 |     
+
+[91m============================================================[0m
+
+```
 
 ### COMPREHENSIVE_EXAMPLES.pyrl
 
@@ -26,28 +115,28 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.55s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 222, Column 5
-[93mUnexpected token:[0m 'return' (type: RETURN)
-[93mExpected one of:[0m newline, else, }, SEMICOLON
+[93mLocation:[0m Line 472, Column 5
+[93mUnexpected token:[0m '$temp' (type: SCALAR_VAR)
+[93mExpected one of:[0m string, newline, ,, }, identifier
 
 [93mContext:[0m
-219 |     if $x < 0 {
-220 |         return -$x
-221 |     }
-222 |     return $x
-[91m          ^^^^^^[0m
-223 | }
-224 | 
-225 | # Анонимная функция с циклом
+469 | 
+470 | # Простой блок
+471 | $block_result = {
+472 |     $temp = 10
+[91m          ^^^^^[0m
+473 |     $temp = $temp * 2
+474 |     return $temp
+475 | }
 
-[91m================...
+[91m=====...
 ```
 
 ### examples_00001_00100.pyrl
@@ -56,22 +145,22 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.52s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 31, Column 57
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m identifier, @variable, &variable, %variable, R, {, (, boolean, string, [, ... and 3 more
+[93mLocation:[0m Line 7, Column 67
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-28 |     %condition["value"] = true
-29 |     # Process data
-30 | def configure($j, $force):
-31 |     &parse($min, $expone...
+ 4 | 
+ 5 | # Example 1
+ 6 | # ==================================================
+ 7 | &configure($quantity) = {while ([149]) > $last {print(%privilege)}; none >= [45.95, none, 813, -90.84, -524, $parent]}
+[91m                                       ...
 ```
 
 ### examples_00101_00200.pyrl
@@ -80,22 +169,21 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.58s
+- **Execution Time:** 0.52s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 123, Column 312
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m identifier, @variable, number, &variable, boolean, [, (, string, R, None, ... and 3 more
+[93mLocation:[0m Line 7, Column 75
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-120 | 
-121 | # Example 110
-122 | # ==================================================
-123 | class Transformer {init($ra...
+ 4 | 
+ 5 | # Example 101
+ 6 | # ==================================================
+ 7 | class File extends Profile {init($word) = {! not %rule / null // (%header); return ["phone", None] and not [$mode, -371, 9.54, $accumulator, $size] * $phase; ret...
 ```
 
 ### examples_00201_00300.pyrl
@@ -104,21 +192,22 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 17, Column 874
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m None, string, &variable, identifier, @variable, [, {, %variable, R, $variable, ... and 3 more
+[93mLocation:[0m Line 16, Column 32
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
+13 | 
 14 | # Example 202
 15 | # ==================================================
-16 | &transform($left) = {print(468); ...
+16 | &transform($left) = {print(468); print($message); verify({"address": $swap, "city": $avg, "address": false}); return}
+[91m                                    ^...
 ```
 
 ### examples_00301_00400.pyrl
@@ -134,17 +223,15 @@
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 78, Column 7
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m number, None, {, boolean, identifier, [, &variable, R, $variable, (, ... and 3 more
+[93mLocation:[0m Line 63, Column 115
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-75 | $current = 'source'
-76 | $a = false
-77 | $counter = false
-78 | $n = --56
-[91m           ^[0m
-79 | $end = any([-44.36, -8...
+60 |     print({"data": $score, "error": $output, "username": false})
+61 |     556
+62 | else:
+63 |     &read() = {print(process(-25.19, %rule) - @configs and {"address": null, "info": none, "city": $age} or False); print(%request)}
+[91m          ...
 ```
 
 ### examples_00401_00500.pyrl
@@ -153,22 +240,21 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 72, Column 318
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m (, {, [, $variable, identifier, string, number, boolean, &variable, R, ... and 3 more
+[93mLocation:[0m Line 31, Column 135
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-69 | 
-70 | # Example 407
-71 | # ==================================================
-72 | class Thread extends Converter {ini...
+28 | $char = null % 'end'
+29 | $end = {"test": $tmp, "info": 'open', "password": False, "country": $tail} <= $factor / @segment == -316
+30 | $line = %validation
+31 | &delete() = {print(%subscription < $output == $factor < -{"key": $status, "name":...
 ```
 
 ### examples_00501_00600.pyrl
@@ -184,15 +270,14 @@
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 122, Column 649
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m [, identifier, boolean, number, None, {, (, @variable, %variable, string, ... and 3 more
+[93mLocation:[0m Line 38, Column 56
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-119 | 
-120 | # Example 511
-121 | # ==================================================
-122 | class Publisher {init($heig...
+35 | 
+36 | # Example 503
+37 | # ==================================================
+38 | class Factory extends Extension {init() = {print(&hide); $pos = 'pending' - @classes or "left" or $amplitude; 'tag'; return true} prop amount = $bound prop outp...
 ```
 
 ### examples_00601_00700.pyrl
@@ -201,22 +286,21 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.58s
+- **Execution Time:** 0.57s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 165, Column 58
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m identifier, R, None, boolean, string, {, [, %variable, &variable, (, ... and 3 more
+[93mLocation:[0m Line 36, Column 95
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-162 | $key = None
-163 | $limit = 'link'
-164 | $parent = 'demo' % 'enabled' + ! -213 < 960
-165 | $center = %database - [$item,...
+33 | 
+34 | # Example 603
+35 | # ==================================================
+36 | class Matrix {prop data = [True] prop m method filter() = {if ['label', true] {{"info": None}}; %dict["sample"] = $percentage; @models[0] = @attributes; return}...
 ```
 
 ### examples_00701_00800.pyrl
@@ -225,22 +309,21 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 85, Column 292
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m &variable, %variable, boolean, @variable, (, R, identifier, string, [, {, ... and 3 more
+[93mLocation:[0m Line 46, Column 35
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-82 | 
-83 | # Example 707
-84 | # ==================================================
-85 | class Subscriber {init($a, $end)...
+43 | $base = join($j, %payload, 'error') / True and @teams
+44 | if execute($momentum) or {"code": $interval, "test": null, "status": $element, "key": -509, "code": True} - [466, -615, $phase, -27] and "email":
+45 |     # Clean up
+46 |     &close($i...
 ```
 
 ### examples_00801_00900.pyrl
@@ -249,22 +332,21 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.59s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 598, Column 5
-[93mUnexpected token:[0m '(' (type: LPAR)
-[93mExpected one of:[0m string, :
+[93mLocation:[0m Line 7, Column 182
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-595 |     $margin = "warning"
-596 |     return verify({"input": $element, "error": $rate})
-597 |     return execute(%plan, $phase) < "hello" < "world" < $velocity
-598 | test({"warning": $period, "email"...
+ 4 | 
+ 5 | # Example 801
+ 6 | # ==================================================
+ 7 | class Runner extends Store {init($head, $phase) = {for $base in range(5) {if True <= -16.17 + %info // 12.08 {for $x in range(7) {if [$end, 806, True] {print([T...
 ```
 
 ### examples_00901_01000.pyrl
@@ -273,22 +355,21 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 104, Column 1053
-[93mUnexpected token:[0m 'print' (type: PRINT)
-[93mExpected one of:[0m newline, }, SEMICOLON
+[93mLocation:[0m Line 36, Column 127
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-101 | 
-102 | # Example 906
-103 | # ==================================================
-104 | class Profile {init($difference, $remainder, $pos) = {@logs[3] = {"message": none, "info":...
+33 |     %access = {"output": $head, "phone": $margin}
+34 |     print((None))
+35 |     # Process data
+36 |     &transform($total) = {$width != 'begin' < false or %condition / $head == -4.40 <= [false, $avg, $n, 'message', -392, -293]; if @features...
 ```
 
 ### examples_01001_01100.pyrl
@@ -297,36 +378,44 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.60s
+- **Execution Time:** 0.54s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 129, Column 72
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m R, %variable, (, [, boolean, number, $variable, identifier, string, &variable, ... and 3 more
+[93mLocation:[0m Line 15, Column 42
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-126 | # ==================================================
-127 | $result = (%table)
-128 | $quotient = &write
-129 | ...
+12 | 
+13 | # Example 1002
+14 | # ==================================================
+15 | &save($word) = {%policy["value"] = %theme; %entry = {"example": $area}; if [9.28, false, False, True, true, "on", 595] {$time = clear('on', {"result": -790}) =...
 ```
 
 ### examples_01101_01200.pyrl
 
 - **Category:** root
 - **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** Runtime Error: Undefined variable: $distance
+- **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.65s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
-Runtime Error: Undefined variable: $distance
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 117, Column 109
+[93mExpected one of:[0m Unknown
 
+[93mContext:[0m
+114 | 
+115 | # Example 1108
+116 | # ==================================================
+117 | &disconnect() = {for $capacity in @collection {@tags = ["file", 216, $median, 'status', $parent, -584, 954]}; $speed = {"test": $width, "warning": $total...
 ```
 
 ### examples_01201_01300.pyrl
@@ -335,522 +424,23 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.54s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 185, Column 50
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m &variable, boolean, R, $variable, identifier, string, %variable, @variable, None, [, ... and 3 more
+[93mLocation:[0m Line 10, Column 78
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-182 |     # Initialize variables
-183 |     $age = run(%feature, @ids) % ["no", "info", True, $i, 16.50, 801] ...
+ 7 | $offset = -939
+ 8 | $pos = 'result' + none * [$error, True, -190, $next, 554, true, "type"] >= ["id", -8, -474, 'body', 305, $z, $threshold] // {"test": $density, "demo": True, "password": $interval, "name": $pos, "email": $val}
+ 9 | for $swap...
 ```
 
 ### examples_01301_01400.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.57s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 391, Column 10
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m &variable, {, R, boolean, None, number, [, %variable, string, identifier, ... and 3 more
-
-[93mContext:[0m
-388 | 
-389 | # Example 1333
-390 | # ==================================================
-391 | $line = --None - validate()...
-```
-
-### examples_01401_01500.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.56s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 203, Column 14
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m [, @variable, string, (, R, None, {, &variable, number, identifier, ... and 3 more
-
-[93mContext:[0m
-200 | # Example 1416
-201 | # ==================================================
-202 | $power = $z
-203 | $momentum = --None
-[9...
-```
-
-### examples_01501_01600.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 29, Column 52
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m %variable, &variable, @variable, None, identifier, [, boolean, $variable, (, number, ... and 3 more
-
-[93mContext:[0m
-26 | $angle = $head / $val
-27 | $input = $max
-28 | $first = -initialize()
-29 | $element = %record != $accelera...
-```
-
-### examples_01601_01700.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.57s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 360, Column 387
-[93mUnexpected token:[0m 'print' (type: PRINT)
-[93mExpected one of:[0m newline, SEMICOLON, }
-
-[93mContext:[0m
-357 | 
-358 | # Example 1627
-359 | # ==================================================
-360 | &check($score, $mass, $output) = {for $key in @rows {print(float(true, %map, false) and @s...
-```
-
-### examples_01701_01800.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 79, Column 134
-[93mUnexpected token:[0m "'target'" (type: STRING)
-[93mExpected one of:[0m }, newline, SEMICOLON
-
-[93mContext:[0m
-76 | # Example 1706
-77 | # ==================================================
-78 | class Queue {prop score prop z prop item method join($amount) = {$numerator = "info"; $ratio; $ph...
-```
-
-### examples_01801_01900.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.55s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 121, Column 9
-[93mUnexpected token:[0m '(' (type: LPAR)
-[93mExpected one of:[0m string, :
-
-[93mContext:[0m
-118 |     assert ["input", -20.97, None] == @columns
-119 | elif -49 != None * %data < 985 - $result >= ["link", false, -30.12]:
-120 |     %access["result"] = $momentum
-121 |     test() == @messages
-[91...
-```
-
-### examples_01901_02000.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.55s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 106, Column 372
-[93mUnexpected token:[0m '%font' (type: HASH_VAR)
-[93mExpected one of:[0m ), ,
-
-[93mContext:[0m
-103 | # Example 1910
-104 | # ==================================================
-105 | class List {init() = {print($pressure + [False, 757, $value, 700, 188, $energy, none, none] < @kinds - -800 or ...
-```
-
-### examples_02001_02100.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.61s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 807, Column 7
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m {, &variable, string, R, number, [, %variable, @variable, (, None, ... and 3 more
-
-[93mContext:[0m
-804 | # Example 2063
-805 | # ==================================================
-806 | $parent = -&trace
-807 | $m = --14.06 <= "l...
-```
-
-### examples_02101_02200.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.61s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 364, Column 18
-[93mUnexpected token:[0m ')' (type: RPAR)
-[93mExpected one of:[0m number, NOT, {, &variable, @variable, $variable, (, string, +/-, None, ... and 6 more
-
-[93mContext:[0m
-361 |     print(none != verify($range, "city", {"output": $error}))
-362 |     # Clean up
-363 |     # Calculate result
-364 |  ...
-```
-
-### examples_02201_02300.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.57s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 203, Column 11
-[93mUnexpected token:[0m ',' (type: COMMA)
-[93mExpected one of:[0m )
-
-[93mContext:[0m
-200 |     print(items(@products, -898))
-201 |     return ({"name": none, "value": none, "error": "type", "address": $amplitude, "key": 227}) - [true, -47.92, 543] < -20.17 + not -141
-202 | len('info', 20.60, ...
-```
-
-### examples_02301_02400.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.58s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 493, Column 436
-[93mUnexpected token:[0m ':' (type: COLON)
-[93mExpected one of:[0m SEMICOLON, }, newline
-
-[93mContext:[0m
-490 | 
-491 | # Example 2341
-492 | # ==================================================
-493 | class Graph extends Response {prop c = %data method refresh($last) = {@outputs = [$line, "outp...
-```
-
-### examples_02401_02500.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.55s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 280, Column 568
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m R, {, %variable, identifier, [, string, number, boolean, $variable, (, ... and 3 more
-
-[93mContext:[0m
-277 | # Example 2426
-278 | # ==================================================
-279 | class Session {init() = {@types; $i ...
-```
-
-### examples_02501_02600.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.56s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 435, Column 97
-[93mUnexpected token:[0m ',' (type: COMMA)
-[93mExpected one of:[0m )
-
-[93mContext:[0m
-432 |     @values = [None, 37.77, None]
-433 |     print([false, 720, null, $char, $name, False])
-434 | configure("link", "password")
-435 | print({"id": $pos, "type": $quantity, "value": $border, "name": $acce...
-```
-
-### examples_02601_02700.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.56s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 255, Column 5
-[93mUnexpected token:[0m '(' (type: LPAR)
-[93mExpected one of:[0m string, :
-
-[93mContext:[0m
-252 |     assert false != @messages or -124 / -40 and "label"
-253 | load()
-254 | range()
-255 | test([-225, false], true)
-[91m          ^[0m
-256 | 
-257 | # Example 2619
-258 | # ========================...
-```
-
-### examples_02701_02800.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.56s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 240, Column 7
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m $variable, [, {, (, &variable, %variable, number, @variable, identifier, None, ... and 3 more
-
-[93mContext:[0m
-237 |     print(-678 < @records != $rate)
-238 |     &evaluate($val, $head, $phase) = {print(["dest", True] or {"city...
-```
-
-### examples_02801_02900.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 47, Column 15
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m None, $variable, string, @variable, boolean, [, &variable, (, %variable, number, ... and 3 more
-
-[93mContext:[0m
-44 |     print(-806 * true < 733)
-45 |     # Clean up
-46 |     $limit = ! True / ["enabled"] < $val
-47 |     retur...
-```
-
-### examples_02901_03000.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.55s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 92, Column 54
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m number, [, R, (, {, %variable, None, &variable, string, @variable, ... and 3 more
-
-[93mContext:[0m
-89 | 
-90 | # Example 2909
-91 | # ==================================================
-92 | $density = ["label", null] == &connect ...
-```
-
-### examples_03001_03100.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.55s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 160, Column 11
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m identifier, None, boolean, %variable, $variable, @variable, string, number, R, {, ... and 3 more
-
-[93mContext:[0m
-157 | # Example 3011
-158 | # ==================================================
-159 | $error = "key" // [null, "...
-```
-
-### examples_03101_03200.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 75, Column 1422
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m number, [, identifier, None, string, &variable, @variable, (, $variable, boolean, ... and 3 more
-
-[93mContext:[0m
-72 | # Example 3106
-73 | # ==================================================
-74 | class Database extends Audio...
-```
-
-### examples_03201_03300.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 27, Column 433
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m (, $variable, &variable, R, {, None, %variable, string, boolean, number, ... and 3 more
-
-[93mContext:[0m
-24 | # ==================================================
-25 | &process() = {for $root in range(1) {$quotient = len(@user...
-```
-
-### examples_03301_03400.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.57s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 436, Column 171
-[93mUnexpected token:[0m 'print' (type: PRINT)
-[93mExpected one of:[0m }, SEMICOLON, newline
-
-[93mContext:[0m
-433 | # Example 3335
-434 | # ==================================================
-435 | &read($prev) = {print(%context <= 'file'); (validate(@vector, True)); while -517 > 949 or %data {...
-```
-
-### examples_03401_03500.pyrl
 
 - **Category:** root
 - **Error Type:** PYRL RUNTIME ERROR
@@ -863,18 +453,17 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 17, Column 105
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m number, {, boolean, &variable, @variable, identifier, $variable, %variable, (, R, ... and 3 more
+[93mLocation:[0m Line 7, Column 67
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-14 | # Example 3402
-15 | # ==================================================
-16 | def disable($amplitude, $a):
-...
+ 4 | 
+ 5 | # Example 1301
+ 6 | # ==================================================
+ 7 | &evaluate() = {print(compute({"phone": $temperature}, -266, True)); for $range in @indices {@data = [$limit, 3.22, 24.90, none, false, "off", -42.86]}; print(@c...
 ```
 
-### examples_03501_03600.pyrl
+### examples_01401_01500.pyrl
 
 - **Category:** root
 - **Error Type:** PYRL RUNTIME ERROR
@@ -887,17 +476,503 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 78, Column 6
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m number, identifier, string, (, [, &variable, %variable, None, {, boolean, ... and 3 more
+[93mLocation:[0m Line 33, Column 70
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-75 |     # Calculate result
-76 |     $temp = 958
-77 |     return &store
-78 |     --41
-[91m          ^[0m
-79 |     return...
+30 | # Example 1403
+31 | # ==================================================
+32 | &init($power, $velocity) = {$c = 'page'}
+33 | &delete($c, $flag) = {for $ratio in @cache {@warnings[4] = [True, 30]; %access["error"] = True; %constraint["status"] =...
+```
+
+### examples_01501_01600.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.52s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 223
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 1501
+ 6 | # ==================================================
+ 7 | &process($next_val, $frequency, $last) = {if %document and None * false or ['yes'] == -17.90 / {"city": $duration} {$sum = [545, false, "info", $min, true, 915...
+```
+
+### examples_01601_01700.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.52s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 121, Column 147
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+118 | 
+119 | # Example 1610
+120 | # ==================================================
+121 | &reset($angle, $z, $border) = {print((['right', none, "text", false, 'message', -335, "pending", 486] % %condition) > (-710) or 'disabled' % None); @head...
+```
+
+### examples_01701_01800.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 17, Column 35
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+14 |     return
+15 |     @words[4] = {"demo": False, "city": $mode, "password": 939}
+16 |     return
+17 | &clean() = {if [none, 626] {return; for $tail in range(5) {$min - {"phone": $total, "phone": true, "token": True, "code": $age, "data": "categ...
+```
+
+### examples_01801_01900.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 25, Column 112
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+22 | # Example 1802
+23 | # ==================================================
+24 | def warn():
+25 |     &configure($root, $j, $margin) = {@fragments = [-63.70, 903, True, -69.00, false, false, $remainder, 18.29]; print(&backup); @tokens[3] = %dict...
+```
+
+### examples_01901_02000.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 53, Column 114
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+50 | if 'username' / {"token": 996, "error": $length, "phone": -491, "country": false}:
+51 |     # Initialize variables
+52 |     # Calculate result
+53 | class Job extends Checker {init($next, $output) = {$next = @list >= -68.63 > True > min($head,...
+```
+
+### examples_02001_02100.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.50s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 10, Column 155
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 7 | def test():
+ 8 |     @categories[9] = $temperature
+ 9 |     # Validate input
+10 |     &run($count, $previous) = {if -{"country": True, "country": null, "code": -787} // @options <= $angle + null and $name {$error or $tmp < $text or $end; retu...
+```
+
+### examples_02101_02200.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.50s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 18
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 2101
+ 6 | # ==================================================
+ 7 | &test() = {return; $child = %order - @fragments < 69 + %header; print(@products); return}
+[91m                      ^[0m
+ 8 | &configure($first, $force, $rate...
+```
+
+### examples_02201_02300.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.53s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 40
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 2201
+ 6 | # ==================================================
+ 7 | &execute($temperature) = {print("info"); for $amount in @chunk {if (none - $coefficient) * (329) {for $i in range(5) {%session["test"] = {"email": $avg, "info":...
+```
+
+### examples_02301_02400.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 39, Column 55
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+36 |     %environment["data"] = "yes"
+37 |     @block = [-442, 580, False, $circumference, 2.71]
+38 |     return
+39 | &convert($n) = {if "note" {return [$left, "key", none]; @configs[9] = {"success": 'password', "email": 883}; print(-null)} else {i...
+```
+
+### examples_02401_02500.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.53s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 25, Column 167
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+22 |     @strings = [$time, 'link']
+23 |     $count = &insert >= @section
+24 |     @rows[10] = {"input": "end", "id": $area, "result": 329, "input": $current}
+25 | class Runner extends Stream {prop result = %response prop total = {"info": $speed} ...
+```
+
+### examples_02501_02600.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 21, Column 76
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+18 | # Example 2502
+19 | # ==================================================
+20 | # Initialize variables
+21 | &connect($padding, $load, $height) = {return [None, 58, 965, False, -33.79]; &verify; return {"phone": false} / $node and @types and true...
+```
+
+### examples_02601_02700.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 17, Column 72
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+14 |     # Check condition
+15 | for $start in range(12):
+16 |     print(keys())
+17 |     &reset($result) = {print(True - @elements <= @products + "success"); print("chapter"); return}
+[91m                                                           ...
+```
+
+### examples_02701_02800.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.54s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 47, Column 36
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+44 | 
+45 | # Example 2704
+46 | # ==================================================
+47 | &load($median) = {@numbers[10] = $j; print((find($max, $acceleration, True)) - %order); $tail = ! %customer; return ({"error": $m, "data": "pending", "key": 16...
+```
+
+### examples_02801_02900.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.52s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 67
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 2801
+ 6 | # ==================================================
+ 7 | class Clock {init() = {for $rate in @properties {-599 or 'enabled'; while strip($median, "right") != [727, 45.86, -83.14, -160] == None % items() < @ids and 'do...
+```
+
+### examples_02901_03000.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.53s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 44, Column 64
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+41 | 
+42 | # Example 2904
+43 | # ==================================================
+44 | &transform($percentage, $size, $parent) = {@issues[10] = 'link'; return -30.83 + print(-346) > None // @units}
+[91m                                           ...
+```
+
+### examples_03001_03100.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 33
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 3001
+ 6 | # ==================================================
+ 7 | &send() = {@inputs[10] = @groups; print($min); print(%mapping * $z / "address" + not -957 <= None - {"error": "title", "country": false}); print((! false > true...
+```
+
+### examples_03101_03200.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.53s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 38, Column 78
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+35 | for $difference in range(7):
+36 |     %context = {"value": 34.89, "code": "type"}
+37 |     # Format output
+38 |     &test($magnitude, $pressure) = {not (@units <= [18.56, -202, true, None]); %info["sample"] = 'category'; return; print(str([nul...
+```
+
+### examples_03201_03300.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 9, Column 42
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 6 | # ==================================================
+ 7 | $root = @tasks > %fields >= ["category", 'city', -641]
+ 8 | $ratio = %subscription
+ 9 | &check($speed, $error) = {{"result": -58}; $pos = false == @segment; return}
+[91m                ...
+```
+
+### examples_03301_03400.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.53s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 44
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 3301
+ 6 | # ==================================================
+ 7 | class Database {init() = {return 'password'; return 66.94 * (@items) / 'test' < {"test": $leaf} < 'link'; return (-12.54 < @headers <= $age or %account)} prop r...
+```
+
+### examples_03401_03500.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.53s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 17, Column 105
+[93mUnexpected token:[0m '-' (type: ADD_OP)
+[93mExpected one of:[0m [, boolean, number, $variable, %variable, R, (, None, @variable, {, ... and 3 more
+
+[93mContext:[0m
+14 | # Example 3402
+15 | # ==================================================
+16 | def disable($amplitude, $a):
+17 |     asser...
+```
+
+### examples_03501_03600.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.58s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 45, Column 46
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+42 |     print(load($threshold, 'group'))
+43 |     %table["warning"] = $width
+44 |     print(True)
+45 |     &test($k, $text) = {%map["key"] = &format; $end = -51.63 / -400; if -42.79 {@items and True and 657 == (@properties); for $counter in @sessi...
 ```
 
 ### examples_03601_03700.pyrl
@@ -906,20 +981,21 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.52s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 106, Column 79
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m {, %variable, R, [, None, identifier, number, @variable, string, $variable, ... and 3 more
+[93mLocation:[0m Line 7, Column 151
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-103 | # ==================================================
-104 | &evaluate($factor) = {if (all()) {$last = None <= "re...
+ 4 | 
+ 5 | # Example 3601
+ 6 | # ==================================================
+ 7 | class Response {prop data method get() = {return max($interval) or &log + -67.66 and 'example' <= {"error": -573, "password": 'target', "error": none}; @sectio...
 ```
 
 ### examples_03701_03800.pyrl
@@ -928,22 +1004,21 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.60s
+- **Execution Time:** 0.57s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 555, Column 283
-[93mUnexpected token:[0m 'print' (type: PRINT)
-[93mExpected one of:[0m }, newline, SEMICOLON
+[93mLocation:[0m Line 7, Column 36
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-552 |     assert load($pos, @block)
-553 |     $x = "tag"
-554 | def verify($product, $power):
-555 |     &init() = {if -384 * $median % {"hello": $energy, "status": $pivot, "value": "er...
+ 4 | 
+ 5 | # Example 3701
+ 6 | # ==================================================
+ 7 | &clear($name, $offset) = {('group'); return "key" - None // %context // list() == abs([true, $capacity, "file", false], {"country": false, "info": $direction, "...
 ```
 
 ### examples_03801_03900.pyrl
@@ -952,21 +1027,21 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 255, Column 9
-[93mUnexpected token:[0m '&authenticate' (type: FUNC_VAR)
-[93mExpected one of:[0m :
+[93mLocation:[0m Line 23, Column 139
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-252 | $m = ! "message" >= @strings and {"message": False, "name": $capacity, "test": -574}
-253 | $weight = "left"
-254 | $power = -28.37 or [null, 'username', 421, False, None, $momentum, $densit...
+20 |     $k = ($capacity)
+21 | for $size in range(12):
+22 |     $swap = $z
+23 |     &delete() = {$counter = verify($pos, {"city": $acceleration, "key": $y, "data": true, "email": 'complete', "message": 546}, "comment"); while 329 >= @array {%entry...
 ```
 
 ### examples_03901_04000.pyrl
@@ -975,73 +1050,24 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.59s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 309, Column 9
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m {, [, @variable, (, identifier, None, boolean, number, string, %variable, ... and 3 more
+[93mLocation:[0m Line 121, Column 137
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-306 | # ==================================================
-307 | $pivot = &navigate
-308 | $factor = (false)
-309 | $key = ...
+118 | 
+119 | # Example 3909
+120 | # ==================================================
+121 | &load($counter, $text, $quantity) = {while 'title' or @pool // 'link' or ["output", None, $quantity, null, $interval] {$volume = @series; if keys() < flo...
 ```
 
 ### examples_04001_04100.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.55s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 296, Column 488
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m R, $variable, string, [, &variable, {, number, (, boolean, @variable, ... and 3 more
-
-[93mContext:[0m
-293 | 
-294 | # Example 4022
-295 | # ==================================================
-296 | class Audio {init($right, $spe...
-```
-
-### examples_04101_04200.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.63s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 939, Column 63
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m None, string, {, R, (, identifier, number, [, @variable, &variable, ... and 3 more
-
-[93mContext:[0m
-936 | 
-937 | # Example 4177
-938 | # ==================================================
-939 | class Client {init($energy, $scor...
-```
-
-### examples_04201_04300.pyrl
 
 - **Category:** root
 - **Error Type:** PYRL RUNTIME ERROR
@@ -1054,15 +1080,60 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 86, Column 725
-[93mUnexpected token:[0m 'print' (type: PRINT)
-[93mExpected one of:[0m SEMICOLON, newline, }
+[93mLocation:[0m Line 147, Column 29
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-83 | 
-84 | # Example 4210
-85 | # ==================================================
-86 | class Service {init($node, $z) = {print([403] >= %database - join()); while -$difference and cl...
+144 | 
+145 | # Example 4010
+146 | # ==================================================
+147 | &validate($exponent) = {-855; range(False, $volume); %color = {"country": $z, "value": $i, "email": -16.85, "demo": "body"}; return {"country": $accelerat...
+```
+
+### examples_04101_04200.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 15, Column 155
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+12 |     # Calculate result
+13 |     $min = convert()
+14 |     ($node - [-629, -732, none, -70.77, 139, 539, $pivot] or 64)
+15 |     &insert($angle) = {if ["yes", None, -803, false, 310] or %payload {$node = True <= ["result", null, 87.10, 'output...
+```
+
+### examples_04201_04300.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.57s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 12, Column 51
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 9 | $remainder = 544 + True <= ["phone", 10.21, true, False, 729, -315] or ('done')
+10 | $key = parse(%order, ["city", $val, -977, "country", null, 124, 'enabled', $quantity])
+11 | if %meta:
+12 |     &init($threshold, $swap, $mode) = {return True;...
 ```
 
 ### examples_04301_04400.pyrl
@@ -1071,21 +1142,21 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.61s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 601, Column 20
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m identifier, &variable, %variable, None, $variable, number, boolean, {, @variable, R, ... and 3 more
+[93mLocation:[0m Line 35, Column 82
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-598 | $amplitude = "open"
-599 | $sum = (-300) % $x % ($difference)
-600 | $left = ['inactive', 921, -52.80, nu...
+32 | def handle():
+33 |     # Initialize variables
+34 |     # Update state
+35 |     &receive() = {return {"info": $pressure, "value": $exponent, "hello": "data"}; @chars = [null, "title", -5.88, False, -83.24, -37.27, True]; $b = true; print(null <...
 ```
 
 ### examples_04401_04500.pyrl
@@ -1101,17 +1172,14 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 288, Column 5
-[93mUnexpected token:[0m '(' (type: LPAR)
-[93mExpected one of:[0m :, string
+[93mLocation:[0m Line 53, Column 103
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-285 |     return -&stop != none == [-357, true, null]
-286 | check(&join)
-287 | clean(@pool, "chapter", 'password')
-288 | test([true, null, 'input', -342, -267, False, True], 29)
-[91m          ^[0m
-289...
+50 | 
+51 | # Example 4404
+52 | # ==================================================
+53 | &fetch($end, $speed, $y) = {print(['yes', 979, False, -939, -558] and 'on' + $key >= -258 - not int()); [-221, 173]; $denominator = @processes; for $next in @...
 ```
 
 ### examples_04501_04600.pyrl
@@ -1120,22 +1188,22 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 159, Column 99
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m identifier, boolean, &variable, None, $variable, {, number, %variable, R, @variable, ... and 3 more
+[93mLocation:[0m Line 23, Column 35
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-156 | 
-157 | # Example 4515
-158 | # ==================================================
-159 | &close($pressure...
+20 | $token = run(%result)
+21 | $time = "done"
+22 | $frequency = -47.29 or False or &receive - 71.32 and "url"
+23 | &save($tmp, $size) = {print($flag); return (-713) - &test <= ([False, "false", "active", $text, True, -73, False])}
+[91m           ...
 ```
 
 ### examples_04601_04700.pyrl
@@ -1151,15 +1219,14 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 34, Column 137
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m (, string, %variable, @variable, $variable, &variable, identifier, [, None, R, ... and 3 more
+[93mLocation:[0m Line 34, Column 128
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
 31 | for $swap in range(6):
 32 |     # Calculate result
 33 |     # Initialize variables
-34 | class Container {prop ...
+34 | class Container {prop price = true prop j prop data = 'link' prop score = $price method slice($height) = {%product["name"] = 76; while --55.88 + false == ...
 ```
 
 ### examples_04701_04800.pyrl
@@ -1175,14 +1242,14 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 343, Column 413
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m %variable, R, [, {, boolean, &variable, number, None, string, @variable, ... and 3 more
+[93mLocation:[0m Line 17, Column 59
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-340 | # Example 4725
-341 | # ==================================================
-342 | &receive() = {convert(%storage); r...
+14 | # ==================================================
+15 | def test($margin, $total, $momentum, $buffer):
+16 |     $previous = $threshold
+17 |     &fetch($difference, $width) = {@messages[10] = &insert; print(@types); $interval = (! -52) / (map...
 ```
 
 ### examples_04801_04900.pyrl
@@ -1191,21 +1258,21 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.57s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 116, Column 94
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m $variable, identifier, [, number, %variable, R, (, &variable, string, None, ... and 3 more
+[93mLocation:[0m Line 42, Column 114
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-113 | # ==================================================
-114 | $x = %request < None + 693 != $tmp
-115 | $circumferen...
+39 | 
+40 | # Example 4804
+41 | # ==================================================
+42 | &evaluate($first, $right) = {return [$val, -31.42, 506, none, 'true'] % 'complete' and 'begin' + 756 < not -95.73; print(strip(@tags, &refresh, @alerts)); if ...
 ```
 
 ### examples_04901_05000.pyrl
@@ -1221,63 +1288,17 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 189, Column 158
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m @variable, &variable, {, identifier, (, boolean, [, number, None, R, ... and 3 more
+[93mLocation:[0m Line 18, Column 102
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-186 |     print((False))
-187 |     %state["message"] = [616, True, -62.14]
-188 |     return
-189 | &verify($temperature, $nex...
+15 | 
+16 | # Example 4902
+17 | # ==================================================
+18 | class Adapter {prop count = %settings prop score prop output method join($last) = {return calculate(); if (convert([29.09, 478, -418, null])) + {"password": "...
 ```
 
 ### examples_05001_05100.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.53s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 23, Column 75
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m &variable, %variable, boolean, string, {, identifier, @variable, R, $variable, None, ... and 3 more
-
-[93mContext:[0m
-20 | # Example 5002
-21 | # ==================================================
-22 | &reset($amplitude) = {@user...
-```
-
-### examples_05101_05200.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 93, Column 131
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m [, identifier, number, string, @variable, &variable, R, None, %variable, $variable, ... and 3 more
-
-[93mContext:[0m
-90 | # ==================================================
-91 | &store($difference, $rate) = {@fields[1] = [$pr...
-```
-
-### examples_05201_05300.pyrl
 
 - **Category:** root
 - **Error Type:** PYRL RUNTIME ERROR
@@ -1290,13 +1311,60 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 248, Column 73
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m identifier, string, $variable, R, &variable, (, %variable, @variable, number, boolean, ... and 3 more
+[93mLocation:[0m Line 22, Column 63
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-245 | for $interval in [$value, -163, 'ready']:
-246 |     @configs = [none, -13.59, 46, -67.02, -326, -10, ...
+19 | 
+20 | # Example 5002
+21 | # ==================================================
+22 | &reset($amplitude) = {@users = [$char, false, -74.48, $center]; [617, 'demo', "city", -889, $next_val, True, 977] > sum(); print(%properties // {"test": 'demo'...
+```
+
+### examples_05101_05200.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.53s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 14, Column 38
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+11 |     print((846 // {"status": 'link', "key": 'inactive', "data": $b, "username": $word} == $phase))
+12 |     # Log message
+13 |     return
+14 | &calculate($force, $node) = {&restart; $density; calculate(-59.08) and @array * not 'test' != $age; ...
+```
+
+### examples_05201_05300.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.57s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 34, Column 69
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+31 |     # Update state
+32 |     # Log message
+33 |     # Update state
+34 | &open($force) = {$base = [True, "note", 13] >= save() <= -711 + True; return ([None, $quantity, 782, -703, True, -501] - [null]) != ! {"country": 29, "sample": -558}; test(...
 ```
 
 ### examples_05301_05400.pyrl
@@ -1312,63 +1380,17 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 66, Column 34
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m boolean, string, number, @variable, &variable, [, {, %variable, $variable, (, ... and 3 more
+[93mLocation:[0m Line 12, Column 140
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-63 | $quantity = initialize($min, [$remainder]) == enumerate($limit) > (-386)
-64 | $force = 'disabled' // True / form...
+ 9 | def forward($tail, $temperature, $remainder):
+10 |     # Validate input
+11 |     print([$diameter, -985, $sum, -253, True] < "demo" * 'phone' == &increase)
+12 |     &configure($exponent, $tail) = {$duration = convert([429], [-45.08, 210, Fals...
 ```
 
 ### examples_05401_05500.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 176, Column 252
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m [, string, $variable, {, &variable, %variable, identifier, R, @variable, None, ... and 3 more
-
-[93mContext:[0m
-173 | # Example 5414
-174 | # ==================================================
-175 | class Client {init($index, $...
-```
-
-### examples_05501_05600.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.56s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 476, Column 5
-[93mUnexpected token:[0m '(' (type: LPAR)
-[93mExpected one of:[0m :, string
-
-[93mContext:[0m
-473 |     return
-474 |     return [-335, 'description', False, 5.86, 398, -410] - -18.26 or [-550, False] <= [-619]
-475 | configure(&init, None, 'demo')
-476 | test({"email": $size, "input": true}, [95.3...
-```
-
-### examples_05601_05700.pyrl
 
 - **Category:** root
 - **Error Type:** PYRL RUNTIME ERROR
@@ -1381,15 +1403,61 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 76, Column 207
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m R, None, (, number, [, identifier, {, %variable, boolean, &variable, ... and 3 more
+[93mLocation:[0m Line 7, Column 135
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-73 | 
-74 | # Example 5607
-75 | # ==================================================
-76 | &initialize() = {print($token); $sum...
+ 4 | 
+ 5 | # Example 5401
+ 6 | # ==================================================
+ 7 | &test($magnitude, $element) = {print(["username", $word, 481, 'section', "content", -60] < -{"data": false, "error": $score} % "city"); @properties[7] = [none,...
+```
+
+### examples_05501_05600.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.55s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 65
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 5501
+ 6 | # ==================================================
+ 7 | class Module {init() = {return [$m, "section", "text", 276, 501]; return} prop quantity prop age = false prop name = %storage prop score method join() = {for $a...
+```
+
+### examples_05601_05700.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.56s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 62, Column 29
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+59 | def divide($height, $word):
+60 |     %session = {"demo": $a, "code": $denominator, "message": 118}
+61 |     print(items() * @events % {"warning": True, "type": $start})
+62 |     &save() = {print($ratio); return}
+[91m                          ...
 ```
 
 ### examples_05701_05800.pyrl
@@ -1398,20 +1466,22 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.55s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 67, Column 7
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m [, number, &variable, boolean, R, $variable, (, @variable, %variable, string, ... and 3 more
+[93mLocation:[0m Line 9, Column 61
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-64 | # ==================================================
-65 | $n = @bytes > [814, false, 'city'] > False // ("pending...
+ 6 | # ==================================================
+ 7 | @bytes = [True, -34.56, -871, False]
+ 8 | $x = True <= (None and {"result": $previous})
+ 9 | &retrieve($count, $line, $b) = {[-970, 192, none, 'enabled']; return}
+[91m                  ...
 ```
 
 ### examples_05801_05900.pyrl
@@ -1427,12 +1497,14 @@ Runtime Error: Undefined variable: $distance
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 251, Column 122
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m string, {, boolean, $variable, @variable, &variable, [, %variable, None, R, ... and 3 more
+[93mLocation:[0m Line 63, Column 55
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-248 |     return {"value": -611, "id": $index, "warning": $phase} - {"data": True, "email": $token, "output": $speed,...
+60 | 
+61 | # Example 5806
+62 | # ==================================================
+63 | class Plugin {init($rate, $y) = {@collection[6] = True; return [False]} prop value prop x prop result = -440 method reload() = {while -@piece {return {"output"...
 ```
 
 ### examples_05901_06000.pyrl
@@ -1441,175 +1513,25 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.59s
+- **Execution Time:** 0.55s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 608, Column 171
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m [, None, {, %variable, $variable, number, @variable, &variable, boolean, string, ... and 3 more
+[93mLocation:[0m Line 19, Column 58
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-605 | 
-606 | # Example 5956
-607 | # ==================================================
-608 | class Handler {init...
+16 | # ==================================================
+17 | %response["result"] = $center
+18 | assert ! &expand % 786 > close(@logs, 413)
+19 | &clean() = {$child = [655, None, -731, -41.44] > $counter; [True, None, 75, 50.69, 429]}
+[91m        ...
 ```
 
 ### examples_06001_06100.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** Runtime Error: Undefined variable: %state
-- **Line:** None
-- **Execution Time:** 0.65s
-
-**Stderr:**
-```text
-Runtime Error: Undefined variable: %state
-
-```
-
-### examples_06101_06200.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 109, Column 11
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m $variable, %variable, string, None, number, identifier, R, {, @variable, boolean, ... and 3 more
-
-[93mContext:[0m
-106 | $child = 'no'
-107 | $numerator = @headers <= 801 - ! 180
-108 | $status = @bytes <= ["text"] and ['off', Fa...
-```
-
-### examples_06201_06300.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.57s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 519, Column 5
-[93mUnexpected token:[0m '(' (type: LPAR)
-[93mExpected one of:[0m string, :
-
-[93mContext:[0m
-516 |     &init($pivot, $rate, $leaf) = {{"username": -88.02, "input": 'category', "key": $line} // &forward != @columns; while ($m * %validation * {"success": 39.50} + {"success": $message, "phone": -1...
-```
-
-### examples_06301_06400.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.62s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 846, Column 122
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m {, [, None, (, &variable, number, boolean, $variable, identifier, string, ... and 3 more
-
-[93mContext:[0m
-843 | # ==================================================
-844 | class Observer {init($price, $previous) = {for $diamet...
-```
-
-### examples_06401_06500.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 71, Column 41
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m (, %variable, $variable, boolean, None, number, identifier, string, &variable, R, ... and 3 more
-
-[93mContext:[0m
-68 |     print([none, -6, -829, -131, $sum, $current])
-69 |     %theme = {"example": "section", "country": true}
-...
-```
-
-### examples_06501_06600.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.53s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 29, Column 33
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m &variable, boolean, {, %variable, $variable, identifier, string, None, number, @variable, ... and 3 more
-
-[93mContext:[0m
-26 | $key = &setup * (['target', 52, true, -275, -878, 36.44])
-27 | $percentage = 956
-28 | $phase = -3.08...
-```
-
-### examples_06601_06700.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.61s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 725, Column 215
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m (, $variable, None, %variable, R, @variable, &variable, [, string, identifier, ... and 3 more
-
-[93mContext:[0m
-722 | 
-723 | # Example 6657
-724 | # ==================================================
-725 | class Entity {init($l...
-```
-
-### examples_06701_06800.pyrl
 
 - **Category:** root
 - **Error Type:** PYRL RUNTIME ERROR
@@ -1622,14 +1544,177 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 266, Column 118
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m identifier, string, (, boolean, {, R, None, &variable, $variable, number, ... and 3 more
+[93mLocation:[0m Line 139, Column 184
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-263 |     $swap = (None) != ! %settings > %font
-264 |     return (('disabled' / %attributes))
-265 | def flush($accumula...
+136 | 
+137 | # Example 6011
+138 | # ==================================================
+139 | &run($z, $head, $z) = {if @numbers or -848 // None - none {@types = [None, -816, $flag, "group"]} else {if $phase {$limit = (find(885, &merge)) > [$momen...
+```
+
+### examples_06101_06200.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.56s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 56, Column 152
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+53 | # ==================================================
+54 | &compute() = {($avg and {"address": none, "hello": True, "key": $mode, "id": $text, "key": -615})}
+55 | &run() = {$offset = $result}
+56 | &clear($length, $pivot, $avg) = {if [-318] {pr...
+```
+
+### examples_06201_06300.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.56s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 77, Column 174
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+74 | 
+75 | # Example 6208
+76 | # ==================================================
+77 | class Observer {prop z method reset($z, $previous) = {@rows - [None, 871, 84.85, none, -517, "body", 949, none] - null < [$force] and $threshold == $magnitude...
+```
+
+### examples_06301_06400.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.55s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 112
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 6301
+ 6 | # ==================================================
+ 7 | class Checker {init($phase) = {%header = {"username": $status, "city": False, "city": $message, "world": $prev}; ! ['category'] or 'country'; for $coefficient ...
+```
+
+### examples_06401_06500.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.55s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 9, Column 64
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 6 | # ==================================================
+ 7 | test "input":
+ 8 |     print(784)
+ 9 |     &execute() = {@jobs = ["tag", 289, True, $quotient, 'text']; $velocity; $element > {"id": $size}; calculate($denominator, none); return 265}
+[...
+```
+
+### examples_06501_06600.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.55s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 16, Column 45
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+13 | 
+14 | # Example 6502
+15 | # ==================================================
+16 | &remove($speed, $node) = {$total = "chapter"; 83.74; print([$acceleration, none, $counter, 842, True]); return}
+[91m                                          ...
+```
+
+### examples_06601_06700.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.55s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 8, Column 87
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 5 | # Example 6601
+ 6 | # ==================================================
+ 7 | &write($data) = {print(%storage)}
+ 8 | &compute($volume, $child, $amount) = {for $duration in range(3) {@elements = [-89.63]}; return; for $power in @rows {-calculate...
+```
+
+### examples_06701_06800.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.55s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 14, Column 125
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+11 | # Example 6702
+12 | # ==================================================
+13 | class Point {prop score = $element prop score prop c method remove($percentage, $mass) = {%item = {"error": $y}}}
+14 | class Processor extends Component {prop data ...
 ```
 
 ### examples_06801_06900.pyrl
@@ -1638,7 +1723,7 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.55s
 
 **Stderr:**
 ```text
@@ -1670,14 +1755,14 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 184, Column 1507
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m @variable, [, identifier, R, boolean, &variable, number, %variable, {, None, ... and 3 more
+[93mLocation:[0m Line 57, Column 108
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-181 | # Example 6917
-182 | # ==================================================
-183 | &parse($factor, $median, $lea...
+54 |     # Initialize variables
+55 |     $score = save($age, -77.11) < load({"demo": "output"}, [-961, -44.01, 972, $head, 'test', $next_val, 748, 303], @elements)
+56 |     # Handle error
+57 |     &compute($base, $left, $node) = {print(["section",...
 ```
 
 ### examples_07001_07100.pyrl
@@ -1686,19 +1771,21 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 64, Column 15
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m identifier, string, $variable, @variable, {, R, &variable, number, [, %variable, ... and 3 more
+[93mLocation:[0m Line 7, Column 226
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-61 | class Consumer {init($message, $difference, $offset) = {@schemas[4] = &trace; $range = -621 // %data // ['sta...
+ 4 | 
+ 5 | # Example 7001
+ 6 | # ==================================================
+ 7 | class Reporter {prop n = $limit prop a prop j = $mode method delete($result) = {@inputs = [90.66, 25, $padding, $output]} method merge($amplitude, $temp) = {%m...
 ```
 
 ### examples_07101_07200.pyrl
@@ -1714,15 +1801,14 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 148, Column 13
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m boolean, %variable, &variable, {, string, [, None, $variable, number, (, ... and 3 more
+[93mLocation:[0m Line 16, Column 46
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-145 | $end = null < [-46.47]
-146 | if {"status": $min}:
-147 |     # Validate input
-148 |     print((--452 > none / %condi...
+13 | 
+14 | # Example 7102
+15 | # ==================================================
+16 | class Image {init() = {@bytes[10] = $capacity; $text = replace() + False > $child; return} prop y prop value method append() = {$min and "done"; %role["status"...
 ```
 
 ### examples_07201_07300.pyrl
@@ -1731,164 +1817,24 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 534, Column 5
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m @variable, $variable, boolean, number, &variable, R, None, [, {, string, ... and 3 more
+[93mLocation:[0m Line 53, Column 62
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-531 | $prev = $base
-532 | $text = $padding
-533 | $item = 283
-534 | if -! -76.47 <= [-580, "begin", true, "password", $age]...
+50 | 
+51 | # Example 7205
+52 | # ==================================================
+53 | class Scheduler {init($load, $y) = {%state = {"info": $token}; 'page' != [-794, 74.08, null, $quotient]; $magnitude; return} prop value = {"warning": 221, "cod...
 ```
 
 ### examples_07301_07400.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.55s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 246, Column 848
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m identifier, None, %variable, &variable, string, [, number, $variable, boolean, @variable, ... and 3 more
-
-[93mContext:[0m
-243 | # Example 7320
-244 | # ==================================================
-245 | class Builder {pr...
-```
-
-### examples_07401_07500.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.56s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 14, Column 66
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m [, None, %variable, {, string, R, identifier, (, number, @variable, ... and 3 more
-
-[93mContext:[0m
-11 |     @columns = [12.78, -763, $result]
-12 |     (not ! 729)
-13 | else:
-14 |     print(True + [88.68, false, None, 'username...
-```
-
-### examples_07501_07600.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.56s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 215, Column 6
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m (, &variable, $variable, @variable, identifier, {, string, boolean, number, [, ... and 3 more
-
-[93mContext:[0m
-212 | $previous = %payload <= $center == [None, true]
-213 | $quotient = (339) - process(False, none, $ratio) or {"he...
-```
-
-### examples_07601_07700.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 174, Column 346
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m @variable, {, [, identifier, &variable, string, $variable, boolean, %variable, (, ... and 3 more
-
-[93mContext:[0m
-171 | 
-172 | # Example 7612
-173 | # ==================================================
-174 | class Formatter {i...
-```
-
-### examples_07701_07800.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.56s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 378, Column 834
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m None, string, boolean, [, &variable, {, R, identifier, number, $variable, ... and 3 more
-
-[93mContext:[0m
-375 | # Example 7734
-376 | # ==================================================
-377 | class Stack {init($quantity, $rem...
-```
-
-### examples_07801_07900.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.57s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 667, Column 97
-[93mUnexpected token:[0m 'None' (type: IDENT)
-[93mExpected one of:[0m }, SEMICOLON, newline
-
-[93mContext:[0m
-664 | # Example 7854
-665 | # ==================================================
-666 | class Graph {init($margin, $n, $period) = {%fields; return ([-28.18, -20.18, -66.85, true, -601, 14...
-```
-
-### examples_07901_08000.pyrl
 
 - **Category:** root
 - **Error Type:** PYRL RUNTIME ERROR
@@ -1901,13 +1847,154 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 113, Column 439
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m R, %variable, $variable, string, &variable, {, None, boolean, @variable, number, ... and 3 more
+[93mLocation:[0m Line 9, Column 23
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-110 | &convert($remainder) = {return; return}
-111 | &compute($threshold, $element, $entry) = {print(({"id": $pro...
+ 6 | # ==================================================
+ 7 | # Handle error
+ 8 | @points = [636, -45.44, $token, True, "begin", 704, none, -11.94]
+ 9 | &initialize() = {$data; return load(%font) or $rate == &sign; return}
+[91m                    ...
+```
+
+### examples_07401_07500.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.50s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 14, Column 66
+[93mUnexpected token:[0m '-' (type: ADD_OP)
+[93mExpected one of:[0m {, boolean, (, identifier, %variable, string, &variable, $variable, None, @variable, ... and 3 more
+
+[93mContext:[0m
+11 |     @columns = [12.78, -763, $result]
+12 |     (not ! 729)
+13 | else:
+14 |     print(True + [88.68, false...
+```
+
+### examples_07501_07600.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.53s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 58
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 7501
+ 6 | # ==================================================
+ 7 | class Runner {init() = {%result = {"test": 'description'}; print(@types - (True) and %subscription); return ((-423) <= false)} prop age = null prop total prop q...
+```
+
+### examples_07601_07700.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 45, Column 145
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+42 | def encode($mass, $next):
+43 |     # Handle error
+44 |     # Update state
+45 | &format($base, $mass, $density) = {return &add != None or %meta == %fields or (values(&unsubscribe, 'country', [-35.54, -707, "sample", $next])); %profile["sample"...
+```
+
+### examples_07701_07800.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.54s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 73, Column 172
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+70 | 
+71 | # Example 7706
+72 | # ==================================================
+73 | class Logger {prop data prop b = 557 prop temp = {"example": -412} prop item = 48.74 method refresh($duration, $tail) = {while 800 % {"message": false} {$quot...
+```
+
+### examples_07801_07900.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.53s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 56
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 7801
+ 6 | # ==================================================
+ 7 | &delete($n, $acceleration) = {if $angle or $end {! None; print(({"country": 29.39, "username": $energy})); while {"address": $input} >= {"demo": $error, "id": $...
+```
+
+### examples_07901_08000.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.50s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 7, Column 50
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+ 4 | 
+ 5 | # Example 7901
+ 6 | # ==================================================
+ 7 | class Image {init($tmp) = {while %profile {return; return $numerator}; return &load and format(27.87, [none, 420, 862, $name, False, -68, 'description']) < @seq...
 ```
 
 ### examples_08001_08100.pyrl
@@ -1923,14 +2010,14 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 115, Column 602
-[93mUnexpected token:[0m 'print' (type: PRINT)
-[93mExpected one of:[0m newline, }, SEMICOLON
+[93mLocation:[0m Line 81, Column 34
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-112 | # Example 8011
-113 | # ==================================================
-114 | class Tester {init($entry, $remainder, $a) = {map(&login); ("disabled" - 838 or "category"); @mem...
+78 | 
+79 | # Example 8007
+80 | # ==================================================
+81 | &test() = {%item = {"test": $max}; if %plan <= -147 == $input or [-46.10, $error, none, $buffer, True, -13.09, 'content'] {$power = 94.44}; if None {%output["s...
 ```
 
 ### examples_08101_08200.pyrl
@@ -1939,21 +2026,21 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 260, Column 12
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m boolean, number, None, R, {, identifier, %variable, (, string, $variable, ... and 3 more
+[93mLocation:[0m Line 38, Column 66
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-257 |     return str(none, "no")
-258 | def shrink($mode, $power, $total, $input):
-259 |     print(true or ["section"] or...
+35 | 
+36 | # Example 8102
+37 | # ==================================================
+38 | class Monitor extends Matrix {init() = {print([-612, none, -308]); $angle = ($base) * strip({"email": "group"}) >= %response // ("no"); return "active" == fals...
 ```
 
 ### examples_08201_08300.pyrl
@@ -1962,28 +2049,21 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 59, Column 5
-[93mUnexpected token:[0m '(' (type: LPAR)
-[93mExpected one of:[0m :, string
+[93mLocation:[0m Line 10, Column 29
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-56 |     ('demo')
-57 |     $output = (format())
-58 |     # Check condition
-59 | test(@data)
-[91m         ^[0m
-60 | sum()
-61 | find(false, False, null)
-62 | 
-
-[91m======================================...
+ 7 | test "country":
+ 8 |     @vector[4] = ["waiting", 991, -935, $limit]
+ 9 |     @rows = [$max, $first, "message", null, 'end', 89]
+10 |     &parse($ratio) = {return; if (transform($b, [76.64, "start", 781, -263])) {@args[10] = {"info": $diameter...
 ```
 
 ### examples_08301_08400.pyrl
@@ -1992,23 +2072,47 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 142, Column 2407
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m &variable, [, None, $variable, identifier, number, boolean, @variable, {, %variable, ... and 3 more
+[93mLocation:[0m Line 29, Column 84
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-139 | # ==================================================
-140 | class Gateway {prop m prop index prop i = ...
+26 | $rate = 'success' and %person
+27 | if ['file', None, 896, True, none, 899, null] / ! [false, "start", $base, false, 972, 'ready'] and initialize(-507):
+28 |     print(execute("country"))
+29 |     &clean($swap, $circumference, $total) = {return...
 ```
 
 ### examples_08401_08500.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** [91m============================================================[0m
+- **Line:** None
+- **Execution Time:** 0.51s
+
+**Stderr:**
+```text
+[91m============================================================[0m
+[91mPARSE ERROR[0m
+[91m============================================================[0m
+[93mLocation:[0m Line 19, Column 153
+[93mExpected one of:[0m Unknown
+
+[93mContext:[0m
+16 |     print(771)
+17 |     $y = null
+18 | while "section":
+19 |     &clean($y, $entry) = {while (&error // &init) + None {[41.27, -80, "begin", $median, False] and -82.57 != [-483, -137, $start] / ['warning', $width]; %session and 34.39 or $mode...
+```
+
+### examples_08501_08600.pyrl
 
 - **Category:** root
 - **Error Type:** PYRL RUNTIME ERROR
@@ -2021,39 +2125,14 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 481, Column 13
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m %variable, string, @variable, identifier, $variable, boolean, &variable, None, [, (, ... and 3 more
+[93mLocation:[0m Line 36, Column 61
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-478 |     assert $c != -48.89
-479 |     assert %product
-480 |     # Log message
-481 |     assert --110 == 'pa...
-```
-
-### examples_08501_08600.pyrl
-
-- **Category:** root
-- **Error Type:** PYRL RUNTIME ERROR
-- **Error Message:** [91m============================================================[0m
-- **Line:** None
-- **Execution Time:** 0.54s
-
-**Stderr:**
-```text
-[91m============================================================[0m
-[91mPARSE ERROR[0m
-[91m============================================================[0m
-[93mLocation:[0m Line 162, Column 147
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m identifier, %variable, (, @variable, number, &variable, None, R, {, $variable, ... and 3 more
-
-[93mContext:[0m
-159 | 
-160 | # Example 8512
-161 | # ==================================================
-162 | class Controller exte...
+33 |     $border = 485
+34 |     assert convert(@series, 288) >= {"message": null} < &validate
+35 |     # Initialize variables
+36 |     &delete($max, $area, $current) = {@numbers[2] = @options; for $coefficient in range(6) {91.34 or "url" <= %respon...
 ```
 
 ### examples_08601_08700.pyrl
@@ -2062,7 +2141,7 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -2071,12 +2150,12 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [93mLocation:[0m Line 23, Column 6
 [93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m $variable, (, R, {, [, None, @variable, boolean, &variable, %variable, ... and 3 more
+[93mExpected one of:[0m {, string, boolean, &variable, None, R, (, $variable, number, @variable, ... and 3 more
 
 [93mContext:[0m
 20 | def increment($width):
 21 |     return -665 % "close" / ["start", true, False, none, "status", -84.11, true]
-22 |     @i...
+22 |     ...
 ```
 
 ### examples_08701_08800.pyrl
@@ -2085,21 +2164,20 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.63s
+- **Execution Time:** 0.57s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 803, Column 175
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m %variable, &variable, $variable, @variable, identifier, [, (, string, R, boolean, ... and 3 more
+[93mLocation:[0m Line 43, Column 52
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-800 |     %cache["output"] = &route
-801 |     assert [$output, 'city', $word, True, -305, true]
-802 |     # Han...
+40 | while ! [16.86, 305, 432, $min, 43, 'section', -32.83, False] % {"city": 742, "result": $buffer, "country": 623, "sample": True, "name": $volume} % %membership / 388:
+41 |     assert not (%context <= $power) != ! %item
+42 |     # Initialize va...
 ```
 
 ### examples_08801_08900.pyrl
@@ -2115,13 +2193,14 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 295, Column 169
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m string, identifier, &variable, @variable, [, {, R, %variable, boolean, $variable, ... and 3 more
+[93mLocation:[0m Line 25, Column 56
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-292 |     @elements = [$avg, -467, True, 16.34, -81.59, none, "message"]
-293 |     print(! {"demo": -85.03, "me...
+22 | # ==================================================
+23 | print({"output": 911, "sample": $threshold})
+24 | 113
+25 | &update() = {@settings = [-528, 510, $leaf, -420, None]; -41.39 != compute() * false // $i; @bytes = [$previous, $swap, 'right...
 ```
 
 ### examples_08901_09000.pyrl
@@ -2130,23 +2209,22 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.55s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 66, Column 13
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m $variable, (, R, None, [, boolean, {, string, @variable, &variable, ... and 3 more
+[93mLocation:[0m Line 7, Column 96
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-63 | 
-64 | # Example 8905
-65 | # ==================================================
-66 | $counter = -! ['note'] or $c
-[91m    ...
+ 4 | 
+ 5 | # Example 8901
+ 6 | # ==================================================
+ 7 | &store($amount, $message, $mode) = {%entry = {"country": "right", "email": true, "input": true}; @batch = [274, 373, 3.71, "start", none, $name]}
+[91m         ...
 ```
 
 ### examples_09001_09100.pyrl
@@ -2155,23 +2233,21 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 72, Column 17
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m %variable, number, (, {, None, [, R, string, $variable, @variable, ... and 3 more
+[93mLocation:[0m Line 19, Column 39
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-69 | if $z:
-70 |     @points[0] = 'name'
-71 |     # Clean up
-72 |     $current = -! 73.94 <= -"world"
-[91m                     ...
+16 | 
+17 | # Example 9002
+18 | # ==================================================
+19 | &receive($i, $swap, $b) = {%attributes; if verify(@bits, [902, 'result', true, "inactive", -912, -50, 72, false]) {%font = {"message": None, "city": $head, "sa...
 ```
 
 ### examples_09101_09200.pyrl
@@ -2180,21 +2256,22 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 8, Column 796
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m %variable, number, None, {, $variable, R, boolean, [, &variable, identifier, ... and 3 more
+[93mLocation:[0m Line 7, Column 79
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
+ 4 | 
  5 | # Example 9101
  6 | # ==================================================
- 7 | &write() = {@attributes = [none, 94...
+ 7 | &write() = {@attributes = [none, 942, $distance, -44.73, "key", "sample", -77]; return}
+[91m                                                                   ...
 ```
 
 ### examples_09201_09300.pyrl
@@ -2203,21 +2280,21 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.62s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 945, Column 232
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m $variable, boolean, (, @variable, %variable, {, number, [, string, R, ... and 3 more
+[93mLocation:[0m Line 7, Column 154
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-942 | # Example 9280
-943 | # ==================================================
-944 | &setup($price, $first, $entry) = {! (...
+ 4 | 
+ 5 | # Example 9201
+ 6 | # ==================================================
+ 7 | class Checker {prop y prop count = false method remove($min) = {print(&unsubscribe - "demo" // (@notifications))} method splice() = {$last or dict(%meta); init...
 ```
 
 ### examples_09301_09400.pyrl
@@ -2233,14 +2310,14 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 39, Column 15
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m @variable, identifier, $variable, &variable, [, %variable, {, (, boolean, R, ... and 3 more
+[93mLocation:[0m Line 33, Column 34
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-36 | # ==================================================
-37 | $pressure = ('enabled')
-38 | $message = (@transactions)...
+30 | # Handle error
+31 | # Initialize variables
+32 | print(not False * [$total, True, True, -291, 'input', 'inactive'] >= [78.14, 'finish', $result, "body"] - 82.83 != ['file', $pos, $first, $border, -803, 'group', "href", 44.56] + $percentage)
+33 ...
 ```
 
 ### examples_09401_09500.pyrl
@@ -2249,20 +2326,21 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 286, Column 264
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m @variable, identifier, &variable, %variable, (, R, None, {, string, [, ... and 3 more
+[93mLocation:[0m Line 56, Column 18
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-283 |     @piece[10] = "data"
-284 |     &write($accumulator, $time, $margin) = {if [$phase, $denominator, -8.74, "type", $...
+53 | @entries = ['demo', -619, $element, none, -687, 72.26, -315]
+54 | len(-60.65) < $interval == [false, $data, 436, $child, True, False] + True
+55 | $value = True == float("no", {"error": $mass, "type": $quotient, "output": -767}, %environment)
+5...
 ```
 
 ### examples_09501_09600.pyrl
@@ -2271,21 +2349,21 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.57s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 213, Column 1073
-[93mUnexpected token:[0m '!' (type: NOT_OP)
-[93mExpected one of:[0m {, R, %variable, None, [, string, number, (, &variable, identifier, ... and 3 more
+[93mLocation:[0m Line 77, Column 210
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-210 | # Example 9518
-211 | # ==================================================
-212 | class Provider {prop b prop value = $p...
+74 | 
+75 | # Example 9506
+76 | # ==================================================
+77 | &insert($duration, $max, $bound) = {while "phone" + %cache + items(@sessions, @records) and any(%fields, %theme, 'path') > %state {clean([$y, -39.15, $token, ...
 ```
 
 ### examples_09601_09700.pyrl
@@ -2294,7 +2372,7 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.55s
 
 **Stderr:**
 ```text
@@ -2303,14 +2381,13 @@ Runtime Error: Undefined variable: %state
 [91m============================================================[0m
 [93mLocation:[0m Line 7, Column 10
 [93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m &variable, (, {, @variable, number, boolean, None, $variable, string, [, ... and 3 more
+[93mExpected one of:[0m string, boolean, R, %variable, {, number, @variable, [, $variable, identifier, ... and 3 more
 
 [93mContext:[0m
  4 | 
  5 | # Example 9601
  6 | # ==================================================
- 7 | $pos = (--1.47 // @requests)
-[91m...
+ 7 | $pos = (--1.47 // @requests)...
 ```
 
 ### examples_09701_09800.pyrl
@@ -2319,22 +2396,21 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 246, Column 9
-[93mUnexpected token:[0m '(' (type: LPAR)
-[93mExpected one of:[0m :, string
+[93mLocation:[0m Line 16, Column 107
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-243 | # Example 9723
-244 | # ==================================================
-245 | def open($circumference, $left, $force, $range):
-246 |     test({"code": $last, "id": $amount, "hello": "page", "cou...
+13 |     $temperature = {"example": $interval, "key": $j} or $median or -42.99 + [347]
+14 |     print(&expand)
+15 | elif {"error": $power}:
+16 |     &read($element) = {$b = [none, false, -589] or False and {"token": $velocity} <= ['label'] >= &res...
 ```
 
 ### examples_09801_09900.pyrl
@@ -2343,22 +2419,22 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.52s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 227, Column 14
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m None, (, [, identifier, string, @variable, &variable, number, R, $variable, ... and 3 more
+[93mLocation:[0m Line 141, Column 41
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-224 | # ==================================================
-225 | $b = @kinds
-226 | $temperature = &handle
-227 | $expon...
+138 | if -(%settings > &revert):
+139 |     assert ! close(-522) != ['pending', 36.15, $k, False, false, None, $avg]
+140 | for $node in @elements:
+141 |     &format($mass, $pos) = {print($size); return}
+[91m                                        ...
 ```
 
 ### examples_09901_10000.pyrl
@@ -2367,22 +2443,21 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.58s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 206, Column 126
-[93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m R, string, %variable, &variable, {, None, [, identifier, $variable, number, ... and 3 more
+[93mLocation:[0m Line 70, Column 80
+[93mExpected one of:[0m Unknown
 
 [93mContext:[0m
-203 |     @jobs[1] = @tasks
-204 |     return 710
-205 | for $price in ["dest", False, -793, none, 51.86, None, 567]:
-2...
+67 | def read():
+68 |     return @configs
+69 |     $pivot = "error"
+70 |     &process($width, $tail, $percentage) = {handle(@columns, $height, @entries); while ! 'body' and %rule // (@customers) {if None {return ! "sample"; $length or 577 or %privi...
 ```
 
 ### web_server_auth.pyrl
@@ -2391,31 +2466,34 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 546, Column 20
-[93mUnexpected token:[0m '=' (type: EQUAL)
-[93mExpected one of:[0m (
+[93mLocation:[0m Line 563, Column 17
+[93mUnexpected token:[0m 'in' (type: IDENT)
+[93mExpected one of:[0m :
 
 [93mContext:[0m
-543 | # Pyrl HTTP Server class
-544 | class PyrlServer:
-545 |     def __init__($self, %config):
-546 |         $self.host = %config["host"]
-[91m                         ^[0m
-547 |         $self.port = %config...
+560 |         # Find matching route
+561 |         $key = $method + ":" + $path
+562 |         
+563 |         if $key in $self.routes:
+[91m                      ^^[0m
+564 |             $handler = $self.route...
 ```
 
 
 ## Error Types
 
-### PYRL RUNTIME ERROR (102 occurrences)
+### PYRL RUNTIME ERROR (105 occurrences)
 
+- 06_anonymous_functions.pyrl
+- 06_classes.pyrl
+- 07_classes.pyrl
 - COMPREHENSIVE_EXAMPLES.pyrl
 - examples_00001_00100.pyrl
 - examples_00101_00200.pyrl

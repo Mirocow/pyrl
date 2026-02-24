@@ -60,14 +60,15 @@ function_definition: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statem
 
 // Block syntax for anonymous functions
 // Statements separated by newlines or semicolons
-block: "{" block_stmt* "}"
-block_sep: _NL+ | ";"+ 
+block: "{" [block_stmt (";"? block_stmt)* ";"?] "}"
 block_stmt: assignment
           | return_statement
           | expression_statement
           | block_if
           | block_while
           | block_for
+          | conditional
+          | loop
 
 // Control flow inside blocks (no indentation)
 block_if: "if" expression block ["else" block]
@@ -120,7 +121,8 @@ power_expr: unary_expr (POW_OP unary_expr)*
 
 ?unary_expr: NOT unary_expr
            | NOT_OP unary_expr
-           | ADD_OP? primary_expr
+           | ADD_OP unary_expr
+           | primary_expr
 
 ?primary_expr: literal
              | "(" expression ")"
@@ -130,16 +132,22 @@ power_expr: unary_expr (POW_OP unary_expr)*
              | index_access
              | attribute_access
              | var_ref
+             | block_expr
+
+// Block expression - higher priority than hash_literal
+block_expr.2: block
 
 // Attribute access: $obj.attr
 attribute_access: primary_expr "." IDENT
 
 // FIXED: Added IDENT to support built-in functions (str, len, int, etc.)
+// Added TEST to allow test() as a function call
 ?var_ref: SCALAR_VAR
         | ARRAY_VAR
         | HASH_VAR
         | FUNC_VAR
         | IDENT
+        | TEST
 
 // Index access uses [] brackets for both arrays and hashes (Python-style)
 // @array[0] - array index access
@@ -150,8 +158,9 @@ index_access: primary_expr "[" expression "]"
 
 literal: STRING | NUMBER | BOOLEAN | NONE | hash_literal | array_literal
 
-// Hash literal - supports multi-line
-hash_literal: "{" [_NL* hash_item ("," _NL* hash_item)* _NL*] [","] "}"
+// Hash literal - supports multi-line  
+// Priority .1 to give block_expr priority when ambiguous
+hash_literal.1: "{" [_NL* hash_item ("," _NL* hash_item)* _NL*] [","] "}"
 hash_item: (STRING | IDENT) ":" expression
 
 // Array literal - supports multi-line
@@ -166,9 +175,9 @@ else_clause: "elif" expression ":" _NL INDENT (_NL | statement)+ DEDENT else_cla
 loop: "for" SCALAR_VAR "in" expression ":" _NL INDENT (_NL | statement)+ DEDENT
     | "while" expression ":" _NL INDENT (_NL | statement)+ DEDENT
 
-test_block: "test" STRING? ":" _NL INDENT (_NL | statement)+ DEDENT
+test_block: TEST STRING ":" _NL INDENT (_NL | statement)+ DEDENT
 
-print_statement: "print" "(" expression ")"
+print_statement: "print" "(" [arg_list] ")"
 
 vue_component_gen: "vue" STRING ":" _NL INDENT vue_property+ DEDENT
 vue_property: IDENT ":" expression _NL
@@ -207,6 +216,7 @@ EXTENDS: "extends"
 METHOD: "method"
 INIT: "init"
 PROP: "prop"
+TEST: "test"
 
 // IDENT last (least specific)
 IDENT: /[a-zA-Z_][a-zA-Z0-9_]*/
@@ -423,7 +433,7 @@ class ReturnStatement:
 @dataclass
 class PrintStatement:
     """Print statement."""
-    value: Any
+    values: List[Any] = field(default_factory=list)
 
 
 @dataclass
@@ -633,6 +643,7 @@ class PyrlTransformer(Transformer):
     def HASH_VAR(self, t): return HashVar(name=t.value[1:])
     def FUNC_VAR(self, t): return FuncVar(name=t.value[1:])
     def IDENT(self, t): return IdentRef(name=t.value)
+    def TEST(self, t): return IdentRef(name=t.value)  # Allow test as function name
 
     def NUMBER(self, t):
         v = t.value
@@ -1045,7 +1056,14 @@ class PyrlTransformer(Transformer):
         return ReturnStatement(value=children[0] if children and children[0] is not None else None)
 
     def print_statement(self, children):
-        return PrintStatement(value=children[0] if children else None)
+        """Transform print statement with multiple arguments."""
+        values = []
+        for child in children:
+            if isinstance(child, list):
+                values.extend([c for c in child if c is not None])
+            elif child is not None:
+                values.append(child)
+        return PrintStatement(values=values)
 
     def assertion_statement(self, children):
         if len(children) == 1:
@@ -1095,6 +1113,10 @@ class PyrlTransformer(Transformer):
             elif child is not None and not isinstance(child, Token):
                 statements.append(child)
         return Block(statements=statements)
+
+    def block_expr(self, children):
+        """Transform block_expr - returns the Block."""
+        return children[0] if children else None
 
     def block_stmts(self, children):
         """Transform block_stmts into list of statements."""

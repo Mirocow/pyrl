@@ -506,10 +506,14 @@ class PyrlVM:
 
     def exec_PrintStatement(self, node: PrintStatement, env: Environment) -> Any:
         from .builtins import pyrl_str
-        value = self.execute(node.value, env)
-        output = pyrl_str(value)
-        print(output)
-        self.output.append(output)
+        outputs = []
+        for value_node in node.values:
+            value = self.execute(value_node, env)
+            output = pyrl_str(value)
+            outputs.append(output)
+        output_str = " ".join(outputs)
+        print(output_str)
+        self.output.append(output_str)
         return None
 
     def exec_AssertStatement(self, node: AssertStatement, env: Environment) -> Any:

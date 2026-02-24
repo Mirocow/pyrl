@@ -108,19 +108,26 @@ class PyrlClass:
         """Create a new instance of the class."""
         instance = PyrlInstance(self)
         
-        # Call init method if it exists
-        if 'init' in self.methods:
+        # Call init method if it exists (check both 'init' and '__init__')
+        init_method = None
+        init_name = None
+        if '__init__' in self.methods:
+            init_method = self.methods['__init__']
+            init_name = '__init__'
+        elif 'init' in self.methods:
             init_method = self.methods['init']
-            if hasattr(init_method, 'params'):  # Is a MethodDef
-                # Create bound method
-                bound_init = PyrlMethod(
-                    name='init',
-                    params=init_method.params,
-                    body=init_method.body,
-                    instance=instance,
-                    closure=self.closure
-                )
-                bound_init(*args)
+            init_name = 'init'
+        
+        if init_method and hasattr(init_method, 'params'):  # Is a MethodDef
+            # Create bound method
+            bound_init = PyrlMethod(
+                name=init_name,
+                params=init_method.params,
+                body=init_method.body,
+                instance=instance,
+                closure=self.closure
+            )
+            bound_init(*args)
         
         return instance
     
@@ -269,8 +276,9 @@ class PyrlMethod:
             for prop_name, prop_value in self.instance._properties.items():
                 local_env.define('$' + prop_name, prop_value)
         
-        # Bind parameters
-        for i, param in enumerate(self.params):
+        # Bind parameters (skip $self as it's already bound to instance)
+        arg_index = 0
+        for param in self.params:
             # Handle both old format (string) and new format (tuple)
             if isinstance(param, tuple):
                 param_name, param_type = param
@@ -279,10 +287,15 @@ class PyrlMethod:
                 param_name = param if param.startswith(('$', '@', '%', '&')) else '$' + param
                 param_type = 'scalar'
             
-            if i < len(args):
-                local_env.define(param_name, args[i])
+            # Skip $self parameter - it's already bound to instance
+            if param_name in ('$self', 'self'):
+                continue
+            
+            if arg_index < len(args):
+                local_env.define(param_name, args[arg_index])
             else:
                 local_env.define(param_name, None)
+            arg_index += 1
         
         # Execute body
         try:

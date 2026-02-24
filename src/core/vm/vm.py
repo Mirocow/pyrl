@@ -318,6 +318,12 @@ class PyrlVM:
             if isinstance(right, str):
                 return not bool(re.search(right, str(left)))
             return not bool(right.search(str(left)))
+        elif op == 'in':
+            # Membership test: left in right
+            return left in right
+        elif op == 'not in':
+            # Negative membership test
+            return left not in right
         else:
             raise PyrlRuntimeError(f"Unknown operator: {op}")
 
@@ -358,15 +364,32 @@ class PyrlVM:
         """Execute attribute access: $obj.attr"""
         obj = self.execute(node.obj, env)
         
-        # Handle Pyrl instances
-        if hasattr(obj, '__dict__') and node.attr in obj.__dict__:
-            return obj.__dict__[node.attr]
+        # Handle PyrlInstance - properties stored in _properties dict
+        if isinstance(obj, PyrlInstance):
+            if node.attr in obj._properties:
+                return obj._properties[node.attr]
+            # Also check class properties
+            if node.attr in obj._class.properties:
+                return obj._properties.get(node.attr, obj._class.properties[node.attr])
+            raise PyrlRuntimeError(f"Attribute '{node.attr}' not found on {obj._class.name}")
+        
+        # Handle PyrlClass - for static access
+        if isinstance(obj, PyrlClass):
+            if node.attr in obj.properties:
+                return obj.properties[node.attr]
+            if node.attr in obj.methods:
+                return obj.get_method(node.attr)
+            raise PyrlRuntimeError(f"Attribute '{node.attr}' not found on class {obj.name}")
         
         # Handle dict-like objects
         if isinstance(obj, dict) and node.attr in obj:
             return obj[node.attr]
         
-        # Handle Python objects
+        # Handle Python objects with __dict__
+        if hasattr(obj, '__dict__') and node.attr in obj.__dict__:
+            return obj.__dict__[node.attr]
+        
+        # Handle Python objects with getattr
         if hasattr(obj, node.attr):
             return getattr(obj, node.attr)
         
@@ -396,7 +419,15 @@ class PyrlVM:
             obj[index] = value
         elif isinstance(target, AttributeAccess):
             obj = self.execute(target.obj, env)
-            setattr(obj, target.attr, value)
+            # Handle PyrlInstance - properties stored in _properties dict
+            if isinstance(obj, PyrlInstance):
+                obj._properties[target.attr] = value
+            elif isinstance(obj, PyrlClass):
+                obj.properties[target.attr] = value
+            elif isinstance(obj, dict):
+                obj[target.attr] = value
+            else:
+                setattr(obj, target.attr, value)
         else:
             raise PyrlRuntimeError(f"Invalid assignment target: {type(target).__name__}")
 

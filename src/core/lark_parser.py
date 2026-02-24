@@ -800,7 +800,16 @@ class PyrlTransformer(Transformer):
         """Transform attribute access: $obj.attr"""
         if len(children) >= 2:
             obj = children[0]
-            attr = children[1].value if isinstance(children[1], Token) else str(children[1])
+            # Handle different types of attribute names
+            attr_child = children[1]
+            if isinstance(attr_child, Token):
+                attr = attr_child.value
+            elif isinstance(attr_child, IdentRef):
+                attr = attr_child.name
+            elif hasattr(attr_child, 'name'):
+                attr = attr_child.name
+            else:
+                attr = str(attr_child)
             return AttributeAccess(obj=obj, attr=attr)
         return children[0] if children else None
 

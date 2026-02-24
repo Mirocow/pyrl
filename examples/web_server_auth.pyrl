@@ -838,11 +838,11 @@ if $result2["success"]:
     print("  Login successful!")
     print("  User: " + $result2["user"]["name"])
     print("  Role: " + $result2["user"]["role"])
-    
+
     # Create session
     $token = create_session("admin")
-    print("  Session token: " + $token)
-    
+    print("  Session token: " + str($token))
+
     # Validate session
     $session = validate_session($token)
     if $session["valid"]:

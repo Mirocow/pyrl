@@ -658,21 +658,10 @@ class PyrlTransformer(Transformer):
     def IDENT(self, t): return IdentRef(name=t.value)
     def TEST(self, t): return IdentRef(name=t.value)  # Allow test as function name
     def PRINT(self, t): return IdentRef(name=t.value)  # Allow print as function name
-    def RETURN(self, t): return IdentRef(name=t.value)
-    def ASSERT(self, t): return IdentRef(name=t.value)
-    def FOR(self, t): return IdentRef(name=t.value)
-    def WHILE(self, t): return IdentRef(name=t.value)
-    def IF(self, t): return IdentRef(name=t.value)
-    def ELSE(self, t): return IdentRef(name=t.value)
-    def ELIF(self, t): return IdentRef(name=t.value)
-    def DEF(self, t): return IdentRef(name=t.value)
-    def CLASS(self, t): return IdentRef(name=t.value)
-    def EXTENDS(self, t): return IdentRef(name=t.value)
-    def METHOD(self, t): return IdentRef(name=t.value)
-    def INIT(self, t): return IdentRef(name=t.value)
-    def PROP(self, t): return IdentRef(name=t.value)
-    def VUE(self, t): return IdentRef(name=t.value)
-    def IN(self, t): return IdentRef(name=t.value)
+    def INIT(self, t): return IdentRef(name=t.value)  # Allow init as function name
+    def METHOD(self, t): return IdentRef(name=t.value)  # Allow method as function name
+    def PROP(self, t): return IdentRef(name=t.value)  # Allow prop as function name
+    def VUE(self, t): return IdentRef(name=t.value)  # Allow vue as function name
 
     def NUMBER(self, t):
         v = t.value

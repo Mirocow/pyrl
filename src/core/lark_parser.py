@@ -56,7 +56,7 @@ compound_stmt: function_definition
              | vue_component_gen
 
 // Function definitions - only with "def" keyword
-function_definition: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
+function_definition: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
 
 // Block syntax for anonymous functions
 // Statements separated by newlines or semicolons

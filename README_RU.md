@@ -241,7 +241,7 @@ python -m pytest tests/test_vm.py -v
 
 ## 🗺️ Дорожная карта
 
-См. [PROJECT_ROADMAP.md](PROJECT_ROADMAP.md) для плана развития проекта.
+См. [PROJECT_ROADMAP.md](documents/PROJECT_ROADMAP.md) для плана развития проекта.
 
 ### Текущая версия: 2.3.0
 

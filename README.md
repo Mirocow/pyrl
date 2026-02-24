@@ -241,7 +241,7 @@ python -m pytest tests/test_vm.py -v
 
 ## 🗺️ Roadmap
 
-See [PROJECT_ROADMAP.md](PROJECT_ROADMAP.md) for development plans.
+See [PROJECT_ROADMAP.md](documents/PROJECT_ROADMAP.md) for development plans.
 
 ### Current Version: 2.3.0
 

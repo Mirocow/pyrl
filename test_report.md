@@ -1,6 +1,6 @@
 # Pyrl Examples Test Report
 
-**Generated:** 2026-02-24 02:43:39
+**Generated:** 2026-02-24 02:46:23
 
 ## Summary
 
@@ -26,7 +26,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -85,7 +85,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -115,7 +115,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.52s
 
 **Stderr:**
 ```text
@@ -124,7 +124,7 @@
 [91m============================================================[0m
 [93mLocation:[0m Line 472, Column 5
 [93mUnexpected token:[0m '$temp' (type: SCALAR_VAR)
-[93mExpected one of:[0m string, newline, ,, }, identifier
+[93mExpected one of:[0m }, identifier, ,, string, newline
 
 [93mContext:[0m
 469 | 
@@ -145,7 +145,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -169,7 +169,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -192,7 +192,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -216,7 +216,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.57s
 
 **Stderr:**
 ```text
@@ -240,7 +240,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -263,7 +263,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -286,7 +286,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.57s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -309,7 +309,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -355,7 +355,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -378,7 +378,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -424,7 +424,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -446,7 +446,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -469,7 +469,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -492,7 +492,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -515,7 +515,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -538,7 +538,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -561,7 +561,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -584,7 +584,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.52s
 
 **Stderr:**
 ```text
@@ -607,7 +607,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.50s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -630,7 +630,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.50s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -655,7 +655,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -701,7 +701,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -724,7 +724,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -747,7 +747,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -771,7 +771,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -794,7 +794,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -817,7 +817,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -841,7 +841,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -864,7 +864,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.57s
 
 **Stderr:**
 ```text
@@ -887,7 +887,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -911,7 +911,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -934,7 +934,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.52s
 
 **Stderr:**
 ```text
@@ -943,13 +943,13 @@
 [91m============================================================[0m
 [93mLocation:[0m Line 17, Column 105
 [93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m [, boolean, number, $variable, %variable, R, (, None, @variable, {, ... and 3 more
+[93mExpected one of:[0m boolean, (, None, identifier, number, @variable, &variable, R, string, [, ... and 3 more
 
 [93mContext:[0m
 14 | # Example 3402
 15 | # ==================================================
 16 | def disable($amplitude, $a):
-17 |     asser...
+17 |    ...
 ```
 
 ### examples_03501_03600.pyrl
@@ -958,7 +958,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.58s
+- **Execution Time:** 0.51s
 
 **Stderr:**
 ```text
@@ -981,7 +981,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.50s
 
 **Stderr:**
 ```text
@@ -1004,7 +1004,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.57s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1050,7 +1050,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.59s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -1073,7 +1073,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.55s
 
 **Stderr:**
 ```text
@@ -1096,7 +1096,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1142,7 +1142,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.54s
 
 **Stderr:**
 ```text
@@ -1165,7 +1165,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.57s
+- **Execution Time:** 0.54s
 
 **Stderr:**
 ```text
@@ -1212,7 +1212,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.54s
 
 **Stderr:**
 ```text
@@ -1235,7 +1235,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1258,7 +1258,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.57s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1281,7 +1281,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1304,7 +1304,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -1327,7 +1327,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.55s
 
 **Stderr:**
 ```text
@@ -1350,7 +1350,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.57s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -1373,7 +1373,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.55s
 
 **Stderr:**
 ```text
@@ -1419,7 +1419,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.52s
 
 **Stderr:**
 ```text
@@ -1442,7 +1442,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.62s
 
 **Stderr:**
 ```text
@@ -1466,7 +1466,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.61s
 
 **Stderr:**
 ```text
@@ -1490,7 +1490,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1513,7 +1513,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.59s
 
 **Stderr:**
 ```text
@@ -1537,7 +1537,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.54s
 
 **Stderr:**
 ```text
@@ -1560,7 +1560,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.60s
 
 **Stderr:**
 ```text
@@ -1629,7 +1629,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -1653,7 +1653,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -1677,7 +1677,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1700,7 +1700,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -1723,7 +1723,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1771,7 +1771,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1817,7 +1817,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -1864,7 +1864,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.50s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -1873,13 +1873,13 @@
 [91m============================================================[0m
 [93mLocation:[0m Line 14, Column 66
 [93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m {, boolean, (, identifier, %variable, string, &variable, $variable, None, @variable, ... and 3 more
+[93mExpected one of:[0m &variable, string, boolean, (, @variable, %variable, None, [, identifier, number, ... and 3 more
 
 [93mContext:[0m
 11 |     @columns = [12.78, -763, $result]
 12 |     (not ! 729)
 13 | else:
-14 |     print(True + [88.68, false...
+14 |     print(True + [88.68, false, N...
 ```
 
 ### examples_07501_07600.pyrl
@@ -1911,7 +1911,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.54s
 
 **Stderr:**
 ```text
@@ -1934,7 +1934,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -1957,7 +1957,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.53s
+- **Execution Time:** 0.52s
 
 **Stderr:**
 ```text
@@ -1980,7 +1980,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.50s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -2003,7 +2003,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.54s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -2026,7 +2026,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.57s
 
 **Stderr:**
 ```text
@@ -2049,7 +2049,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -2072,7 +2072,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -2095,7 +2095,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -2118,7 +2118,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.57s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -2141,7 +2141,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -2150,12 +2150,11 @@
 [91m============================================================[0m
 [93mLocation:[0m Line 23, Column 6
 [93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m {, string, boolean, &variable, None, R, (, $variable, number, @variable, ... and 3 more
+[93mExpected one of:[0m &variable, number, identifier, [, @variable, $variable, %variable, string, boolean, (, ... and 3 more
 
 [93mContext:[0m
 20 | def increment($width):
-21 |     return -665 % "close" / ["start", true, False, none, "status", -84.11, true]
-22 |     ...
+21 |     return -665 % "close" / ["start", true, False, none, "status", -84.11, t...
 ```
 
 ### examples_08701_08800.pyrl
@@ -2164,7 +2163,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.57s
+- **Execution Time:** 0.53s
 
 **Stderr:**
 ```text
@@ -2209,7 +2208,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -2256,7 +2255,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -2280,7 +2279,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.50s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -2303,7 +2302,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -2326,7 +2325,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.51s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -2349,7 +2348,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.57s
+- **Execution Time:** 0.56s
 
 **Stderr:**
 ```text
@@ -2372,7 +2371,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.55s
+- **Execution Time:** 0.63s
 
 **Stderr:**
 ```text
@@ -2381,13 +2380,13 @@
 [91m============================================================[0m
 [93mLocation:[0m Line 7, Column 10
 [93mUnexpected token:[0m '-' (type: ADD_OP)
-[93mExpected one of:[0m string, boolean, R, %variable, {, number, @variable, [, $variable, identifier, ... and 3 more
+[93mExpected one of:[0m &variable, None, identifier, (, boolean, [, $variable, @variable, number, string, ... and 3 more
 
 [93mContext:[0m
  4 | 
  5 | # Example 9601
  6 | # ==================================================
- 7 | $pos = (--1.47 // @requests)...
+ 7 | $pos = (--1.47 // @reques...
 ```
 
 ### examples_09701_09800.pyrl
@@ -2396,7 +2395,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.56s
+- **Execution Time:** 0.54s
 
 **Stderr:**
 ```text
@@ -2419,7 +2418,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.52s
+- **Execution Time:** 0.61s
 
 **Stderr:**
 ```text
@@ -2443,7 +2442,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.58s
+- **Execution Time:** 0.54s
 
 **Stderr:**
 ```text
@@ -2466,7 +2465,7 @@
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.50s
+- **Execution Time:** 0.64s
 
 **Stderr:**
 ```text

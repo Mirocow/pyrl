@@ -46,6 +46,7 @@ from ..lark_parser import (
     Assignment,
     HashAccess,
     ArrayAccess,
+    AttributeAccess,
     FunctionCall,
     FunctionDef,
     IfStatement,
@@ -90,7 +91,7 @@ ASTNode = Union[
     Program, ScalarVar, ArrayVar, HashVar, FuncVar, IdentRef,
     NumberLiteral, StringLiteral, BooleanLiteral, NoneLiteral,
     ArrayLiteral, HashLiteral, RegexLiteral,
-    BinaryOp, UnaryOp, Assignment, HashAccess, ArrayAccess,
+    BinaryOp, UnaryOp, Assignment, HashAccess, ArrayAccess, AttributeAccess,
     FunctionCall, FunctionDef, IfStatement, ForLoop, WhileLoop,
     ReturnStatement, PrintStatement, AssertStatement, TestBlock,
     VueComponent, Block, AnonymousFuncDef, ClassDef, MethodDef,
@@ -353,6 +354,24 @@ class PyrlVM:
         except (IndexError, KeyError, TypeError):
             raise PyrlRuntimeError(f"Cannot access index '{index}' on {type(obj).__name__}")
 
+    def exec_AttributeAccess(self, node: AttributeAccess, env: Environment) -> Any:
+        """Execute attribute access: $obj.attr"""
+        obj = self.execute(node.obj, env)
+        
+        # Handle Pyrl instances
+        if hasattr(obj, '__dict__') and node.attr in obj.__dict__:
+            return obj.__dict__[node.attr]
+        
+        # Handle dict-like objects
+        if isinstance(obj, dict) and node.attr in obj:
+            return obj[node.attr]
+        
+        # Handle Python objects
+        if hasattr(obj, node.attr):
+            return getattr(obj, node.attr)
+        
+        raise PyrlRuntimeError(f"Attribute '{node.attr}' not found on {type(obj).__name__}")
+
     # ===========================================
     # Assignment Execution
     # ===========================================
@@ -375,6 +394,9 @@ class PyrlVM:
             obj = self.execute(target.obj, env)
             index = self.execute(target.index, env)
             obj[index] = value
+        elif isinstance(target, AttributeAccess):
+            obj = self.execute(target.obj, env)
+            setattr(obj, target.attr, value)
         else:
             raise PyrlRuntimeError(f"Invalid assignment target: {type(target).__name__}")
 

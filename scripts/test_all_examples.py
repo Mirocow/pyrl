@@ -71,14 +71,26 @@ def print_debug_error(error_type: str, error: Exception, stderr: Optional[str] =
     """Print detailed debug information for ANY error (matching pyrl_cli.py style)."""
     if debug:
         import traceback
+
+        # Check if error message already contains formatted error (like PARSE ERROR)
+        error_str = str(error)
+        has_formatted_error = "PARSE ERROR" in error_str or "RUNTIME ERROR" in error_str
+
         print(f"\n{Colors.RED}{'='*60}{Colors.RESET}", file=sys.stderr)
         print(f"{Colors.RED}{format_error_type(error_type)}{Colors.RESET}", file=sys.stderr)
         print(f"{Colors.RED}{'='*60}{Colors.RESET}", file=sys.stderr)
-        print(f"{Colors.YELLOW}Message:{Colors.RESET} {error}", file=sys.stderr)
-        print(f"{Colors.YELLOW}Type:{Colors.RESET} {type(error).__name__}", file=sys.stderr)
-        if hasattr(error, '__traceback__') and error.__traceback__:
-            print(f"{Colors.YELLOW}Traceback:{Colors.RESET}", file=sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+
+        if has_formatted_error:
+            # Error already has formatting, print it directly
+            print(error_str, file=sys.stderr)
+        else:
+            # Normal error, print with labels
+            print(f"{Colors.YELLOW}Message:{Colors.RESET} {error}", file=sys.stderr)
+            print(f"{Colors.YELLOW}Type:{Colors.RESET} {type(error).__name__}", file=sys.stderr)
+            if hasattr(error, '__traceback__') and error.__traceback__:
+                print(f"{Colors.YELLOW}Traceback:{Colors.RESET}", file=sys.stderr)
+                traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+
         if stderr:
             print(f"{Colors.YELLOW}Stderr:{Colors.RESET}", file=sys.stderr)
             for line in stderr.split('\n')[:30]:

@@ -296,6 +296,11 @@ class PyrlVM:
             return left // right
         elif op == '%':
             return left % right
+        elif op == '**':
+            return left ** right
+        elif op == '^':
+            # ^ is used for power in Pyrl (like in some BASIC dialects)
+            return left ** right
         elif op == '==':
             return left == right
         elif op == '!=':

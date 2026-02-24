@@ -33,6 +33,15 @@ $empty = None
 }
 
 # Функциональные переменные (&)
+# Определяем базовые функции-обработчики
+&handler($data) = {
+    return "Handled: " + str($data)
+}
+
+&transform($x) = {
+    return $x * 2
+}
+
 $callback = &handler
 $mapper = &transform
 
@@ -65,7 +74,15 @@ $not_result = not False
 $bang_result = !$active
 
 # Комбинированные выражения
+$a = 10
+$b = 20
+$c = 30
+$d = 5
+$e = 2
 $complex = ($a + $b) * ($c - $d) / $e
+$x = 50
+$y = 25
+$z = 50
 $logical = ($x > 0) and ($y < 100) or ($z == 50)
 
 # ============================================
@@ -253,9 +270,10 @@ def fibonacci($n):
     return %hash[$key]
 }
 
-# Присваивание функции переменной
+# Присваивание функции переменной (для демонстрации)
+# В Pyrl функции хранятся как &name, можно вызывать напрямую
 $my_func = &double
-$result = $my_func(5)
+$result = &double(5)
 
 # ============================================
 # 7. КЛАССЫ (OOP)
@@ -378,7 +396,7 @@ class Stack {
     prop items = []
     
     method push($item) = {
-        @items[@items.length] = $item
+        @items = push(@items, $item)
     }
     
     method pop() = {
@@ -410,7 +428,7 @@ $upper = upper("hello")
 $lower = lower("WORLD")
 $stripped = strip("  hello  ")
 $parts = split("a,b,c", ",")
-$joined = join(["x", "y", "z"], "-")
+$joined = join("-", ["x", "y", "z"])
 $replaced = replace("hello world", "world", "Pyrl")
 $found = find("hello", "ll")
 $counted = count("hello", "l")
@@ -441,25 +459,33 @@ $len_str = len($name)
 @items = items(%person)
 
 # Функции высшего порядка
-@doubled = map(@numbers, &double)
-@filtered = filter(@numbers, &is_positive)
-$reduced = reduce(@numbers, &add, 0)
+&is_positive($x) = {
+    return $x > 0
+}
+
+@doubled = map(&double, @numbers)
+@filtered = filter(&is_positive, @numbers)
+# reduce не реализован, используем sum для демонстрации
+$sum_all = sum(@numbers)
 
 # Проверки
 $is_any = any([False, True, False])
 $is_all = all([True, True, True])
-$in_range = in_range(5, 1, 10)
+# in_range не реализован, используем прямую проверку
+$in_range_check = 5 >= 1 and 5 <= 10
 
 # ============================================
 # 9. РЕГУЛЯРНЫЕ ВЫРАЖЕНИЯ
 # ============================================
 
 # Regex литералы
+$email = "test@example.com"
 $email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 $phone_pattern = r"^\d{3}-\d{3}-\d{4}$"
 $date_pattern = r"\d{4}-\d{2}-\d{2}"
 
 # Операторы сопоставления с regex
+$phone = "123-456-7890"
 $is_match = $email =~ $email_pattern
 $is_not_match = $phone !~ $phone_pattern
 
@@ -467,29 +493,30 @@ $is_not_match = $phone !~ $phone_pattern
 # 10. БЛОКОВЫЕ ВЫРАЖЕНИЯ
 # ============================================
 
-# Простой блок
+# Простой блок (без return, так как это не функция)
 $block_result = {
     $temp = 10
     $temp = $temp * 2
-    return $temp
+    $temp
 }
 
-# Блок с условиями
+# Блок с условиями (без return)
 $conditional_block = {
     if $x > 0 {
-        return "positive"
+        $result = "positive"
     } else {
-        return "non-positive"
+        $result = "non-positive"
     }
+    $result
 }
 
-# Блок с циклом
+# Блок с циклом (без return)
 $loop_block = {
     $sum = 0
     for $i in range(1, 11) {
         $sum = $sum + $i
     }
-    return $sum
+    $sum
 }
 
 # ============================================
@@ -571,17 +598,17 @@ def quick_sort(@arr):
     
     for $item in @arr:
         if $item < $pivot:
-            @less[@less.length] = $item
+            @less = push(@less, $item)
         elif $item == $pivot:
-            @equal[@equal.length] = $item
+            @equal = push(@equal, $item)
         else:
-            @greater[@greater.length] = $item
+            @greater = push(@greater, $item)
     
     @result = quick_sort(@less)
     for $item in @equal:
-        @result[@result.length] = $item
+        @result = push(@result, $item)
     for $item in quick_sort(@greater):
-        @result[@result.length] = $item
+        @result = push(@result, $item)
     
     return @result
 
@@ -649,14 +676,14 @@ def filter_positive(@arr):
     @result = []
     for $item in @arr:
         if $item > 0:
-            @result[@result.length] = $item
+            @result = push(@result, $item)
     return @result
 
 # Трансформация массива
 def double_all(@arr):
     @result = []
     for $item in @arr:
-        @result[@result.length] = $item * 2
+        @result = push(@result, $item * 2)
     return @result
 
 # Поиск максимума
@@ -707,7 +734,7 @@ def unique(@arr):
             if $existing == $item:
                 $found = True
         if not $found:
-            @result[@result.length] = $item
+            @result = push(@result, $item)
     return @result
 
 # Группировка по ключу
@@ -717,7 +744,7 @@ def group_by(@items, $key_func):
         $key = $key_func($item)
         if not %groups[$key]:
             %groups[$key] = []
-        %groups[$key][len(%groups[$key])] = $item
+        %groups[$key] = push(%groups[$key], $item)
     return %groups
 
 # ============================================
@@ -769,17 +796,17 @@ def group_by(@items, $key_func):
     @errors = []
     
     if not %user["name"] {
-        @errors[len(@errors)] = "Name is required"
+        @errors = push(@errors, "Name is required")
     }
     
     if not %user["email"] {
-        @errors[len(@errors)] = "Email is required"
+        @errors = push(@errors, "Email is required")
     } elif not (%user["email"] =~ r"^[^@]+@[^@]+\.[^@]+$") {
-        @errors[len(@errors)] = "Invalid email format"
+        @errors = push(@errors, "Invalid email format")
     }
     
     if %user["age"] and %user["age"] < 0 {
-        @errors[len(@errors)] = "Age must be positive"
+        @errors = push(@errors, "Age must be positive")
     }
     
     return @errors
@@ -795,7 +822,7 @@ def group_by(@items, $key_func):
     @page_items = []
     for $i in range($start, $end) {
         if $i < $total {
-            @page_items[len(@page_items)] = @items[$i]
+            @page_items = push(@page_items, @items[$i])
         }
     }
     
@@ -824,7 +851,7 @@ class Logger {
             "message": $message,
             "timestamp": now()
         }
-        @logs[len(@logs)] = %entry
+        @logs = push(@logs, %entry)
         print("[" + $level + "] " + $message)
     }
     
@@ -868,12 +895,12 @@ class Application {
     }
     
     method use($middleware) = {
-        @middleware[len(@middleware)] = $middleware
+        @middleware = push(@middleware, $middleware)
     }
     
     method start() = {
         $running = True
-        print("Application started on port " + %config["port"])
+        print("Application started on port " + str(%config["port"]))
     }
     
     method stop() = {
@@ -888,6 +915,29 @@ class Application {
         }
         return {"error": "Not found"}
     }
+}
+
+# Определение обработчиков маршрутов
+&home_handler(%params) = {
+    return {"message": "Welcome to Pyrl App!"}
+}
+
+&users_handler(%params) = {
+    return {"users": ["Alice", "Bob", "Charlie"]}
+}
+
+&products_handler(%params) = {
+    return {"products": [{"name": "Widget", "price": 9.99}]}
+}
+
+&logging_middleware(%req) = {
+    print("[LOG] Request received")
+    return %req
+}
+
+&auth_middleware(%req) = {
+    print("[AUTH] Checking authentication")
+    return %req
 }
 
 # Создание и запуск приложения

@@ -325,6 +325,13 @@ def pyrl_remove(lst, item):
     return lst
 
 
+@builtin('push')
+def pyrl_push(lst, item):
+    """Push item to end of list. Returns new list."""
+    lst.append(item)
+    return lst
+
+
 @builtin('pop')
 def pyrl_pop(lst, index=-1):
     """Pop item from list at index."""

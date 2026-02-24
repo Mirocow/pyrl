@@ -1,0 +1,77 @@
+{
+    "name": "pyrl",
+    "displayName": "Pyrl Language Support",
+    "description": "Syntax highlighting and language support for Pyrl - a hybrid Python-Perl language",
+    "version": "2.1.0",
+    "publisher": "pyrl-team",
+    "engines": {
+        "vscode": "^1.50.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "keywords": [
+        "pyrl",
+        "python",
+        "perl",
+        "hybrid",
+        "syntax"
+    ],
+    "activationEvents": [
+        "onLanguage:pyrl"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "pyrl",
+                "aliases": [
+                    "Pyrl",
+                    "pyrl"
+                ],
+                "extensions": [
+                    ".pyrl"
+                ],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./icons/pyrl-light.svg",
+                    "dark": "./icons/pyrl-dark.svg"
+                }
+            }
+        ],
+        "grammars": [
+            {
+                "language": "pyrl",
+                "scopeName": "source.pyrl",
+                "path": "./syntaxes/pyrl.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "pyrl",
+                "path": "./snippets/pyrl.json"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts"
+    },
+    "devDependencies": {
+        "@types/node": "^16.x",
+        "@types/vscode": "^1.50.0",
+        "@typescript-eslint/eslint-plugin": "^5.x",
+        "@typescript-eslint/parser": "^5.x",
+        "eslint": "^8.x",
+        "typescript": "^4.x"
+    },
+    "repository": {
+        "type": "git",
+        "url": "http://178.140.10.58:8082/ai/pyrl-project.git"
+    },
+    "license": "MIT",
+    "icon": "icons/pyrl.png"
+}

@@ -1,7 +1,7 @@
 # Документация языка Pyrl
 
-**Версия:** 2.0.0  
-**Последнее обновление:** 2025-01-10
+**Версия:** 2.1.0  
+**Последнее обновление:** 2025-02-24
 
 ---
 
@@ -1000,147 +1000,114 @@ if $response{"status"} == 200:
 
 ---
 
-## Веб-сервер с авторизацией
+## Веб-сервер с авторизацией *(NEW v2.1)*
 
 Полный пример веб-приложения на Pyrl с фронтендом и бэкендом находится в `examples/web_server_auth.pyrl`.
-
-### Структура приложения
-
-```pyrl
-# Конфигурация сервера
-%config = {
-    host: "0.0.0.0",
-    port: 8080,
-    secret_key: "pyrl_secret_key_2024",
-    session_timeout: 3600
-}
-
-# База пользователей (в памяти)
-%users = {
-    "admin": {password: "admin123", role: "administrator", name: "Administrator"},
-    "user": {password: "user123", role: "user", name: "Regular User"}
-}
-
-# Хранилище сессий
-%sessions = {}
-```
-
-### Класс HTTP сервера
-
-```pyrl
-class PyrlServer:
-    def __init__($self, %config):
-        $self.host = %config["host"]
-        $self.port = %config["port"]
-        $self.routes = {}
-    
-    def route($self, $path, $method, &handler):
-        $key = $method + ":" + $path
-        $self.routes[$key] = &handler
-    
-    def handle_request($self, $method, $path, %headers, $body):
-        $key = $method + ":" + $path
-        if $key in $self.routes:
-            $handler = $self.routes[$key]
-            return $handler(%headers, $body)
-        return $self.error_response(404, "Not Found")
-```
-
-### Маршруты приложения
-
-| Метод | Путь | Описание |
-|-------|------|----------|
-| GET | `/` | Страница входа (логин) |
-| POST | `/login` | Обработка авторизации |
-| GET | `/dashboard` | Панель администратора (требует авторизации) |
-| POST | `/logout` | Выход из системы |
-| GET | `/api/status` | API статус сервера |
-
-### Функция авторизации
-
-```pyrl
-def verify_user($username, $password):
-    if $username in %users:
-        $user = %users[$username]
-        if $user{password} == $password:
-            return {success: True, user: $user}
-    return {success: False, error: "Invalid credentials"}
-
-def create_session($username):
-    $token = generate_token($username)
-    %sessions[$token] = {
-        username: $username,
-        created: time(),
-        expires: time() + %config["session_timeout"]
-    }
-    return $token
-```
-
-### Обработчик входа
-
-```pyrl
-def handle_login_post(%headers, $body):
-    # Парсинг данных формы
-    @params = split($body, "&")
-    %form_data = {}
-    for $param in @params:
-        @parts = split($param, "=")
-        %form_data[@parts[0]] = @parts[1]
-    
-    $username = %form_data["username"]
-    $password = %form_data["password"]
-    
-    # Проверка credentials
-    $result = verify_user($username, $password)
-    
-    if $result{success}:
-        $token = create_session($username)
-        return {
-            status: 302,
-            headers: {
-                "Location": "/dashboard",
-                "Set-Cookie": "session=" + $token
-            },
-            body: ""
-        }
-    else:
-        return {
-            status: 302,
-            headers: {"Location": "/?error=1"},
-            body: ""
-        }
-```
-
-### HTML шаблоны (Фронтенд)
-
-**Страница входа:**
-- Форма с полями username и password
-- Вывод ошибки при неверных данных
-- CSS стилизация в современном дизайне
-
-**Дашборд:**
-- Приветствие с именем пользователя
-- Статистика (пользователи, посты, просмотры)
-- История активности
-- Быстрые действия
 
 ### Запуск сервера
 
 ```bash
-# Выполнение примера
-python pyrl_cli.py examples/web_server_auth.pyrl
+cd pyrl-project
+python scripts/run_web_app.py --file examples/web_server_auth.pyrl --port 8080
+```
 
-# Или через REPL
-pyrl> run examples/web_server_auth.pyrl
+После запуска сервер доступен по адресу: `http://localhost:8080/`
+
+### Структура pyrl-файла
+
+```pyrl
+# 1. КОНФИГУРАЦИЯ
+$APP_NAME = "Pyrl Admin"
+$APP_VERSION = "1.0.0"
+$PORT = env_get("PYRL_PORT", "8080")
+$SECRET_KEY = env_get("PYRL_SECRET", "pyrl_secret_key_2024")
+
+# 2. ДАННЫЕ (база пользователей в памяти)
+%users = {
+    "admin": {password: "admin123", role: "Administrator", name: "Admin User"},
+    "user": {password: "user123", role: "User", name: "John Doe"}
+}
+
+%sessions = {}
+
+# 3. БИЗНЕС-ЛОГИКА
+def check_login($username, $password):
+    $user = get(%users, $username, None)
+    if $user != None:
+        if $user["password"] == $password:
+            return $user
+    return None
+
+def create_session($username):
+    $token = generate_token($username)
+    %sessions[$token] = {username: $username, expires: time() + 3600}
+    return $token
+
+# 4. HTTP ОБРАБОТЧИК (точка входа)
+def handle_request($method, $path, %headers, $body):
+    if $path == "/" and $method == "GET":
+        return html_response($LOGIN_PAGE)
+    
+    if $path == "/login" and $method == "POST":
+        %form = parse_form($body)
+        $user = check_login(%form["username"], %form["password"])
+        if $user == None:
+            return {status: 302, headers: {"Location": "/?error=1"}, body: ""}
+        $token = create_session(%form["username"])
+        return {status: 302, headers: {"Location": "/dashboard", "Set-Cookie": "session=" + $token}, body: ""}
+    
+    # ... другие маршруты
+    
+    return html_response($ERROR_PAGE, 404)
+
+# 5. ЭКСПОРТ (обязательно!)
+$app = {handle: &handle_request, port: int($PORT)}
+```
+
+### Web-интерфейс
+
+| URL | Описание |
+|-----|----------|
+| `GET /` | Страница входа с красивым UI |
+| `POST /login` | Обработка авторизации |
+| `GET /dashboard` | Дашборд после авторизации |
+| `POST /logout` | Выход из системы |
+
+### REST API
+
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| GET | `/api/status` | Статус сервера |
+| GET | `/api/users` | Список пользователей |
+| GET | `/api/user/{name}` | Информация о пользователе |
+| POST | `/api/verify` | Проверка credentials (JSON) |
+| POST | `/api/validate` | Проверка токена сессии |
+| POST | `/api/logout` | Выход (API) |
+
+### Примеры API-запросов
+
+```bash
+# Проверка credentials
+curl -X POST -H "Content-Type: application/json" \
+     -d '{"username":"admin","password":"admin123"}' \
+     http://localhost:8080/api/verify
+
+# Ответ: {"success": true, "token": "...", "user": {...}}
+
+# Статус сервера
+curl http://localhost:8080/api/status
+
+# Список пользователей
+curl http://localhost:8080/api/users
 ```
 
 ### Тестовые учётные данные
 
 | Логин | Пароль | Роль |
 |-------|--------|------|
-| admin | admin123 | Administrator |
-| user | user123 | Regular User |
-| guest | guest123 | Guest User |
+| `admin` | `admin123` | Administrator |
+| `user` | `user123` | User |
+| `guest` | `guest123` | Guest |
 
 ### Поток авторизации
 
@@ -1149,10 +1116,42 @@ pyrl> run examples/web_server_auth.pyrl
 2. POST /login         → Проверка credentials
    ├─ Success          → Создание сессии, redirect /dashboard
    └─ Failed           → Redirect /?error=1
-3. GET /dashboard      → Проверка сессии
+3. GET /dashboard      → Проверка сессии через cookie
    ├─ Valid session    → Отображение дашборда
    └─ Invalid/None     → Redirect /
-4. POST /logout        → Удаление сессии, redirect /
+4. POST /logout        → Удаление cookie, redirect /
+```
+
+### Пример приложения без авторизации
+
+Файл `examples/app.pyrl` — простой шаблон приложения с бизнес-логикой:
+
+```pyrl
+# Данные
+@items = [
+    {id: 1, name: "Item One", value: 100},
+    {id: 2, name: "Item Two", value: 200}
+]
+
+# Бизнес-логика
+def get_all_items():
+    return @items
+
+def add_item($name, $value):
+    $new_id = len(@items) + 1
+    append(@items, {id: $new_id, name: $name, value: $value})
+
+# HTTP обработчик
+def handle_request($method, $path, %headers, $body):
+    if $path == "/api/items" and $method == "GET":
+        return json_response({items: get_all_items()})
+    if $path == "/api/items" and $method == "POST":
+        %data = json_parse($body)
+        add_item(%data["name"], %data["value"])
+        return json_response({success: True})
+    return json_response({error: "Not found"}, 404)
+
+$app = {handle: &handle_request}
 ```
 
 ---

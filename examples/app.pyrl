@@ -1,0 +1,180 @@
+# ============================================================
+# Pyrl Application - Управляющий файл с бизнес-логикой
+# ============================================================
+# Запуск: python scripts/run_web_app.py --file examples/app.pyrl
+# ============================================================
+
+# ============================================================
+# КОНФИГУРАЦИЯ
+# ============================================================
+
+$APP_NAME = "Pyrl Server"
+$APP_VERSION = "1.0.0"
+$PORT = env_get("PYRL_PORT", "8080")
+
+# ============================================================
+# ДАННЫЕ (база в памяти)
+# ============================================================
+
+@items = [
+    {id: 1, name: "Item One", value: 100},
+    {id: 2, name: "Item Two", value: 200},
+    {id: 3, name: "Item Three", value: 300}
+]
+
+%config = {
+    max_items: 100,
+    debug: True
+}
+
+# ============================================================
+# БИЗНЕС-ЛОГИКА
+# ============================================================
+
+# Получить все элементы
+def get_all_items():
+    return @items
+
+# Получить элемент по ID
+def get_item_by_id($id):
+    for $item in @items:
+        if $item["id"] == $id:
+            return $item
+    return None
+
+# Добавить элемент
+def add_item($name, $value):
+    $new_id = len(@items) + 1
+    $new_item = {id: $new_id, name: $name, value: $value}
+    append(@items, $new_item)
+    return $new_item
+
+# Обработать данные
+def process_data(%data):
+    $result = {
+        processed: True,
+        input_size: len(str(%data)),
+        timestamp: time()
+    }
+    return $result
+
+# ============================================================
+# HTML ШАБЛОНЫ
+# ============================================================
+
+$HTML_INDEX = """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pyrl App</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        h1 { color: #333; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        a { color: #0066cc; }
+        .endpoint { margin: 10px 0; padding: 10px; background: #e8f5e9; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>{{APP_NAME}} v{{VERSION}}</h1>
+    <p>Сервер работает! Бизнес-логика определена в <code>app.pyrl</code></p>
+    
+    <h2>Доступные эндпоинты:</h2>
+    
+    <div class="endpoint"><code>GET /</code> - Эта страница</div>
+    <div class="endpoint"><code>GET /api/items</code> - Список элементов</div>
+    <div class="endpoint"><code>GET /api/items/1</code> - Элемент по ID</div>
+    <div class="endpoint"><code>POST /api/items</code> - Создать элемент (JSON: name, value)</div>
+    <div class="endpoint"><code>POST /api/process</code> - Обработать данные (JSON)</div>
+    <div class="endpoint"><code>GET /api/status</code> - Статус сервера</div>
+    
+    <h2>Тестирование:</h2>
+    <pre>
+# Получить элементы
+curl http://localhost:8080/api/items
+
+# Создать элемент
+curl -X POST -H "Content-Type: application/json" \\
+     -d '{"name":"New Item","value":999}' \\
+     http://localhost:8080/api/items
+
+# Обработать данные
+curl -X POST -H "Content-Type: application/json" \\
+     -d '{"key":"value","count":42}' \\
+     http://localhost:8080/api/process
+    </pre>
+</body>
+</html>
+"""
+
+# ============================================================
+# HTTP ОБРАБОТЧИК (точка входа)
+# ============================================================
+
+def handle_request($method, $path, %headers, $body):
+    print("[" + $method + "] " + $path)
+    
+    # GET / - Главная страница
+    if $path == "/" and $method == "GET":
+        $html = $HTML_INDEX
+        $html = replace($html, "{{APP_NAME}}", $APP_NAME)
+        $html = replace($html, "{{VERSION}}", $APP_VERSION)
+        return html_response($html)
+    
+    # GET /api/items - Все элементы
+    if $path == "/api/items" and $method == "GET":
+        $items = get_all_items()
+        return json_response({items: $items, count: len($items)})
+    
+    # GET /api/items/N - Элемент по ID
+    if startswith($path, "/api/items/") and $method == "GET":
+        $id_str = replace($path, "/api/items/", "")
+        $id = int($id_str)
+        $item = get_item_by_id($id)
+        if $item != None:
+            return json_response({item: $item, found: True})
+        return json_response({error: "Not found", found: False}, 404)
+    
+    # POST /api/items - Создать элемент
+    if $path == "/api/items" and $method == "POST":
+        %data = json_parse($body)
+        $name = get(%data, "name", "Unnamed")
+        $value = get(%data, "value", 0)
+        $new_item = add_item($name, $value)
+        return json_response({created: $new_item, success: True}, 201)
+    
+    # POST /api/process - Обработать данные
+    if $path == "/api/process" and $method == "POST":
+        %data = json_parse($body)
+        $result = process_data(%data)
+        return json_response({result: $result, input: %data})
+    
+    # GET /api/status - Статус
+    if $path == "/api/status" and $method == "GET":
+        return json_response({
+            app: $APP_NAME,
+            version: $APP_VERSION,
+            status: "running",
+            items_count: len(@items),
+            uptime: time()
+        })
+    
+    # 404
+    return json_response({error: "Not found", path: $path}, 404)
+
+# ============================================================
+# ЭКСПОРТ
+# ============================================================
+
+print("")
+print("=" * 50)
+print("  " + $APP_NAME + " v" + $APP_VERSION)
+print("=" * 50)
+print("  Port: " + $PORT)
+print("  Endpoints: /, /api/items, /api/process, /api/status")
+print("=" * 50)
+print("")
+
+$app = {handle: &handle_request, port: int($PORT)}

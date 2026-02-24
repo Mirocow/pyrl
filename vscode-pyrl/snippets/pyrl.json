@@ -1,0 +1,152 @@
+{
+    "Function Definition": {
+        "prefix": "def",
+        "body": [
+            "def ${1:function_name}(${2:params}):",
+            "\t${3:pass}"
+        ],
+        "description": "Define a function"
+    },
+    "Anonymous Function": {
+        "prefix": "afunc",
+        "body": [
+            "&${1:function_name}(${2:params}) = {",
+            "\t${3:pass}",
+            "}"
+        ],
+        "description": "Define an anonymous function with block syntax"
+    },
+    "Class Definition": {
+        "prefix": "class",
+        "body": [
+            "class ${1:ClassName} {",
+            "\tprop ${2:property} = ${3:value}",
+            "\t",
+            "\tinit(${4:params}) = {",
+            "\t\t${5:# constructor body}",
+            "\t}",
+            "\t",
+            "\tmethod ${6:method_name}() = {",
+            "\t\t${7:# method body}",
+            "\t}",
+            "}"
+        ],
+        "description": "Define a class with properties and methods"
+    },
+    "If Statement": {
+        "prefix": "if",
+        "body": [
+            "if ${1:condition}:",
+            "\t${2:pass}"
+        ],
+        "description": "If statement"
+    },
+    "If-Else Statement": {
+        "prefix": "ifelse",
+        "body": [
+            "if ${1:condition}:",
+            "\t${2:pass}",
+            "else:",
+            "\t${3:pass}"
+        ],
+        "description": "If-else statement"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": [
+            "for $${1:var} in ${2:iterable}:",
+            "\t${3:pass}"
+        ],
+        "description": "For loop"
+    },
+    "While Loop": {
+        "prefix": "while",
+        "body": [
+            "while ${1:condition}:",
+            "\t${2:pass}"
+        ],
+        "description": "While loop"
+    },
+    "Test Block": {
+        "prefix": "test",
+        "body": [
+            "test \"${1:test name}\":",
+            "\t${2:pass}"
+        ],
+        "description": "Test block"
+    },
+    "Print Statement": {
+        "prefix": "print",
+        "body": [
+            "print(${1:message})"
+        ],
+        "description": "Print statement"
+    },
+    "Return Statement": {
+        "prefix": "return",
+        "body": [
+            "return ${1:value}"
+        ],
+        "description": "Return statement"
+    },
+    "Hash Variable": {
+        "prefix": "hash",
+        "body": [
+            "%${1:varname} = {${2:key}: ${3:value}}"
+        ],
+        "description": "Hash variable"
+    },
+    "Array Variable": {
+        "prefix": "array",
+        "body": [
+            "@${1:varname} = [${2:items}]"
+        ],
+        "description": "Array variable"
+    },
+    "Scalar Variable": {
+        "prefix": "scalar",
+        "body": [
+            "$${1:varname} = ${2:value}"
+        ],
+        "description": "Scalar variable"
+    },
+    "HTTP Handler": {
+        "prefix": "handler",
+        "body": [
+            "def handle_request($method, $path, %headers, $body):",
+            "\tif $path == \"/${1:route}\" and $method == \"${2:GET}\":",
+            "\t\treturn ${3:html_response}(\"${4:content}\")",
+            "\treturn html_response(\"Not Found\", 404)",
+            "",
+            "$app = {handle: &handle_request}"
+        ],
+        "description": "HTTP request handler for web server"
+    },
+    "Vue Component": {
+        "prefix": "vue",
+        "body": [
+            "vue \"${1:ComponentName}\":",
+            "\ttemplate: \"${2:<div></div>}\"",
+            "\tprops: [${3:}]",
+            "\tdata: {${4:}}"
+        ],
+        "description": "Vue component generation"
+    },
+    "Try-Except Block": {
+        "prefix": "try",
+        "body": [
+            "try:",
+            "\t${1:pass}",
+            "except ${2:Exception}:",
+            "\t${3:pass}"
+        ],
+        "description": "Try-except block"
+    },
+    "Assert Statement": {
+        "prefix": "assert",
+        "body": [
+            "assert ${1:condition}"
+        ],
+        "description": "Assert statement"
+    }
+}

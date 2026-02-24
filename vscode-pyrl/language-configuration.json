@@ -1,0 +1,59 @@
+{
+    "comments": {
+        "lineComment": "#",
+        "blockComment": ["=begin", "=end"]
+    },
+    "brackets": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"]
+    ],
+    "autoClosingPairs": [
+        { "open": "{", "close": "}" },
+        { "open": "[", "close": "]" },
+        { "open": "(", "close": ")" },
+        { "open": "\"", "close": "\"", "notIn": ["string"] },
+        { "open": "'", "close": "'", "notIn": ["string"] },
+        { "open": "\"\"\"", "close": "\"\"\"", "notIn": ["string"] }
+    ],
+    "surroundingPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""],
+        ["'", "'"]
+    ],
+    "folding": {
+        "markers": {
+            "start": "^\\s*(def|class|if|elif|else|for|while|try|except|finally|with|test|vue)\\b",
+            "end": "^\\s*(return|break|continue|pass)\\b"
+        }
+    },
+    "indentationRules": {
+        "increaseIndentPattern": "^\\s*(def|class|if|elif|else|for|while|try|except|finally|with|test|vue)\\b.*:\\s*$",
+        "decreaseIndentPattern": "^\\s*(elif|else|except|finally)\\b.*:\\s*$"
+    },
+    "onEnterRules": [
+        {
+            "beforeText": "^\\s*(def|class|if|elif|else|for|while|try|except|finally|with|test|vue)\\b.*:\\s*$",
+            "action": {
+                "indent": "indent"
+            }
+        },
+        {
+            "beforeText": "^\\s*#.*$",
+            "afterText": "^\\s*$",
+            "action": {
+                "indent": "none",
+                "appendText": "# "
+            }
+        }
+    ],
+    "wordPattern": "([\\$\\@\\%\\&]?[a-zA-Z_][a-zA-Z0-9_]*)",
+    "autoCloseBefore": ";:.,={}])\"'\\n\\t ",
+    "colorizedBracketPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"]
+    ]
+}

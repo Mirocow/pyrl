@@ -5,6 +5,56 @@ All notable changes to the Pyrl language will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-02-24
+
+### Added
+
+#### Real HTTP Server Support
+- **NEW**: `examples/web_server_auth.pyrl` now creates a fully functional HTTP server
+- Beautiful login page with gradient UI and error handling
+- Dashboard with user information and statistics after successful login
+- Session management with cookies and token validation
+- REST API endpoints for external integrations
+
+#### Web Server Example (`examples/app.pyrl`)
+- Simple application server template with business logic in pyrl file
+- CRUD operations example with in-memory data storage
+- Clean separation of configuration, data, business logic, and HTTP handler
+
+### Changed
+
+#### `examples/web_server_auth.pyrl`
+- Complete rewrite to work as real HTTP server (not just demonstration)
+- Added `$app` export for `run_web_app.py` wrapper
+- Added `check_login()` helper function for cleaner authentication logic
+- Fixed session validation and cookie handling
+
+### REST API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/status` | Server status |
+| GET | `/api/users` | List all users |
+| GET | `/api/user/{name}` | Get user info |
+| POST | `/api/verify` | Verify credentials (JSON) |
+| POST | `/api/validate` | Validate session token |
+| POST | `/api/logout` | Logout (API) |
+
+### Running the Server
+
+```bash
+cd /home/z/my-project/pyrl
+python scripts/run_web_app.py --file examples/web_server_auth.pyrl --port 8080
+```
+
+### Test Credentials
+
+| Username | Password | Role |
+|----------|----------|------|
+| admin | admin123 | Administrator |
+| user | user123 | User |
+| guest | guest123 | Guest |
+
 ## [2.0.0] - 2025-01-10
 
 ### Added

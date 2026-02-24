@@ -1,34 +1,29 @@
 # ============================================================
-# Pyrl Web Server - Полноценный сервер с авторизацией
-# Запуск: python scripts/run_web_app.py --file examples/web_server_auth.pyrl --port 8080
+# Pyrl Web Server - Real HTTP Server with Authentication
+# Works with: python scripts/run_web_app.py --file examples/web_server_auth_real.pyrl
 # ============================================================
 
-# ============================================================
-# КОНФИГУРАЦИЯ
-# ============================================================
-
-$APP_NAME = "Pyrl Admin"
-$APP_VERSION = "1.0.0"
+# Server configuration
 $PORT = env_get("PYRL_PORT", "8080")
+$HOST = env_get("PYRL_HOST", "0.0.0.0")
 $SECRET_KEY = env_get("PYRL_SECRET", "pyrl_secret_key_2024")
 
-# ============================================================
-# ДАННЫЕ
-# ============================================================
-
+# Users database (in-memory)
 %users = {
-    "admin": {password: "admin123", role: "Administrator", name: "Admin User", email: "admin@pyrl.local"},
-    "user": {password: "user123", role: "User", name: "John Doe", email: "john@pyrl.local"},
-    "guest": {password: "guest123", role: "Guest", name: "Guest User", email: "guest@pyrl.local"}
+    "admin": {password: "admin123", role: "administrator", name: "Administrator"},
+    "user": {password: "user123", role: "user", name: "Regular User"},
+    "guest": {password: "guest123", role: "guest", name: "Guest User"}
 }
 
+# Sessions storage
 %sessions = {}
 
 # ============================================================
-# HTML ШАБЛОНЫ
+# HTML Templates (Frontend)
 # ============================================================
 
-$LOGIN_PAGE = """
+# Login page template
+$login_page = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,7 +46,7 @@ $LOGIN_PAGE = """
             padding: 40px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
         }
         .logo {
             text-align: center;
@@ -100,9 +95,6 @@ $LOGIN_PAGE = """
             border-left: 4px solid #d63031;
             display: none;
         }
-        .error-message.show {
-            display: block;
-        }
         .btn {
             width: 100%;
             padding: 14px;
@@ -125,22 +117,6 @@ $LOGIN_PAGE = """
             color: #666;
             font-size: 0.85em;
         }
-        .credentials {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-size: 0.85em;
-        }
-        .credentials h4 {
-            margin-bottom: 8px;
-            color: #333;
-        }
-        .credentials code {
-            background: #e9ecef;
-            padding: 2px 6px;
-            border-radius: 3px;
-        }
     </style>
 </head>
 <body>
@@ -151,7 +127,7 @@ $LOGIN_PAGE = """
         </div>
         
         <div class="error-message" id="errorBox">
-            <strong>Error!</strong> Invalid username or password. Please try again.
+            <strong>Error!</strong> Invalid username or password.
         </div>
         
         <form id="loginForm" method="POST" action="/login">
@@ -166,35 +142,30 @@ $LOGIN_PAGE = """
             <button type="submit" class="btn">Sign In</button>
         </form>
         
-        <div class="credentials">
-            <h4>Test Credentials:</h4>
-            <code>admin / admin123</code> - Administrator<br>
-            <code>user / user123</code> - User<br>
-            <code>guest / guest123</code> - Guest
-        </div>
-        
         <div class="footer">
-            <p>Powered by Pyrl Language v{{VERSION}}</p>
+            <p>Powered by Pyrl Language</p>
+            <p>Demo: admin / admin123</p>
         </div>
     </div>
     
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('error') === '1') {
-            document.getElementById('errorBox').classList.add('show');
+            document.getElementById('errorBox').style.display = 'block';
         }
     </script>
 </body>
 </html>
 """
 
-$DASHBOARD_PAGE = """
+# Dashboard template
+$dashboard_page = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Pyrl Admin</title>
+    <title>Pyrl Admin - Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -231,7 +202,6 @@ $DASHBOARD_PAGE = """
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s;
         }
         .btn-logout:hover { background: rgba(255, 255, 255, 0.3); }
         .container { max-width: 1400px; margin: 0 auto; padding: 30px; }
@@ -256,9 +226,7 @@ $DASHBOARD_PAGE = """
             padding: 25px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s;
         }
-        .stat-card:hover { transform: translateY(-5px); }
         .stat-icon {
             width: 50px; height: 50px;
             border-radius: 12px;
@@ -271,58 +239,6 @@ $DASHBOARD_PAGE = """
         .stat-icon.storage { background: #fce4ec; color: #e91e63; }
         .stat-value { font-size: 2.2em; font-weight: 700; color: #1a1a2e; }
         .stat-label { color: #666; font-size: 0.95em; margin-top: 5px; }
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-        }
-        @media (max-width: 900px) {
-            .content-grid { grid-template-columns: 1fr; }
-        }
-        .card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-        .card-header {
-            background: #f8f9fa;
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            font-weight: 600;
-            color: #1a1a2e;
-        }
-        .card-body { padding: 20px; }
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .activity-item:last-child { border-bottom: none; }
-        .activity-icon {
-            width: 40px; height: 40px;
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            margin-right: 15px; font-size: 0.9em;
-        }
-        .activity-icon.login { background: #e3f2fd; color: #2196f3; }
-        .activity-icon.create { background: #e8f5e9; color: #4caf50; }
-        .activity-icon.update { background: #fff3e0; color: #ff9800; }
-        .activity-text { flex: 1; }
-        .activity-time { color: #999; font-size: 0.85em; }
-        .quick-actions { display: flex; flex-direction: column; gap: 10px; }
-        .action-btn {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            border: none;
-            border-radius: 10px;
-            text-align: left;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 0.95em;
-        }
-        .action-btn:hover { background: #e94560; color: white; }
     </style>
 </head>
 <body>
@@ -343,7 +259,7 @@ $DASHBOARD_PAGE = """
     <div class="container">
         <div class="welcome-banner">
             <h2>Welcome, {{USERNAME}}!</h2>
-            <p>You are logged in as <strong>{{ROLE}}</strong>. Session active.</p>
+            <p>You are logged in as <strong>{{ROLE}}</strong>.</p>
         </div>
         
         <div class="stats-grid">
@@ -368,53 +284,13 @@ $DASHBOARD_PAGE = """
                 <div class="stat-label">Storage Used</div>
             </div>
         </div>
-        
-        <div class="content-grid">
-            <div class="card">
-                <div class="card-header">Recent Activity</div>
-                <div class="card-body">
-                    <div class="activity-item">
-                        <div class="activity-icon login">Auth</div>
-                        <div class="activity-text">User <strong>{{USERNAME}}</strong> logged in</div>
-                        <div class="activity-time">Just now</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon create">New</div>
-                        <div class="activity-text">New user <strong>john_doe</strong> registered</div>
-                        <div class="activity-time">5 min ago</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon update">Edit</div>
-                        <div class="activity-text">Settings updated by <strong>admin</strong></div>
-                        <div class="activity-time">1 hour ago</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon create">File</div>
-                        <div class="activity-text">New page <strong>About Us</strong> created</div>
-                        <div class="activity-time">3 hours ago</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">Quick Actions</div>
-                <div class="card-body">
-                    <div class="quick-actions">
-                        <button class="action-btn">Add New User</button>
-                        <button class="action-btn">Create New Post</button>
-                        <button class="action-btn">System Settings</button>
-                        <button class="action-btn">View Reports</button>
-                        <button class="action-btn">Manage Plugins</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </body>
 </html>
 """
 
-$ERROR_PAGE = """
+# Error page template
+$error_page = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -449,7 +325,6 @@ $ERROR_PAGE = """
             text-decoration: none;
             display: inline-block;
         }
-        .btn-home:hover { background: #c23a51; }
     </style>
 </head>
 <body>
@@ -463,42 +338,34 @@ $ERROR_PAGE = """
 """
 
 # ============================================================
-# БИЗНЕС-ЛОГИКА
+# Authentication Functions
 # ============================================================
 
-# Генерация токена сессии
+# Generate session token
 def generate_token($username):
     $timestamp = str(time())
     $data = $username + ":" + $timestamp + ":" + $SECRET_KEY
     return str(hash($data))
 
-# Проверка пользователя
+# Verify user credentials
 def verify_user($username, $password):
     $user = get(%users, $username, None)
     if $user != None:
         if $user["password"] == $password:
             return {success: True, user: $user}
-    return {success: False, user: None}
+    return {success: False, error: "Invalid username or password"}
 
-# Проверка credentials и возврат токена
-def check_login($username, $password):
-    $user = get(%users, $username, None)
-    if $user != None:
-        if $user["password"] == $password:
-            return $user
-    return None
-
-# Создание сессии
+# Create session
 def create_session($username):
     $token = generate_token($username)
     %sessions[$token] = {
         username: $username,
-        created: str(time()),
+        created: time(),
         expires: time() + 3600
     }
     return $token
 
-# Проверка сессии
+# Validate session
 def validate_session($token):
     $session = get(%sessions, $token, None)
     if $session != None:
@@ -507,63 +374,82 @@ def validate_session($token):
     return {valid: False}
 
 # ============================================================
-# HTTP ОБРАБОТЧИК
+# HTTP Request Handler (Main entry point for server)
 # ============================================================
 
 def handle_request($method, $path, %headers, $body):
-    # GET / - Страница входа
+    # GET / - Login page
     if $path == "/" and $method == "GET":
-        $html = replace($LOGIN_PAGE, "{{VERSION}}", $APP_VERSION)
-        return html_response($html)
+        print("[GET /] Serving login page")
+        return html_response($login_page)
     
-    # POST /login - Обработка входа
+    # POST /login - Process login
     if $path == "/login" and $method == "POST":
+        print("[POST /login] Processing login attempt")
+        
+        # Parse form data
         %form = parse_form($body)
         $username = get(%form, "username", "")
         $password = get(%form, "password", "")
         
-        $user = check_login($username, $password)
+        print("  Username: " + $username)
         
-        if $user == None:
+        # Verify credentials
+        $result = verify_user($username, $password)
+        
+        if $result["success"]:
+            print("  Result: SUCCESS")
+            $token = create_session($username)
+            return {
+                status: 302,
+                headers: {
+                    "Location": "/dashboard",
+                    "Set-Cookie": "session=" + $token + "; HttpOnly; Path=/"
+                },
+                body: ""
+            }
+        else:
+            print("  Result: FAILED")
             return {
                 status: 302,
                 headers: {"Location": "/?error=1"},
                 body: ""
             }
-        
-        $token = create_session($username)
-        return {
-            status: 302,
-            headers: {
-                "Location": "/dashboard",
-                "Set-Cookie": "session=" + $token + "; HttpOnly; Path=/"
-            },
-            body: ""
-        }
     
-    # GET /dashboard - Панель управления
+    # GET /dashboard - Admin dashboard
     if $path == "/dashboard" and $method == "GET":
+        print("[GET /dashboard] Serving dashboard")
+        
+        # Check for session cookie
         $cookie = get(%headers, "Cookie", "")
         %cookies = parse_cookies($cookie)
         $token = get(%cookies, "session", "")
         
-        $session = validate_session($token)
+        # Validate session
+        $session_result = validate_session($token)
         
-        if $session["valid"]:
-            $username = $session["username"]
+        if $session_result["valid"]:
+            $username = $session_result["username"]
             $user = %users[$username]
             
-            $html = $DASHBOARD_PAGE
+            print("  User: " + $username)
+            print("  Role: " + $user["role"])
+            
+            # Build dashboard HTML
+            $html = $dashboard_page
             $html = replace($html, "{{USERNAME}}", $user["name"])
             $html = replace($html, "{{ROLE}}", $user["role"])
             $html = replace($html, "{{AVATAR}}", upper($username[0]))
             
             return html_response($html)
         
+        # Not authenticated - redirect to login
+        print("  Not authenticated - redirecting to login")
         return redirect("/")
     
-    # POST /logout - Выход
+    # POST /logout - Logout user
     if $path == "/logout" and $method == "POST":
+        print("[POST /logout] Logging out user")
         return {
             status: 302,
             headers: {
@@ -573,122 +459,51 @@ def handle_request($method, $path, %headers, $body):
             body: ""
         }
     
-    # ============================================================
-    # REST API
-    # ============================================================
-    
-    # GET /api/status - Статус сервера
+    # GET /api/status - API endpoint
     if $path == "/api/status" and $method == "GET":
-        return json_response({
-            app: $APP_NAME,
-            version: $APP_VERSION,
-            status: "running",
-            users_count: len(%users),
-            sessions_count: len(%sessions),
-            uptime: time()
-        })
+        print("[GET /api/status] API status check")
+        %response = {
+            status: "ok",
+            version: "1.0.0",
+            language: "Pyrl",
+            uptime: time(),
+            users_registered: len(%users),
+            active_sessions: len(%sessions)
+        }
+        return json_response(%response)
     
-    # GET /api/users - Список пользователей (без паролей)
-    if $path == "/api/users" and $method == "GET":
-        @users_list = []
-        for $username in keys(%users):
-            $user = %users[$username]
-            append(@users_list, {
-                username: $username,
-                role: $user["role"],
-                name: $user["name"],
-                email: $user["email"]
-            })
-        return json_response({users: @users_list, count: len(@users_list)})
-    
-    # GET /api/user/NAME - Информация о пользователе
-    if startswith($path, "/api/user/") and $method == "GET":
-        $username = replace($path, "/api/user/", "")
-        $user = get(%users, $username, None)
-        if $user != None:
-            return json_response({
-                username: $username,
-                role: $user["role"],
-                name: $user["name"],
-                email: $user["email"]
-            })
-        return json_response({error: "User not found"}, 404)
-    
-    # POST /api/verify - Проверка credentials (для внешних приложений)
-    if $path == "/api/verify" and $method == "POST":
-        %data = json_parse($body)
-        $username = get(%data, "username", "")
-        $password = get(%data, "password", "")
-        $user = check_login($username, $password)
-        
-        if $user != None:
-            $token = create_session($username)
-            return json_response({
-                success: True,
-                token: $token,
-                user: {
-                    username: $username,
-                    role: $user["role"],
-                    name: $user["name"]
-                }
-            })
-        return json_response({success: False, error: "Invalid credentials"}, 401)
-    
-    # POST /api/validate - Проверка токена
-    if $path == "/api/validate" and $method == "POST":
-        %data = json_parse($body)
-        $token = get(%data, "token", "")
-        $session = validate_session($token)
-        
-        if $session["valid"]:
-            $username = $session["username"]
-            $user = %users[$username]
-            return json_response({
-                valid: True,
-                username: $username,
-                role: $user["role"],
-                name: $user["name"]
-            })
-        return json_response({valid: False}, 401)
-    
-    # POST /api/logout - API выход
-    if $path == "/api/logout" and $method == "POST":
-        %data = json_parse($body)
-        $token = get(%data, "token", "")
-        # Удаляем сессию (упрощенно)
-        return json_response({success: True, message: "Logged out"})
-    
-    # 404 - Страница не найдена
-    $html = replace($ERROR_PAGE, "{{CODE}}", "404")
-    $html = replace($html, "{{MESSAGE}}", "Page Not Found")
-    return html_response($html, 404)
+    # 404 Not Found
+    $body = $error_page
+    $body = replace($body, "{{CODE}}", "404")
+    $body = replace($body, "{{MESSAGE}}", "Page Not Found")
+    return html_response($body, 404)
 
 # ============================================================
-# ЗАПУСК
+# Server Initialization
 # ============================================================
 
 print("")
 print("=" * 60)
-print("  " + $APP_NAME + " v" + $APP_VERSION)
+print("  Pyrl Web Server with Authentication")
 print("=" * 60)
 print("")
-print("  Web Interface:")
-print("    http://localhost:" + $PORT + "/")
+print("  Host: " + $HOST)
+print("  Port: " + $PORT)
 print("")
-print("  Test Credentials:")
-print("    admin / admin123  (Administrator)")
-print("    user  / user123   (User)")
-print("    guest / guest123  (Guest)")
+print("  Routes:")
+print("    GET  /              - Login page")
+print("    POST /login         - Process authentication")
+print("    GET  /dashboard     - Admin dashboard (requires auth)")
+print("    POST /logout        - Logout user")
+print("    GET  /api/status    - API status endpoint")
 print("")
-print("  REST API Endpoints:")
-print("    GET  /api/status       - Server status")
-print("    GET  /api/users        - List users")
-print("    GET  /api/user/{name}  - Get user info")
-print("    POST /api/verify       - Verify credentials")
-print("    POST /api/validate     - Validate session token")
-print("    POST /api/logout       - API logout")
+print("  Test credentials:")
+print("    admin / admin123    - Administrator")
+print("    user  / user123     - Regular user")
+print("    guest / guest123    - Guest user")
 print("")
 print("=" * 60)
 print("")
 
+# Export app for server wrapper - this is required for run_web_app.py
 $app = {handle: &handle_request, port: int($PORT)}

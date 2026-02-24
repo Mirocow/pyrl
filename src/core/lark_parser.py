@@ -159,11 +159,11 @@ literal: STRING | NUMBER | BOOLEAN | NONE | hash_literal | array_literal
 
 // Hash literal - supports multi-line  
 // Priority .1 to give block_expr priority when ambiguous
-hash_literal.1: "{" [_NL* hash_item ("," _NL* hash_item)* _NL*] [","] "}"
+hash_literal.1: "{" [hash_item ("," hash_item)*] [","] "}"
 hash_item: (STRING | IDENT) ":" expression
 
 // Array literal - supports multi-line
-array_literal: "[" [_NL* expression ("," _NL* expression)* _NL*] [","] "]"
+array_literal: "[" [expression ("," expression)*] [","] "]"
 
 regex_literal: "r" STRING
 
@@ -174,8 +174,8 @@ else_clause: ELIF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_claus
 
 loop: FOR SCALAR_VAR IN expression ":" _NL INDENT (_NL | statement)+ DEDENT
     | WHILE expression ":" _NL INDENT (_NL | statement)+ DEDENT
-    | FOR SCALAR_VAR IN expression block
-    | WHILE expression block
+    | FOR SCALAR_VAR IN expression "{" block_stmt* "}"
+    | WHILE expression "{" block_stmt* "}"
 
 test_block: TEST STRING ":" _NL INDENT (_NL | statement)+ DEDENT
 

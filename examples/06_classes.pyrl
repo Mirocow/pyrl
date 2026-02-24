@@ -5,18 +5,25 @@
 # BASIC CLASS DEFINITION
 # ===========================================
 
-class Person:
-    def __init__($self, $name, $age):
-        $self.name = $name
-        $self.age = $age
+class Person {
+    prop name
+    prop age
     
-    def greet($self):
-        return "Hello, I'm " + $self.name
+    init($n, $a) = {
+        $name = $n;
+        $age = $a
+    }
     
-    def get_info($self):
-        return $self.name + " is " + str($self.age) + " years old"
+    method greet() = {
+        return "Hello, I'm " + $name
+    }
+    
+    method get_info() = {
+        return $name + " is " + str($age) + " years old"
+    }
+}
 
-# Create instances
+print("=== Person Class ===")
 $alice = Person("Alice", 30)
 $bob = Person("Bob", 25)
 
@@ -27,24 +34,33 @@ print($bob.get_info())
 # CLASS WITH METHODS
 # ===========================================
 
-class Counter:
-    def __init__($self, $start):
-        $self.count = $start
+class Counter {
+    prop count = 0
     
-    def increment($self):
-        $self.count = $self.count + 1
-        return $self.count
+    init($start) = {
+        $count = $start
+    }
     
-    def decrement($self):
-        $self.count = $self.count - 1
-        return $self.count
+    method increment() = {
+        $count = $count + 1;
+        return $count
+    }
     
-    def get($self):
-        return $self.count
+    method decrement() = {
+        $count = $count - 1;
+        return $count
+    }
     
-    def reset($self, $value):
-        $self.count = $value
+    method get() = {
+        return $count
+    }
+    
+    method reset($value) = {
+        $count = $value
+    }
+}
 
+print("=== Counter Class ===")
 $counter = Counter(0)
 print("Initial: " + str($counter.get()))
 print("After increment: " + str($counter.increment()))
@@ -57,24 +73,29 @@ print("After reset: " + str($counter.get()))
 # CLASS WITH CALCULATION
 # ===========================================
 
-class Rectangle:
-    def __init__($self, $w, $h):
-        $self.width = $w
-        $self.height = $h
+class Rectangle {
+    prop width = 0
+    prop height = 0
     
-    def area($self):
-        return $self.width * $self.height
+    init($w, $h) = {
+        $width = $w;
+        $height = $h
+    }
     
-    def perimeter($self):
-        return 2 * ($self.width + $self.height)
+    method area() = {
+        return $width * $height
+    }
     
-    def is_square($self):
-        return $self.width == $self.height
+    method perimeter() = {
+        return 2 * ($width + $height)
+    }
     
-    def scale($self, $factor):
-        $self.width = $self.width * $factor
-        $self.height = $self.height * $factor
+    method is_square() = {
+        return $width == $height
+    }
+}
 
+print("=== Rectangle Class ===")
 $rect = Rectangle(10, 20)
 print("Area: " + str($rect.area()))
 print("Perimeter: " + str($rect.perimeter()))
@@ -88,29 +109,34 @@ print("Is square: " + str($square.is_square()))
 # UTILITY CLASS
 # ===========================================
 
-class Calculator:
-    def __init__($self, $initial):
-        $self.result = $initial
+class Calculator {
+    prop result = 0
     
-    def add($self, $x):
-        $self.result = $self.result + $x
-        return $self.result
+    init($initial) = {
+        $result = $initial
+    }
     
-    def subtract($self, $x):
-        $self.result = $self.result - $x
-        return $self.result
+    method add($x) = {
+        $result = $result + $x;
+        return $result
+    }
     
-    def multiply($self, $x):
-        $self.result = $self.result * $x
-        return $self.result
+    method subtract($x) = {
+        $result = $result - $x;
+        return $result
+    }
     
-    def divide($self, $x):
-        $self.result = $self.result / $x
-        return $self.result
+    method multiply($x) = {
+        $result = $result * $x;
+        return $result
+    }
     
-    def get($self):
-        return $self.result
+    method get() = {
+        return $result
+    }
+}
 
+print("=== Calculator Class ===")
 $calc = Calculator(10)
 print("Initial: " + str($calc.get()))
 print("Add 5: " + str($calc.add(5)))
@@ -121,26 +147,31 @@ print("Subtract 3: " + str($calc.subtract(3)))
 # CLASS FOR DATA MODELING
 # ===========================================
 
-class BankAccount:
-    def __init__($self, $owner_name, $initial_balance):
-        $self.owner = $owner_name
-        $self.balance = $initial_balance
+class BankAccount {
+    prop owner = ""
+    prop balance = 0
     
-    def deposit($self, $amount):
-        if $amount > 0:
-            $self.balance = $self.balance + $amount
-            return True
-        return False
+    init($owner_name, $initial_balance) = {
+        $owner = $owner_name;
+        $balance = $initial_balance
+    }
     
-    def withdraw($self, $amount):
-        if $amount > 0 and $amount <= $self.balance:
-            $self.balance = $self.balance - $amount
-            return True
-        return False
+    method deposit($amount) = {
+        $balance = $balance + $amount;
+        return True
+    }
     
-    def get_balance($self):
-        return $self.balance
+    method withdraw($amount) = {
+        $balance = $balance - $amount;
+        return True
+    }
+    
+    method get_balance() = {
+        return $balance
+    }
+}
 
+print("=== BankAccount Class ===")
 $account1 = BankAccount("Alice", 1000)
 $account2 = BankAccount("Bob", 500)
 
@@ -152,3 +183,5 @@ print("After deposit, Alice: $" + str($account1.get_balance()))
 
 $account1.withdraw(300)
 print("After withdraw, Alice: $" + str($account1.get_balance()))
+
+print("=== Classes Demo Complete ===")

@@ -628,7 +628,7 @@ def generate_token($username):
 def verify_user($username, $password):
     if $username in %users:
         $user = %users[$username]
-        if $user{password} == $password:
+        if $user["password"] == $password:
             return {success: True, user: $user}
     return {success: False, error: "Invalid username or password"}
 
@@ -646,8 +646,8 @@ def create_session($username):
 def validate_session($token):
     if $token in %sessions:
         $session = %sessions[$token]
-        if $session{expires} > time():
-            return {valid: True, username: $session{username}}
+        if $session["expires"] > time():
+            return {valid: True, username: $session["username"]}
         else:
             # Session expired, remove it
             popitem(%sessions, $token)
@@ -688,7 +688,7 @@ def handle_login_post(%headers, $body):
     # Verify credentials
     $result = verify_user($username, $password)
     
-    if $result{success}:
+    if $result["success"]:
         print("  Result: SUCCESS - Redirecting to dashboard")
         
         # Create session
@@ -733,17 +733,17 @@ def handle_dashboard(%headers, $body):
     if $token:
         $session_result = validate_session($token)
         
-        if $session_result{valid}:
-            $username = $session_result{username}
+        if $session_result["valid"]:
+            $username = $session_result["username"]
             $user = %users[$username]
             
             print("  User: " + $username)
-            print("  Role: " + $user{role})
+            print("  Role: " + $user["role"])
             
             # Build dashboard HTML
             $html = $dashboard_page
-            $html = replace($html, "{{USERNAME}}", $user{name})
-            $html = replace($html, "{{ROLE}}", $user{role})
+            $html = replace($html, "{{USERNAME}}", $user["name"])
+            $html = replace($html, "{{ROLE}}", $user["role"])
             $html = replace($html, "{{AVATAR}}", upper($username[0]))
             
             return $server.html_response($html)
@@ -824,20 +824,20 @@ print("")
 print("Test 1: Failed login attempt")
 print("-" * 40)
 $result1 = verify_user("admin", "wrong_password")
-if $result1{success}:
+if $result1["success"]:
     print("  Login successful (unexpected!)")
 else:
-    print("  Login failed: " + $result1{error})
+    print("  Login failed: " + $result1["error"])
 print("")
 
 # Test 2: Successful login
 print("Test 2: Successful login attempt")
 print("-" * 40)
 $result2 = verify_user("admin", "admin123")
-if $result2{success}:
+if $result2["success"]:
     print("  Login successful!")
-    print("  User: " + $result2{user}{name})
-    print("  Role: " + $result2{user}{role})
+    print("  User: " + $result2["user"]["name"])
+    print("  Role: " + $result2["user"]["role"])
     
     # Create session
     $token = create_session("admin")
@@ -845,10 +845,10 @@ if $result2{success}:
     
     # Validate session
     $session = validate_session($token)
-    if $session{valid}:
-        print("  Session valid for: " + $session{username})
+    if $session["valid"]:
+        print("  Session valid for: " + $session["username"])
 else:
-    print("  Login failed: " + $result2{error})
+    print("  Login failed: " + $result2["error"])
 print("")
 
 # Test 3: API status
@@ -862,7 +862,7 @@ print("")
 print("Registered Users:")
 for $username in keys(%users):
     $user = %users[$username]
-    print("  - " + $username + " (" + $user{role} + "): " + $user{name})
+    print("  - " + $username + " (" + $user["role"] + "): " + $user["name"])
 print("")
 
 # ============================================================

@@ -12,8 +12,10 @@ def safe_divide($a, $b):
         return None
     return $a / $b
 
-print("10 / 2 = " + str(safe_divide(10, 2)))
-print("10 / 0 = " + str(safe_divide(10, 0)))
+$result1 = safe_divide(10, 2)
+print("10 div 2 -> " + str($result1))
+$result2 = safe_divide(10, 0)
+print("10 div 0 -> " + str($result2))
 
 # ===========================================
 # RESULT PATTERN
@@ -23,7 +25,8 @@ print("10 / 0 = " + str(safe_divide(10, 0)))
 def divide_safely($a, $b):
     if $b == 0:
         return {success: False, error: "Division by zero"}
-    return {success: True, value: $a / $b}
+    $result = $a / $b
+    return {success: True, value: $result}
 
 $result1 = divide_safely(10, 2)
 if $result1["success"]:

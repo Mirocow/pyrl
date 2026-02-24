@@ -22,9 +22,9 @@ if $pattern =~ m~test~ {
     print("Found 'test' with ~ delimiter")
 }
 
-# Shorthand syntax: /pattern/
+# Match with m// (use m/pattern/ instead of /pattern/ shorthand)
 $email = "user@example.com"
-if $email =~ /@/ {
+if $email =~ m/@/ {
     print("Email contains @")
 }
 
@@ -65,7 +65,7 @@ if $input =~ m/test/ {
     print("Input contains 'test'")
 }
 
-if $input =~ /\d/ {
+if $input =~ m/\d/ {
     print("Input contains digit")
 }
 

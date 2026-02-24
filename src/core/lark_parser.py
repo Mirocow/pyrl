@@ -1017,14 +1017,34 @@ class PyrlTransformer(Transformer):
                         i += 1
             elif isinstance(child, list):
                 # Could be else_clause nested data
-                # Structure for elif: [condition, INDENT, statements..., DEDENT, else_clause?]
-                # Structure for else: [INDENT, statements..., DEDENT]
+                # Structure for elif: [ELIF, condition, statement, else_clause?]
+                # Structure for else: [ELSE, INDENT, statements..., DEDENT]
                 if len(child) >= 1:
                     # Check if first item is a Token
                     first_item = child[0] if child else None
-                    
+
+                    # If it starts with ELIF token, parse the elif clause
+                    if isinstance(first_item, Token) and first_item.type == 'ELIF':
+                        # Process potentially nested elif/else structure
+                        # Pass elif_clauses and get else_body back
+                        nested_else = self._process_elif_else_list(child, elif_clauses)
+                        if nested_else:
+                            else_body = nested_else
+                    # If it starts with ELSE token, it's an else body from else_clause
+                    elif isinstance(first_item, Token) and first_item.type == 'ELSE':
+                        # Skip ELSE and INDENT tokens, collect body
+                        else_body = []
+                        for item in child[1:]:
+                            if isinstance(item, Token) and item.type in ('ELSE', 'INDENT'):
+                                continue
+                            elif isinstance(item, Token) and item.type == 'DEDENT':
+                                break
+                            elif isinstance(item, list):
+                                else_body.extend(self._filter_tokens(item))
+                            elif not isinstance(item, Token):
+                                else_body.append(item)
                     # If it starts with INDENT, it's an else body
-                    if isinstance(first_item, Token) and first_item.type == 'INDENT':
+                    elif isinstance(first_item, Token) and first_item.type == 'INDENT':
                         else_body = []
                         for item in child[1:]:  # Skip INDENT
                             if isinstance(item, Token) and item.type == 'DEDENT':
@@ -1084,6 +1104,97 @@ class PyrlTransformer(Transformer):
         return IfStatement(condition=condition, then_body=then_body, elif_clauses=elif_clauses, else_body=else_body)
 
     def else_clause(self, children): return children if children else None
+
+    def _process_elif_else_list(self, items, elif_clauses):
+        """Process nested elif/else structure from else_clause.
+
+        Structure: [ELIF, condition, statement, else_clause?]
+        where else_clause can be another ELIF or ELSE.
+        Returns: else_body list (empty if no else clause)
+        """
+        else_body = []
+        i = 0
+        while i < len(items):
+            item = items[i]
+
+            # Check for ELIF token
+            if isinstance(item, Token) and item.type == 'ELIF':
+                i += 1
+                # Get condition
+                elif_cond = None
+                if i < len(items) and not isinstance(items[i], Token):
+                    elif_cond = items[i]
+                    i += 1
+
+                # Collect body statements (non-Token items until next ELIF/ELSE/list)
+                elif_body = []
+                while i < len(items):
+                    next_item = items[i]
+                    if isinstance(next_item, Token) and next_item.type in ('ELIF', 'ELSE'):
+                        break
+                    elif isinstance(next_item, list):
+                        # Check if this is a nested else_clause
+                        if len(next_item) >= 1 and isinstance(next_item[0], Token):
+                            if next_item[0].type == 'ELIF':
+                                # Recursively process nested elif
+                                nested_else = self._process_elif_else_list(next_item, elif_clauses)
+                                else_body.extend(nested_else)
+                                i += 1
+                                break
+                            elif next_item[0].type == 'ELSE':
+                                # Process nested else
+                                for sub_item in next_item[1:]:
+                                    if isinstance(sub_item, Token) and sub_item.type in ('ELSE', 'INDENT', 'DEDENT'):
+                                        continue
+                                    elif isinstance(sub_item, list):
+                                        else_body.extend(self._filter_tokens(sub_item))
+                                    elif not isinstance(sub_item, Token):
+                                        else_body.append(sub_item)
+                                i += 1
+                                break
+                        else:
+                            elif_body.extend(self._filter_tokens(next_item))
+                    elif not isinstance(next_item, Token):
+                        elif_body.append(next_item)
+                    i += 1
+
+                if elif_cond:
+                    elif_clauses.append((elif_cond, elif_body))
+
+            elif isinstance(item, Token) and item.type == 'ELSE':
+                # Collect else body
+                i += 1
+                while i < len(items):
+                    next_item = items[i]
+                    if isinstance(next_item, Token) and next_item.type in ('ELSE', 'INDENT', 'DEDENT'):
+                        i += 1
+                        continue
+                    elif isinstance(next_item, list):
+                        else_body.extend(self._filter_tokens(next_item))
+                    elif not isinstance(next_item, Token):
+                        else_body.append(next_item)
+                    i += 1
+            elif isinstance(item, list):
+                # Nested list - could be another elif/else
+                if len(item) >= 1 and isinstance(item[0], Token):
+                    if item[0].type == 'ELIF':
+                        nested_else = self._process_elif_else_list(item, elif_clauses)
+                        else_body.extend(nested_else)
+                    elif item[0].type == 'ELSE':
+                        for sub_item in item[1:]:
+                            if isinstance(sub_item, Token) and sub_item.type in ('ELSE', 'INDENT', 'DEDENT'):
+                                continue
+                            elif isinstance(sub_item, list):
+                                else_body.extend(self._filter_tokens(sub_item))
+                            elif not isinstance(sub_item, Token):
+                                else_body.append(sub_item)
+                else:
+                    else_body.extend(self._filter_tokens(item))
+                i += 1
+            else:
+                i += 1
+
+        return else_body
 
     def loop(self, children):
         """Transform loop statement (for or while)."""
@@ -1160,12 +1271,24 @@ class PyrlTransformer(Transformer):
         return PrintStatement(values=values)
 
     def assertion_statement(self, children):
-        if len(children) == 1:
-            return AssertStatement(left=children[0], operator=None, right=None)
-        elif len(children) >= 3:
-            op = children[1].value if isinstance(children[1], Token) else str(children[1])
-            return AssertStatement(left=children[0], operator=op, right=children[2])
-        return AssertStatement(left=children[0] if children else None, operator=None, right=None)
+        # Skip ASSERT token, collect expressions
+        exprs = []
+        op = None
+        for child in children:
+            if isinstance(child, Token) and child.type == 'ASSERT':
+                continue
+            elif isinstance(child, Token) and child.type == 'COMP_OP':
+                op = child.value
+            elif not isinstance(child, Token):
+                exprs.append(child)
+
+        if len(exprs) == 1:
+            # assert expression (no explicit comparison in grammar)
+            # expression might be a BinaryOp with comparison
+            return AssertStatement(left=exprs[0], operator=None, right=None)
+        elif len(exprs) >= 2 and op:
+            return AssertStatement(left=exprs[0], operator=op, right=exprs[1])
+        return AssertStatement(left=exprs[0] if exprs else None, operator=None, right=None)
 
     def comparison_op(self, children): return children[0] if children else None
 

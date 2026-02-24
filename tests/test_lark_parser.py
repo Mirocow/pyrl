@@ -437,7 +437,8 @@ class TestFunctionDefinition:
 """)
         assert isinstance(ast.statements[0], FunctionDef)
         assert ast.statements[0].name == "add"
-        assert ast.statements[0].params == ["a", "b"]
+        # Params are tuples of (name_with_sigil, type)
+        assert ast.statements[0].params == [('$a', 'scalar'), ('$b', 'scalar')]
 
     def test_sigil_function(self):
         """Test function with & sigil."""

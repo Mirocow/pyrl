@@ -1,7 +1,7 @@
 # Pyrl Language Documentation
 
-**Version:** 1.0.0  
-**Last Updated:** 2024
+**Version:** 2.3.0  
+**Last Updated:** 2025-02-24
 
 ---
 
@@ -18,11 +18,13 @@
 9. [Functions](#functions)
 10. [Classes and Objects](#classes-and-objects)
 11. [Built-in Functions](#built-in-functions)
-12. [Plugin System](#plugin-system)
-13. [Model Training](#model-training)
-14. [API Server](#api-server)
-15. [Docker](#docker)
-16. [Examples](#examples)
+12. [SQLite Database](#sqlite-database) *(NEW v2.3)*
+13. [Plugin System](#plugin-system)
+14. [Model Training](#model-training)
+15. [API Server](#api-server)
+16. [Docker](#docker)
+17. [Language Grammar](#language-grammar) *(NEW v2.2)*
+18. [Examples](#examples)
 
 ---
 
@@ -529,6 +531,83 @@ class Student(Person):
 | `json_parse(string)` | Parse JSON |
 | `json_stringify(obj, indent)` | Serialize to JSON |
 
+### Environment *(NEW v2.3)*
+
+| Function | Description |
+|----------|-------------|
+| `env_get(key, default)` | Get environment variable |
+| `env_set(key, value)` | Set environment variable |
+| `env_keys()` | List all environment variables |
+
+### Database *(NEW v2.3)*
+
+| Function | Description |
+|----------|-------------|
+| `db_connect(filename)` | Connect to SQLite database |
+| `db_close(handle)` | Close connection |
+| `db_execute(handle, sql, params)` | Execute SQL (INSERT, UPDATE, DELETE) |
+| `db_query(handle, sql, params)` | SELECT query (all rows) |
+| `db_query_one(handle, sql, params)` | SELECT query (one row) |
+| `db_begin(handle)` | Begin transaction |
+| `db_commit(handle)` | Commit transaction |
+| `db_rollback(handle)` | Rollback transaction |
+| `db_tables(handle)` | List tables |
+
+---
+
+## SQLite Database *(NEW v2.3)*
+
+Pyrl has built-in SQLite support for persistent data storage.
+
+### Automatic Database Creation
+
+When running a web application, the database is automatically created in the `data/` folder:
+
+```bash
+# Database created with pyrl file name
+python scripts/run_web_app.py --file examples/web_server_auth.pyrl
+# Database: data/web_server_auth.db
+```
+
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `PYRL_DB_PATH` | Full path to database file |
+| `PYRL_APP_NAME` | Application name (pyrl filename) |
+| `PYRL_DATA_DIR` | Data directory (`data/`) |
+| `PYRL_PORT` | Server port |
+| `PYRL_HOST` | Server host |
+
+### Usage in Code
+
+```pyrl
+# Get database path from environment
+$DB_PATH = env_get("PYRL_DB_PATH", "data/app.db")
+
+# Connect to database
+$db = db_connect($DB_PATH)
+
+# Create table
+db_execute($db, """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT DEFAULT 'User'
+    )
+""")
+
+# Insert data
+db_execute($db, "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+    ["admin", "secret123", "Administrator"])
+
+# Query data
+$result = db_query($db, "SELECT * FROM users WHERE role = ?", ["Administrator"])
+for $user in $result["rows"]:
+    print($user["username"])
+```
+
 ---
 
 ## Plugin System
@@ -784,6 +863,99 @@ services:
     volumes:
       - ./models:/app/models
 ```
+
+---
+
+## Language Grammar *(NEW v2.2)*
+
+Pyrl uses a Lark parser with a formal LALR grammar. The grammar is defined in `src/core/lark_parser.py`.
+
+### Core Rules
+
+```
+start: (_NL | statement)*
+
+statement: simple_stmt _NL?
+         | compound_stmt
+
+simple_stmt: return_statement
+           | assignment
+           | print_statement
+           | expression_statement
+
+compound_stmt: function_definition
+             | class_definition
+             | conditional
+             | loop
+```
+
+### Variables with Sigils
+
+```
+SCALAR_VAR: "$" IDENT    # $name - scalar
+ARRAY_VAR: "@" IDENT     # @items - array
+HASH_VAR: "%" IDENT      # %data - hash
+FUNC_VAR: "&" IDENT      # &func - function
+```
+
+### Operators
+
+```
+COMP_OP: "==" | "!=" | "<=" | ">=" | "=~" | "!~" | "<" | ">"
+ADD_OP: "+" | "-"
+MUL_OP: "//" | "*" | "/" | "%"
+POW_OP: "**" | "^"
+```
+
+### Keywords
+
+```
+if, elif, else, while, for, in, def, return, class, extends,
+method, init, prop, test, print, assert, and, or, not, True, False, None
+```
+
+### Functions
+
+```
+function_definition: DEF IDENT "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
+func_var_definition: FUNC_VAR "(" [arg_list] ")" "=" block
+```
+
+### Classes
+
+```
+class_definition: CLASS IDENT [EXTENDS IDENT] "{" class_member* "}"
+class_member: method_def | property_def
+method_def: METHOD IDENT "(" [arg_list] ")" "=" block
+property_def: PROP IDENT ["=" expression]
+```
+
+### Control Flow
+
+```
+conditional: IF expression ":" _NL INDENT statement+ DEDENT else_clause?
+loop: FOR SCALAR_VAR IN expression ":" _NL INDENT statement+ DEDENT
+    | WHILE expression ":" _NL INDENT statement+ DEDENT
+```
+
+### Model Training with Grammar
+
+The `scripts/train_model.py` script uses grammar for feature extraction:
+
+```bash
+# Train with grammar features
+python scripts/train_model.py --examples-dir examples/
+
+# Without grammar features
+python scripts/train_model.py --no-grammar
+```
+
+Extracted features:
+- AST node types
+- Sigil usage ($, @, %, &)
+- Keyword frequency
+- Operator frequency
+- Parse success rate
 
 ---
 

@@ -1,6 +1,6 @@
 # Документация языка Pyrl
 
-**Версия:** 2.1.0  
+**Версия:** 2.3.0  
 **Последнее обновление:** 2025-02-24
 
 ---
@@ -19,9 +19,11 @@
 10. [Анонимные функции](#анонимные-функции) *(NEW v2.0)*
 11. [Классы и объекты](#классы-и-объекты) *(NEW v2.0)*
 12. [Встроенные функции](#встроенные-функции)
-13. [API сервер](#api-сервер)
-14. [Docker](#docker)
-15. [Примеры](#примеры)
+13. [База данных SQLite](#база-данных-sqlite) *(NEW v2.3)*
+14. [API сервер](#api-сервер)
+15. [Docker](#docker)
+16. [Грамматика языка](#грамматика-языка) *(NEW v2.2)*
+17. [Примеры](#примеры)
 
 ---
 
@@ -690,6 +692,150 @@ print($stack.is_empty())  # False
 | `json_parse(string)` | Парсинг JSON |
 | `json_stringify(obj, indent)` | Сериализация в JSON |
 
+### Окружение *(NEW v2.3)*
+
+| Функция | Описание |
+|---------|----------|
+| `env_get(key, default)` | Получить переменную окружения |
+| `env_set(key, value)` | Установить переменную окружения |
+| `env_keys()` | Список всех переменных окружения |
+
+### База данных *(NEW v2.3)*
+
+| Функция | Описание |
+|---------|----------|
+| `db_connect(filename)` | Подключиться к SQLite базе |
+| `db_close(handle)` | Закрыть соединение |
+| `db_execute(handle, sql, params)` | Выполнить SQL (INSERT, UPDATE, DELETE) |
+| `db_query(handle, sql, params)` | SELECT запрос (все строки) |
+| `db_query_one(handle, sql, params)` | SELECT запрос (одна строка) |
+| `db_begin(handle)` | Начать транзакцию |
+| `db_commit(handle)` | Подтвердить транзакцию |
+| `db_rollback(handle)` | Откатить транзакцию |
+| `db_tables(handle)` | Список таблиц |
+
+---
+
+## База данных SQLite *(NEW v2.3)*
+
+Pyrl имеет встроенную поддержку SQLite для постоянного хранения данных.
+
+### Автоматическое создание базы
+
+При запуске веб-приложения база данных создается автоматически в папке `data/`:
+
+```bash
+# База данных создается с именем pyrl-файла
+python scripts/run_web_app.py --file examples/web_server_auth.pyrl
+# База: data/web_server_auth.db
+
+python scripts/run_web_app.py --file examples/my_app.pyrl
+# База: data/my_app.db
+```
+
+### Переменные окружения
+
+При запуске устанавливаются переменные окружения:
+
+| Переменная | Описание |
+|------------|----------|
+| `PYRL_DB_PATH` | Полный путь к файлу базы данных |
+| `PYRL_APP_NAME` | Имя приложения (имя pyrl-файла) |
+| `PYRL_DATA_DIR` | Папка данных (`data/`) |
+| `PYRL_PORT` | Порт сервера |
+| `PYRL_HOST` | Хост сервера |
+
+### Использование в коде
+
+```pyrl
+# Получить путь к базе из переменной окружения
+$DB_PATH = env_get("PYRL_DB_PATH", "data/app.db")
+
+# Подключиться к базе
+$db = db_connect($DB_PATH)
+
+# Создать таблицу
+db_execute($db, """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT DEFAULT 'User',
+        created_at REAL
+    )
+""")
+
+# Вставить данные
+$now = time()
+db_execute($db, "INSERT INTO users (username, password, role, created_at) VALUES (?, ?, ?, ?)",
+    ["admin", "secret123", "Administrator", $now])
+
+# Запросить данные
+$result = db_query($db, "SELECT * FROM users WHERE role = ?", ["Administrator"])
+for $user in $result["rows"]:
+    print($user["username"])
+
+# Запрос одной строки
+$user = db_query_one($db, "SELECT * FROM users WHERE username = ?", ["admin"])
+if $user["row"] != None:
+    print("Found: " + $user["row"]["username"])
+```
+
+### Транзакции
+
+```pyrl
+db_begin($db)
+try:
+    db_execute($db, "UPDATE accounts SET balance = balance - ? WHERE id = ?", [100, 1])
+    db_execute($db, "UPDATE accounts SET balance = balance + ? WHERE id = ?", [100, 2])
+    db_commit($db)
+except:
+    db_rollback($db)
+```
+
+### Пример схемы для веб-приложения
+
+```pyrl
+# Таблица пользователей
+db_execute($db, """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'User',
+        name TEXT,
+        email TEXT,
+        created_at REAL,
+        last_login REAL
+    )
+""")
+
+# Таблица сессий
+db_execute($db, """
+    CREATE TABLE IF NOT EXISTS sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        token TEXT UNIQUE NOT NULL,
+        username TEXT NOT NULL,
+        created_at REAL NOT NULL,
+        expires_at REAL NOT NULL,
+        ip_address TEXT,
+        user_agent TEXT
+    )
+""")
+
+# Лог активности
+db_execute($db, """
+    CREATE TABLE IF NOT EXISTS activity_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        action TEXT NOT NULL,
+        details TEXT,
+        ip_address TEXT,
+        created_at REAL NOT NULL
+    )
+""")
+```
+
 ---
 
 ## Система плагинов
@@ -948,6 +1094,149 @@ services:
 
 ---
 
+## Грамматика языка *(NEW v2.2)*
+
+Pyrl использует Lark-парсер с формальной грамматикой LALR. Грамматика определена в `src/core/lark_parser.py`.
+
+### Основные правила
+
+```
+start: (_NL | statement)*
+
+statement: simple_stmt _NL?
+         | compound_stmt
+
+simple_stmt: return_statement
+           | assignment
+           | print_statement
+           | assertion_statement
+           | expression_statement
+           | func_var_definition
+
+compound_stmt: function_definition
+             | class_definition
+             | conditional
+             | loop
+             | test_block
+```
+
+### Переменные с сигилами
+
+```
+SCALAR_VAR: "$" IDENT    # $name - скаляр
+ARRAY_VAR: "@" IDENT     # @items - массив
+HASH_VAR: "%" IDENT      # %data - хеш
+FUNC_VAR: "&" IDENT      # &func - функция
+```
+
+### Операторы
+
+```
+COMP_OP: "==" | "!=" | "<=" | ">=" | "=~" | "!~" | "<" | ">"
+ADD_OP: "+" | "-"
+MUL_OP: "//" | "*" | "/" | "%"
+POW_OP: "**" | "^"
+NOT_OP: "!"
+```
+
+### Ключевые слова
+
+```
+if, elif, else, while, for, in, def, return, class, extends,
+method, init, prop, test, print, assert, and, or, not, True, False, None
+```
+
+### Выражения
+
+```
+expression: or_expr
+
+or_expr: and_expr (OR and_expr)*
+and_expr: comparison_expr (AND comparison_expr)*
+comparison_expr: additive_expr ((COMP_OP | IN) additive_expr)*
+additive_expr: multiplicative_expr (ADD_OP multiplicative_expr)*
+multiplicative_expr: power_expr (MUL_OP power_expr)*
+power_expr: unary_expr (POW_OP unary_expr)*
+```
+
+### Функции
+
+```
+function_definition: DEF IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
+
+func_var_definition: FUNC_VAR "(" [arg_list] ")" "=" block
+                   | FUNC_VAR "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
+```
+
+### Классы
+
+```
+class_definition: CLASS IDENT [EXTENDS IDENT] "{" class_member* "}"
+                | CLASS IDENT [EXTENDS IDENT] ":" _NL INDENT (_NL | class_member_indented)+ DEDENT
+
+class_member: method_def | property_def
+method_def: METHOD IDENT "(" [arg_list] ")" "=" block
+          | INIT "(" [arg_list] ")" "=" block
+property_def: PROP IDENT ["=" expression]
+```
+
+### Управляющие конструкции
+
+```
+conditional: IF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
+           | IF expression "{" [block_stmt]* "}" [ELSE "{" [block_stmt]* "}"]
+
+loop: FOR SCALAR_VAR IN expression ":" _NL INDENT (_NL | statement)+ DEDENT
+    | WHILE expression ":" _NL INDENT (_NL | statement)+ DEDENT
+    | FOR SCALAR_VAR IN expression "{" [block_stmt]* "}"
+    | WHILE expression "{" [block_stmt]* "}"
+```
+
+### Блоки
+
+```
+block: "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+block_stmt: return_statement
+          | print_statement
+          | assignment
+          | expression_statement
+          | FOR SCALAR_VAR IN expression "{" [block_stmt]* "}"
+          | WHILE expression "{" [block_stmt]* "}"
+          | IF expression "{" [block_stmt]* "}" elif_block* [ELSE "{" [block_stmt]* "}"]
+```
+
+### Регулярные выражения
+
+```
+regex_literal: "r" STRING              # r"pattern"
+             | PERL_REGEX              # m/pattern/, s/old/new/
+
+PERL_REGEX: /m\/[^\/]+\/[imsxg]*/
+          | /qr\/[^\/]+\/[imsxg]*/
+          | /s\/[^\/]*\/[^\/]*\/[imsxg]*/
+```
+
+### Обучение модели на грамматике
+
+Скрипт `scripts/train_model.py` использует грамматику для извлечения признаков:
+
+```bash
+# Обучение с грамматическими признаками
+python scripts/train_model.py --examples-dir examples/
+
+# Без грамматических признаков
+python scripts/train_model.py --no-grammar
+```
+
+Извлекаемые признаки:
+- Типы AST-узлов
+- Использование сигилов ($, @, %, &)
+- Частота ключевых слов
+- Частота операторов
+- Процент успешного парсинга
+
+---
+
 ## Примеры
 
 ### Факториал
@@ -1000,9 +1289,9 @@ if $response{"status"} == 200:
 
 ---
 
-## Веб-сервер с авторизацией *(NEW v2.1)*
+## Веб-сервер с авторизацией *(NEW v2.3)*
 
-Полный пример веб-приложения на Pyrl с фронтендом и бэкендом находится в `examples/web_server_auth.pyrl`.
+Полный пример веб-приложения на Pyrl с фронтендом, бэкендом и SQLite находится в `examples/web_server_auth.pyrl`.
 
 ### Запуск сервера
 
@@ -1013,37 +1302,64 @@ python scripts/run_web_app.py --file examples/web_server_auth.pyrl --port 8080
 
 После запуска сервер доступен по адресу: `http://localhost:8080/`
 
+База данных автоматически создается в `data/web_server_auth.db`.
+
 ### Структура pyrl-файла
 
 ```pyrl
 # 1. КОНФИГУРАЦИЯ
 $APP_NAME = "Pyrl Admin"
-$APP_VERSION = "1.0.0"
+$APP_VERSION = "2.0.0"
 $PORT = env_get("PYRL_PORT", "8080")
 $SECRET_KEY = env_get("PYRL_SECRET", "pyrl_secret_key_2024")
+$DB_PATH = env_get("PYRL_DB_PATH", "data/web_server_auth.db")
 
-# 2. ДАННЫЕ (база пользователей в памяти)
-%users = {
-    "admin": {password: "admin123", role: "Administrator", name: "Admin User"},
-    "user": {password: "user123", role: "User", name: "John Doe"}
-}
+# 2. ИНИЦИАЛИЗАЦИЯ БАЗЫ ДАННЫХ
+$db = db_connect($DB_PATH)
 
-%sessions = {}
+def init_database():
+    db_execute($db, """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'User',
+            name TEXT,
+            email TEXT,
+            created_at REAL
+        )
+    """)
+    
+    db_execute($db, """
+        CREATE TABLE IF NOT EXISTS sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            token TEXT UNIQUE NOT NULL,
+            username TEXT NOT NULL,
+            created_at REAL NOT NULL,
+            expires_at REAL NOT NULL
+        )
+    """)
 
-# 3. БИЗНЕС-ЛОГИКА
-def check_login($username, $password):
-    $user = get(%users, $username, None)
-    if $user != None:
-        if $user["password"] == $password:
-            return $user
+init_database()
+
+# 3. БИЗНЕС-ЛОГИКА (с SQLite)
+def get_user($username):
+    $result = db_query_one($db, "SELECT * FROM users WHERE username = ?", [$username])
+    if $result["success"] and $result["row"] != None:
+        return $result["row"]
     return None
 
 def create_session($username):
     $token = generate_token($username)
-    %sessions[$token] = {username: $username, expires: time() + 3600}
+    $now = time()
+    $expires = $now + 3600
+    db_execute($db, 
+        "INSERT INTO sessions (token, username, created_at, expires_at) VALUES (?, ?, ?, ?)",
+        [$token, $username, $now, $expires]
+    )
     return $token
 
-# 4. HTTP ОБРАБОТЧИК (точка входа)
+# 4. HTTP ОБРАБОТЧИК
 def handle_request($method, $path, %headers, $body):
     if $path == "/" and $method == "GET":
         return html_response($LOGIN_PAGE)
@@ -1055,8 +1371,6 @@ def handle_request($method, $path, %headers, $body):
             return {status: 302, headers: {"Location": "/?error=1"}, body: ""}
         $token = create_session(%form["username"])
         return {status: 302, headers: {"Location": "/dashboard", "Set-Cookie": "session=" + $token}, body: ""}
-    
-    # ... другие маршруты
     
     return html_response($ERROR_PAGE, 404)
 
@@ -1079,7 +1393,10 @@ $app = {handle: &handle_request, port: int($PORT)}
 |-------|----------|----------|
 | GET | `/api/status` | Статус сервера |
 | GET | `/api/users` | Список пользователей |
+| GET | `/api/sessions` | Активные сессии |
+| GET | `/api/activity` | Лог активности |
 | GET | `/api/user/{name}` | Информация о пользователе |
+| POST | `/api/user/create` | Создать пользователя |
 | POST | `/api/verify` | Проверка credentials (JSON) |
 | POST | `/api/validate` | Проверка токена сессии |
 | POST | `/api/logout` | Выход (API) |
@@ -1099,6 +1416,14 @@ curl http://localhost:8080/api/status
 
 # Список пользователей
 curl http://localhost:8080/api/users
+
+# Активные сессии
+curl http://localhost:8080/api/sessions
+
+# Создать пользователя
+curl -X POST -H "Content-Type: application/json" \
+     -d '{"username":"newuser","password":"pass123","role":"User"}' \
+     http://localhost:8080/api/user/create
 ```
 
 ### Тестовые учётные данные
@@ -1109,49 +1434,41 @@ curl http://localhost:8080/api/users
 | `user` | `user123` | User |
 | `guest` | `guest123` | Guest |
 
-### Поток авторизации
+### Структура базы данных
 
-```
-1. GET /               → Отображение формы входа
-2. POST /login         → Проверка credentials
-   ├─ Success          → Создание сессии, redirect /dashboard
-   └─ Failed           → Redirect /?error=1
-3. GET /dashboard      → Проверка сессии через cookie
-   ├─ Valid session    → Отображение дашборда
-   └─ Invalid/None     → Redirect /
-4. POST /logout        → Удаление cookie, redirect /
-```
+```sql
+-- Пользователи
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'User',
+    name TEXT,
+    email TEXT,
+    created_at REAL,
+    last_login REAL
+);
 
-### Пример приложения без авторизации
+-- Сессии
+CREATE TABLE sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    token TEXT UNIQUE NOT NULL,
+    username TEXT NOT NULL,
+    created_at REAL NOT NULL,
+    expires_at REAL NOT NULL,
+    ip_address TEXT,
+    user_agent TEXT
+);
 
-Файл `examples/app.pyrl` — простой шаблон приложения с бизнес-логикой:
-
-```pyrl
-# Данные
-@items = [
-    {id: 1, name: "Item One", value: 100},
-    {id: 2, name: "Item Two", value: 200}
-]
-
-# Бизнес-логика
-def get_all_items():
-    return @items
-
-def add_item($name, $value):
-    $new_id = len(@items) + 1
-    append(@items, {id: $new_id, name: $name, value: $value})
-
-# HTTP обработчик
-def handle_request($method, $path, %headers, $body):
-    if $path == "/api/items" and $method == "GET":
-        return json_response({items: get_all_items()})
-    if $path == "/api/items" and $method == "POST":
-        %data = json_parse($body)
-        add_item(%data["name"], %data["value"])
-        return json_response({success: True})
-    return json_response({error: "Not found"}, 404)
-
-$app = {handle: &handle_request}
+-- Лог активности
+CREATE TABLE activity_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT,
+    action TEXT NOT NULL,
+    details TEXT,
+    ip_address TEXT,
+    created_at REAL NOT NULL
+);
 ```
 
 ---

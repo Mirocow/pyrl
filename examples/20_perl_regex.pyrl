@@ -1,0 +1,84 @@
+# ============================================
+# 20. PERL-STYLE REGULAR EXPRESSIONS
+# ============================================
+
+print("=== Perl-style Regex Examples ===")
+
+# Basic match with m//
+$name = "Hello World"
+if $name =~ m/World/ {
+    print("Found 'World' in name")
+}
+
+# Case-insensitive match with m//i
+$text = "HELLO"
+if $text =~ m/hello/i {
+    print("Case-insensitive match works!")
+}
+
+# Using ~ as delimiter
+$pattern = "test123"
+if $pattern =~ m~test~ {
+    print("Found 'test' with ~ delimiter")
+}
+
+# Shorthand syntax: /pattern/
+$email = "user@example.com"
+if $email =~ /@/ {
+    print("Email contains @")
+}
+
+# Multiple modifiers
+$data = "HELLO WORLD"
+if $data =~ m/hello/i {
+    print("Found hello (case-insensitive)")
+}
+
+# qr// - compiled regex
+$digit_pattern = qr/\d+/
+if "123abc" =~ $digit_pattern {
+    print("Found digits using compiled regex")
+}
+
+# qr with modifiers
+$word_pattern = qr/hello/im
+print("Compiled pattern created")
+
+# s/// - substitution
+$str = "hello world hello"
+$result = s/hello/hi/
+print("Substitution result: " + str($result))
+
+# s///g - global substitution
+$text2 = "aaa bbb aaa"
+$result2 = s/aaa/xxx/g
+print("Global substitution: " + str($result2))
+
+# s~~~ with different delimiter
+$path = "/old/path/old"
+$result3 = s~old~new~g
+print("Path substitution: " + str($result3))
+
+# Combining with variable checks
+$input = "test123"
+if $input =~ m/test/ {
+    print("Input contains 'test'")
+}
+
+if $input =~ /\d/ {
+    print("Input contains digit")
+}
+
+# Complex pattern
+$ip = "192.168.1.1"
+if $ip =~ m/\d+\.\d+\.\d+\.\d+/ {
+    print("Valid IP format")
+}
+
+# Using modifiers: i, m, s, x, g
+$multiline = "line1\nline2"
+if $multiline =~ m/line2/m {
+    print("Multiline match works")
+}
+
+print("=== Perl-style Regex Demo Complete ===")

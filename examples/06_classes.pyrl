@@ -5,23 +5,16 @@
 # BASIC CLASS DEFINITION
 # ===========================================
 
-class Person {
-    prop name = "Unknown"
-    prop age = 0
+class Person:
+    def __init__($self, $name, $age):
+        $self.name = $name
+        $self.age = $age
     
-    init($name, $age) = {
-        $name = $name;
-        $age = $age
-    }
+    def greet($self):
+        return "Hello, I'm " + $self.name
     
-    method greet() = {
-        return "Hello, I'm " + $name
-    }
-    
-    method get_info() = {
-        return $name + " is " + str($age) + " years old"
-    }
-}
+    def get_info($self):
+        return $self.name + " is " + str($self.age) + " years old"
 
 # Create instances
 $alice = Person("Alice", 30)
@@ -34,31 +27,23 @@ print($bob.get_info())
 # CLASS WITH METHODS
 # ===========================================
 
-class Counter {
-    prop count = 0
+class Counter:
+    def __init__($self, $start):
+        $self.count = $start
     
-    init($start) = {
-        $count = $start
-    }
+    def increment($self):
+        $self.count = $self.count + 1
+        return $self.count
     
-    method increment() = {
-        $count = $count + 1;
-        return $count
-    }
+    def decrement($self):
+        $self.count = $self.count - 1
+        return $self.count
     
-    method decrement() = {
-        $count = $count - 1;
-        return $count
-    }
+    def get($self):
+        return $self.count
     
-    method get() = {
-        return $count
-    }
-    
-    method reset($value) = {
-        $count = $value
-    }
-}
+    def reset($self, $value):
+        $self.count = $value
 
 $counter = Counter(0)
 print("Initial: " + str($counter.get()))
@@ -72,32 +57,23 @@ print("After reset: " + str($counter.get()))
 # CLASS WITH CALCULATION
 # ===========================================
 
-class Rectangle {
-    prop width = 0
-    prop height = 0
+class Rectangle:
+    def __init__($self, $w, $h):
+        $self.width = $w
+        $self.height = $h
     
-    init($w, $h) = {
-        $width = $w;
-        $height = $h
-    }
+    def area($self):
+        return $self.width * $self.height
     
-    method area() = {
-        return $width * $height
-    }
+    def perimeter($self):
+        return 2 * ($self.width + $self.height)
     
-    method perimeter() = {
-        return 2 * ($width + $height)
-    }
+    def is_square($self):
+        return $self.width == $self.height
     
-    method is_square() = {
-        return $width == $height
-    }
-    
-    method scale($factor) = {
-        $width = $width * $factor;
-        $height = $height * $factor
-    }
-}
+    def scale($self, $factor):
+        $self.width = $self.width * $factor
+        $self.height = $self.height * $factor
 
 $rect = Rectangle(10, 20)
 print("Area: " + str($rect.area()))
@@ -112,37 +88,28 @@ print("Is square: " + str($square.is_square()))
 # UTILITY CLASS
 # ===========================================
 
-class Calculator {
-    prop result = 0
+class Calculator:
+    def __init__($self, $initial):
+        $self.result = $initial
     
-    init($initial) = {
-        $result = $initial
-    }
+    def add($self, $x):
+        $self.result = $self.result + $x
+        return $self.result
     
-    method add($x) = {
-        $result = $result + $x;
-        return $result
-    }
+    def subtract($self, $x):
+        $self.result = $self.result - $x
+        return $self.result
     
-    method subtract($x) = {
-        $result = $result - $x;
-        return $result
-    }
+    def multiply($self, $x):
+        $self.result = $self.result * $x
+        return $self.result
     
-    method multiply($x) = {
-        $result = $result * $x;
-        return $result
-    }
+    def divide($self, $x):
+        $self.result = $self.result / $x
+        return $self.result
     
-    method divide($x) = {
-        $result = $result / $x;
-        return $result
-    }
-    
-    method get() = {
-        return $result
-    }
-}
+    def get($self):
+        return $self.result
 
 $calc = Calculator(10)
 print("Initial: " + str($calc.get()))
@@ -154,35 +121,25 @@ print("Subtract 3: " + str($calc.subtract(3)))
 # CLASS FOR DATA MODELING
 # ===========================================
 
-class BankAccount {
-    prop owner = "Unknown"
-    prop balance = 0
+class BankAccount:
+    def __init__($self, $owner_name, $initial_balance):
+        $self.owner = $owner_name
+        $self.balance = $initial_balance
     
-    init($owner_name, $initial_balance) = {
-        $owner = $owner_name;
-        $balance = $initial_balance
-    }
-    
-    method deposit($amount) = {
-        if $amount > 0 {
-            $balance = $balance + $amount;
+    def deposit($self, $amount):
+        if $amount > 0:
+            $self.balance = $self.balance + $amount
             return True
-        };
         return False
-    }
     
-    method withdraw($amount) = {
-        if $amount > 0 and $amount <= $balance {
-            $balance = $balance - $amount;
+    def withdraw($self, $amount):
+        if $amount > 0 and $amount <= $self.balance:
+            $self.balance = $self.balance - $amount
             return True
-        };
         return False
-    }
     
-    method get_balance() = {
-        return $balance
-    }
-}
+    def get_balance($self):
+        return $self.balance
 
 $account1 = BankAccount("Alice", 1000)
 $account2 = BankAccount("Bob", 500)

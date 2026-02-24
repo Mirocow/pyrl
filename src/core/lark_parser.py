@@ -41,8 +41,8 @@ simple_stmt: return_statement
 func_var_definition: FUNC_VAR "(" [arg_list] ")" "=" block
                   | FUNC_VAR "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
 
-assertion_statement: "assert" expression comparison_op expression
-                   | "assert" expression
+assertion_statement: ASSERT expression comparison_op expression
+                   | ASSERT expression
 
 comparison_op: COMP_OP
 
@@ -56,29 +56,29 @@ compound_stmt: function_definition
              | vue_component_gen
 
 // Function definitions - only with "def" keyword
-function_definition: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
+function_definition: DEF IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
 
-// Block syntax for anonymous functions
+// Block syntax for anonymous functions and control flow
 // Statements separated by newlines or semicolons
 block: "{" [block_stmt (";"? block_stmt)* ";"?] "}"
-block_stmt: assignment
-          | return_statement
+block_stmt: return_statement
           | print_statement
+          | assertion_statement
+          | assignment
+          | func_var_definition
           | expression_statement
-          | block_if
-          | block_while
-          | block_for
-          | conditional
-          | loop
+          | FOR SCALAR_VAR IN expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+          | WHILE expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+          | IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" elif_block* [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]
 
-// Control flow inside blocks (no indentation)
-block_if: "if" expression block ["else" block]
-block_while: "while" expression block
-block_for: "for" SCALAR_VAR IN expression block
+// elif for block-style conditionals
+elif_block: ELIF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+
+// Control flow - unified syntax (both : and {} supported)
 
 // OOP: Class definition - supports both { } and : with indentation
-class_definition: "class" IDENT ["extends" IDENT] "{" class_member* "}"
-                | "class" IDENT ["extends" IDENT] ":" _NL INDENT (_NL | class_member_indented)+ DEDENT
+class_definition: CLASS IDENT [EXTENDS IDENT] "{" class_member* "}"
+                | CLASS IDENT [EXTENDS IDENT] ":" _NL INDENT (_NL | class_member_indented)+ DEDENT
 
 class_member: method_def
             | property_def
@@ -87,15 +87,15 @@ class_member_indented: method_def_indented
                      | property_def
 
 // Method definitions
-method_def: "method" IDENT "(" [arg_list] ")" "=" block
-          | "init" "(" [arg_list] ")" "=" block
+method_def: METHOD IDENT "(" [arg_list] ")" "=" block
+          | INIT "(" [arg_list] ")" "=" block
 
 // Method with indentation
-method_def_indented: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
-                   | "init" "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
+method_def_indented: DEF IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
+                   | INIT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
 
 // Property definition
-property_def: "prop" IDENT ["=" expression]
+property_def: PROP IDENT ["=" expression]
 
 assignment: assign_target "=" expression
 
@@ -131,7 +131,6 @@ power_expr: unary_expr (POW_OP unary_expr)*
              | function_call
              | method_call
              | index_access
-             | hash_access_brace
              | attribute_access
              | var_ref
              | block_expr
@@ -139,20 +138,22 @@ power_expr: unary_expr (POW_OP unary_expr)*
 // Block expression - higher priority than hash_literal
 block_expr.2: block
 
-// Hash access with braces (Perl-style): $hash{key}
-hash_access_brace.3: primary_expr "{" (STRING | IDENT) "}"
-
 // Attribute access: $obj.attr
 attribute_access: primary_expr "." IDENT
 
 // FIXED: Added IDENT to support built-in functions (str, len, int, etc.)
 // Added TEST to allow test() as a function call
-?var_ref: SCALAR_VAR
+// HASH_ACCESS: %hash{key} syntax - must come before HASH_VAR for priority
+?var_ref: HASH_ACCESS
+        | SCALAR_VAR
         | ARRAY_VAR
         | HASH_VAR
         | FUNC_VAR
         | IDENT
         | TEST
+
+// Perl-style hash access: %hash{key} or %hash{"key"} - tight, no spaces
+HASH_ACCESS: "%" IDENT "{" (IDENT | ESCAPED_STRING | SINGLE_QUOTED_STRING) "}"
 
 // Index access uses [] brackets for both arrays and hashes (Python-style)
 // @array[0] - array index access
@@ -165,26 +166,44 @@ literal: STRING | NUMBER | BOOLEAN | NONE | hash_literal | array_literal
 
 // Hash literal - supports multi-line  
 // Priority .1 to give block_expr priority when ambiguous
-hash_literal.1: "{" [_NL* hash_item ("," _NL* hash_item)* _NL*] [","] "}"
+hash_literal.1: "{" [hash_item ("," hash_item)*] [","] "}"
 hash_item: (STRING | IDENT) ":" expression
 
 // Array literal - supports multi-line
-array_literal: "[" [_NL* expression ("," _NL* expression)* _NL*] [","] "]"
+array_literal: "[" [expression ("," expression)*] [","] "]"
 
+// Regular expressions - both Python-style and Perl-style
+// Python-style: r"pattern" or r'pattern'
+// Perl-style: m/pattern/mods, qr/pattern/mods, s/pat/repl/mods
 regex_literal: "r" STRING
+             | PERL_REGEX
 
-conditional: "if" expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
-else_clause: "elif" expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
-           | "else" ":" _NL INDENT (_NL | statement)+ DEDENT
+// Perl-style regex (match, quote, substitute)
+// m/pattern/mods - match, qr/pattern/mods - quote, s/pat/repl/mods - substitute
+// Also shorthand: /pattern/mods (without m)
+PERL_REGEX.2: /m\/[^\/]+\/[imsxg]*/
+            | /m~[^~]+~[imsxg]*/
+            | /qr\/[^\/]+\/[imsxg]*/
+            | /qr~[^~]+~[imsxg]*/
+            | /s\/[^\/]*\/[^\/]*\/[imsxg]*/
+            | /s~[^~]*~[^~]*~[imsxg]*/
+            | /\/[^\/]+\/[imsxg]*/
 
-loop: "for" SCALAR_VAR IN expression ":" _NL INDENT (_NL | statement)+ DEDENT
-    | "while" expression ":" _NL INDENT (_NL | statement)+ DEDENT
+conditional: IF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
+           | IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]
+else_clause: ELIF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
+           | ELSE ":" _NL INDENT (_NL | statement)+ DEDENT
+
+loop: FOR SCALAR_VAR IN expression ":" _NL INDENT (_NL | statement)+ DEDENT
+    | WHILE expression ":" _NL INDENT (_NL | statement)+ DEDENT
+    | FOR SCALAR_VAR IN expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+    | WHILE expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
 
 test_block: TEST STRING ":" _NL INDENT (_NL | statement)+ DEDENT
 
-print_statement: "print" "(" [arg_list] ")"
+print_statement: PRINT "(" [arg_list] ")"
 
-vue_component_gen: "vue" STRING ":" _NL INDENT vue_property+ DEDENT
+vue_component_gen: VUE STRING ":" _NL INDENT vue_property+ DEDENT
 vue_property: IDENT ":" expression _NL
 
 function_call: primary_expr "(" [arg_list] ")"
@@ -194,7 +213,7 @@ method_call: primary_expr "." IDENT "(" [arg_list] ")"
 
 arg_list: expression ("," expression)*
 
-return_statement: "return" expression?
+return_statement: RETURN expression?
 
 // ===========================================
 // Variable Types with Sigils
@@ -223,6 +242,16 @@ METHOD: "method"
 INIT: "init"
 PROP: "prop"
 TEST: "test"
+PRINT: "print"
+RETURN: "return"
+ASSERT: "assert"
+FOR: "for"
+WHILE: "while"
+IF: "if"
+ELSE: "else"
+ELIF: "elif"
+DEF: "def"
+VUE: "vue"
 
 // IDENT last (least specific)
 IDENT: /[a-zA-Z_][a-zA-Z0-9_]*/
@@ -648,8 +677,29 @@ class PyrlTransformer(Transformer):
     def ARRAY_VAR(self, t): return ArrayVar(name=t.value[1:])
     def HASH_VAR(self, t): return HashVar(name=t.value[1:])
     def FUNC_VAR(self, t): return FuncVar(name=t.value[1:])
+
+    def HASH_ACCESS(self, t):
+        """Parse %hash{key} syntax."""
+        import re
+        v = t.value
+        # Format: %name{key} or %name{"key"} or %name{'key'}
+        match = re.match(r'%(\w+)\{(.+)\}$', v)
+        if match:
+            name = match.group(1)
+            key = match.group(2)
+            # Remove quotes if present
+            if (key.startswith('"') and key.endswith('"')) or (key.startswith("'") and key.endswith("'")):
+                key = key[1:-1]
+            return ArrayAccess(obj=HashVar(name=name), index=StringLiteral(value=key))
+        return HashVar(name=v[1:])
+
     def IDENT(self, t): return IdentRef(name=t.value)
     def TEST(self, t): return IdentRef(name=t.value)  # Allow test as function name
+    def PRINT(self, t): return IdentRef(name=t.value)  # Allow print as function name
+    def INIT(self, t): return IdentRef(name=t.value)  # Allow init as function name
+    def METHOD(self, t): return IdentRef(name=t.value)  # Allow method as function name
+    def PROP(self, t): return IdentRef(name=t.value)  # Allow prop as function name
+    def VUE(self, t): return IdentRef(name=t.value)  # Allow vue as function name
 
     def NUMBER(self, t):
         v = t.value

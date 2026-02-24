@@ -793,10 +793,11 @@ def group_by(@items, $key_func):
     $end = $start + $per_page
     
     @page_items = []
-    for $i in range($start, $end):
+    for $i in range($start, $end) {
         if $i < $total {
             @page_items[len(@page_items)] = @items[$i]
         }
+    }
     
     return {
         "items": @page_items,

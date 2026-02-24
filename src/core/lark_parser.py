@@ -64,15 +64,11 @@ block: "{" [block_stmt (";"? block_stmt)* ";"?] "}"
 block_stmt: print_statement
           | return_statement
           | assignment
-          | block_if
-          | block_while
-          | block_for
           | expression_statement
+          | loop
+          | conditional
 
-// Control flow inside blocks (no indentation)
-block_if: IF expression block [ELSE block]
-block_while: WHILE expression block
-block_for: FOR SCALAR_VAR IN expression block
+// Control flow - unified syntax (both : and {} supported)
 
 // OOP: Class definition - supports both { } and : with indentation
 class_definition: CLASS IDENT [EXTENDS IDENT] "{" class_member* "}"
@@ -172,11 +168,14 @@ array_literal: "[" [_NL* expression ("," _NL* expression)* _NL*] [","] "]"
 regex_literal: "r" STRING
 
 conditional: IF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
+           | IF expression block [ELSE block]
 else_clause: ELIF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
            | ELSE ":" _NL INDENT (_NL | statement)+ DEDENT
 
 loop: FOR SCALAR_VAR IN expression ":" _NL INDENT (_NL | statement)+ DEDENT
     | WHILE expression ":" _NL INDENT (_NL | statement)+ DEDENT
+    | FOR SCALAR_VAR IN expression block
+    | WHILE expression block
 
 test_block: TEST STRING ":" _NL INDENT (_NL | statement)+ DEDENT
 

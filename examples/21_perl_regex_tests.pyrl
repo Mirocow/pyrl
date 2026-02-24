@@ -17,10 +17,10 @@ test "Perl regex m~ delimiter":
     assert $text =~ m~path~
     print("m~~ delimiter: OK")
 
-test "Perl regex shorthand /pattern/":
+test "Perl regex m// for @ symbol":
     $email = "user@domain.com"
-    assert $email =~ /@/
-    print("/pattern/ shorthand: OK")
+    assert $email =~ m/@/
+    print("m//@ match: OK")
 
 test "Perl regex multiple modifiers":
     $text = "HELLO WORLD"

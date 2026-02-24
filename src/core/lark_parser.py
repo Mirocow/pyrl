@@ -69,7 +69,10 @@ block_stmt: return_statement
           | expression_statement
           | FOR SCALAR_VAR IN expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
           | WHILE expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
-          | IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]
+          | IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" elif_block* [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]
+
+// elif for block-style conditionals
+elif_block: ELIF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
 
 // Control flow - unified syntax (both : and {} supported)
 
@@ -128,7 +131,6 @@ power_expr: unary_expr (POW_OP unary_expr)*
              | function_call
              | method_call
              | index_access
-             | hash_access_brace
              | attribute_access
              | var_ref
              | block_expr
@@ -136,21 +138,22 @@ power_expr: unary_expr (POW_OP unary_expr)*
 // Block expression - higher priority than hash_literal
 block_expr.2: block
 
-// Hash access with braces (Perl-style): $hash{key}
-// Only for direct variable access, not after expressions
-hash_access_brace: (SCALAR_VAR | HASH_VAR) "{" (STRING | IDENT) "}"
-
 // Attribute access: $obj.attr
 attribute_access: primary_expr "." IDENT
 
 // FIXED: Added IDENT to support built-in functions (str, len, int, etc.)
 // Added TEST to allow test() as a function call
-?var_ref: SCALAR_VAR
+// HASH_ACCESS: %hash{key} syntax - must come before HASH_VAR for priority
+?var_ref: HASH_ACCESS
+        | SCALAR_VAR
         | ARRAY_VAR
         | HASH_VAR
         | FUNC_VAR
         | IDENT
         | TEST
+
+// Perl-style hash access: %hash{key} or %hash{"key"} - tight, no spaces
+HASH_ACCESS: "%" IDENT "{" (IDENT | ESCAPED_STRING | SINGLE_QUOTED_STRING) "}"
 
 // Index access uses [] brackets for both arrays and hashes (Python-style)
 // @array[0] - array index access
@@ -659,6 +662,22 @@ class PyrlTransformer(Transformer):
     def ARRAY_VAR(self, t): return ArrayVar(name=t.value[1:])
     def HASH_VAR(self, t): return HashVar(name=t.value[1:])
     def FUNC_VAR(self, t): return FuncVar(name=t.value[1:])
+
+    def HASH_ACCESS(self, t):
+        """Parse %hash{key} syntax."""
+        import re
+        v = t.value
+        # Format: %name{key} or %name{"key"} or %name{'key'}
+        match = re.match(r'%(\w+)\{(.+)\}$', v)
+        if match:
+            name = match.group(1)
+            key = match.group(2)
+            # Remove quotes if present
+            if (key.startswith('"') and key.endswith('"')) or (key.startswith("'") and key.endswith("'")):
+                key = key[1:-1]
+            return ArrayAccess(obj=HashVar(name=name), index=StringLiteral(value=key))
+        return HashVar(name=v[1:])
+
     def IDENT(self, t): return IdentRef(name=t.value)
     def TEST(self, t): return IdentRef(name=t.value)  # Allow test as function name
     def PRINT(self, t): return IdentRef(name=t.value)  # Allow print as function name

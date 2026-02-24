@@ -104,7 +104,9 @@ assign_target: SCALAR_VAR
 
 additive_expr: multiplicative_expr (ADD_OP multiplicative_expr)*
 
-multiplicative_expr: unary_expr (MUL_OP unary_expr)*
+multiplicative_expr: power_expr (MUL_OP power_expr)*
+
+power_expr: unary_expr (POW_OP unary_expr)*
 
 ?unary_expr: NOT unary_expr
            | NOT_OP unary_expr
@@ -214,6 +216,7 @@ FLOAT: /\d+\.\d*/
 COMP_OP: "==" | "!=" | "<=" | ">=" | "=~" | "!~" | "<" | ">"
 ADD_OP: "+" | "-"
 MUL_OP: "//" | "*" | "/" | "%"
+POW_OP: "**" | "^"
 NOT_OP: "!"
 
 // Whitespace (inline)
@@ -674,6 +677,7 @@ class PyrlTransformer(Transformer):
     def comparison_expr(self, children): return self._build_binary_ops(children, None)
     def additive_expr(self, children): return self._build_binary_ops(children, None)
     def multiplicative_expr(self, children): return self._build_binary_ops(children, None)
+    def power_expr(self, children): return self._build_binary_ops(children, None)
 
     def _build_binary_ops(self, children, specific_op=None):
         if len(children) == 1: return children[0]

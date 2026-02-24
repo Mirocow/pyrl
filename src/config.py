@@ -47,8 +47,8 @@ class Config:
     
     def _init_paths(self) -> None:
         """Initialize path configurations."""
-        # Project root
-        self.project_root = Path(__file__).parent.parent.parent
+        # Project root - parent of src directory
+        self.project_root = Path(__file__).parent.parent
         
         # Data directory
         self.data_dir = Path(os.getenv("PYRL_DATA_DIR", self.project_root / "data"))

@@ -86,3 +86,5 @@ checkpoints/
 htmlcov/
 logs/
 checkpoints/
+test_report.md
+app.db

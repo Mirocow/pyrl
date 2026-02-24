@@ -41,8 +41,8 @@ simple_stmt: return_statement
 func_var_definition: FUNC_VAR "(" [arg_list] ")" "=" block
                   | FUNC_VAR "(" [arg_list] ")" ":" _NL INDENT statement+ DEDENT
 
-assertion_statement: "assert" expression comparison_op expression
-                   | "assert" expression
+assertion_statement: ASSERT expression comparison_op expression
+                   | ASSERT expression
 
 comparison_op: COMP_OP
 
@@ -56,29 +56,29 @@ compound_stmt: function_definition
              | vue_component_gen
 
 // Function definitions - only with "def" keyword
-function_definition: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
+function_definition: DEF IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
 
 // Block syntax for anonymous functions
 // Statements separated by newlines or semicolons
 block: "{" [block_stmt (";"? block_stmt)* ";"?] "}"
-block_stmt: assignment
+block_stmt: print_statement
           | return_statement
-          | print_statement
-          | expression_statement
+          | assignment
           | block_if
           | block_while
           | block_for
+          | expression_statement
           | conditional
           | loop
 
 // Control flow inside blocks (no indentation)
-block_if: "if" expression block ["else" block]
-block_while: "while" expression block
-block_for: "for" SCALAR_VAR IN expression block
+block_if: IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]
+block_while: WHILE expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+block_for: FOR SCALAR_VAR IN expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
 
 // OOP: Class definition - supports both { } and : with indentation
-class_definition: "class" IDENT ["extends" IDENT] "{" class_member* "}"
-                | "class" IDENT ["extends" IDENT] ":" _NL INDENT (_NL | class_member_indented)+ DEDENT
+class_definition: CLASS IDENT [EXTENDS IDENT] "{" class_member* "}"
+                | CLASS IDENT [EXTENDS IDENT] ":" _NL INDENT (_NL | class_member_indented)+ DEDENT
 
 class_member: method_def
             | property_def
@@ -87,15 +87,15 @@ class_member_indented: method_def_indented
                      | property_def
 
 // Method definitions
-method_def: "method" IDENT "(" [arg_list] ")" "=" block
-          | "init" "(" [arg_list] ")" "=" block
+method_def: METHOD IDENT "(" [arg_list] ")" "=" block
+          | INIT "(" [arg_list] ")" "=" block
 
 // Method with indentation
-method_def_indented: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
-                   | "init" "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
+method_def_indented: DEF IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
+                   | INIT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
 
 // Property definition
-property_def: "prop" IDENT ["=" expression]
+property_def: PROP IDENT ["=" expression]
 
 assignment: assign_target "=" expression
 
@@ -173,18 +173,18 @@ array_literal: "[" [_NL* expression ("," _NL* expression)* _NL*] [","] "]"
 
 regex_literal: "r" STRING
 
-conditional: "if" expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
-else_clause: "elif" expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
-           | "else" ":" _NL INDENT (_NL | statement)+ DEDENT
+conditional: IF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
+else_clause: ELIF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
+           | ELSE ":" _NL INDENT (_NL | statement)+ DEDENT
 
-loop: "for" SCALAR_VAR IN expression ":" _NL INDENT (_NL | statement)+ DEDENT
-    | "while" expression ":" _NL INDENT (_NL | statement)+ DEDENT
+loop: FOR SCALAR_VAR IN expression ":" _NL INDENT (_NL | statement)+ DEDENT
+    | WHILE expression ":" _NL INDENT (_NL | statement)+ DEDENT
 
 test_block: TEST STRING ":" _NL INDENT (_NL | statement)+ DEDENT
 
-print_statement: "print" "(" [arg_list] ")"
+print_statement: PRINT "(" [arg_list] ")"
 
-vue_component_gen: "vue" STRING ":" _NL INDENT vue_property+ DEDENT
+vue_component_gen: VUE STRING ":" _NL INDENT vue_property+ DEDENT
 vue_property: IDENT ":" expression _NL
 
 function_call: primary_expr "(" [arg_list] ")"
@@ -194,7 +194,7 @@ method_call: primary_expr "." IDENT "(" [arg_list] ")"
 
 arg_list: expression ("," expression)*
 
-return_statement: "return" expression?
+return_statement: RETURN expression?
 
 // ===========================================
 // Variable Types with Sigils
@@ -223,6 +223,16 @@ METHOD: "method"
 INIT: "init"
 PROP: "prop"
 TEST: "test"
+PRINT: "print"
+RETURN: "return"
+ASSERT: "assert"
+FOR: "for"
+WHILE: "while"
+IF: "if"
+ELSE: "else"
+ELIF: "elif"
+DEF: "def"
+VUE: "vue"
 
 // IDENT last (least specific)
 IDENT: /[a-zA-Z_][a-zA-Z0-9_]*/

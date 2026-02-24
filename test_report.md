@@ -1,24 +1,70 @@
 # Pyrl Examples Test Report
 
-**Generated:** 2026-02-24 03:10:49
+**Generated:** 2026-02-24 03:13:57
 
 ## Summary
 
 | Metric | Count |
 |--------|-------|
 | Total | 127 |
-| Passed | 25 |
-| Failed | 102 |
+| Passed | 18 |
+| Failed | 109 |
 | Timeout | 0 |
-| Success Rate | 19.7% |
+| Success Rate | 14.2% |
 
 ## Category Breakdown
 
 | Category | Total | Passed | Failed | Rate |
 |----------|-------|--------|--------|------|
-| root | 127 | 25 | 102 | 19.7% |
+| root | 127 | 18 | 109 | 14.2% |
 
 ## Failed Examples
+
+### 03_control_flow.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** Unknown error
+- **Line:** None
+- **Execution Time:** 0.59s
+
+### 04_functions.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** Unknown error
+- **Line:** None
+- **Execution Time:** 0.56s
+
+### 05_arrays_hashes.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** Runtime Error: Cannot access index 'i' on dict
+- **Line:** None
+- **Execution Time:** 0.55s
+
+**Stderr:**
+```text
+Runtime Error: Cannot access index 'i' on dict
+
+```
+
+### 09_algorithms.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** Unknown error
+- **Line:** None
+- **Execution Time:** 0.56s
+
+### 09_algorithms_ext.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** Unknown error
+- **Line:** None
+- **Execution Time:** 0.62s
 
 ### COMPREHENSIVE_EXAMPLES.pyrl
 
@@ -40,7 +86,7 @@ Runtime Error: Undefined variable: &handler
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.61s
+- **Execution Time:** 0.66s
 
 **Stderr:**
 ```text
@@ -49,13 +95,13 @@ Runtime Error: Undefined variable: &handler
 [91m============================================================[0m
 [93mLocation:[0m Line 729, Column 63
 [93mUnexpected token:[0m '<=' (type: COMP_OP)
-[93mExpected one of:[0m return, NOT, %variable, if, string, }, $variable, NOT_OP, [, None, ... and 14 more
+[93mExpected one of:[0m number, print, while, string, NOT_OP, %variable, {, identifier, R, if, ... and 14 more
 
 [93mContext:[0m
 726 | 
 727 | # Example 56
 728 | # ==================================================
-729 | &clean($momentum, $distance) = {p...
+729 | &clean($momentum, $distance) ...
 ```
 
 ### examples_00101_00200.pyrl
@@ -64,7 +110,7 @@ Runtime Error: Undefined variable: &handler
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $tail
 - **Line:** None
-- **Execution Time:** 0.68s
+- **Execution Time:** 0.73s
 
 **Stderr:**
 ```text
@@ -78,7 +124,7 @@ Runtime Error: Undefined variable: $tail
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &trace
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.72s
 
 **Stderr:**
 ```text
@@ -92,7 +138,7 @@ Runtime Error: Undefined variable: &trace
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: none
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.70s
 
 **Stderr:**
 ```text
@@ -106,7 +152,7 @@ Runtime Error: Undefined variable: none
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: execute
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.74s
 
 **Stderr:**
 ```text
@@ -120,7 +166,7 @@ Runtime Error: Undefined variable: execute
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: init
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.73s
 
 **Stderr:**
 ```text
@@ -134,7 +180,7 @@ Runtime Error: Undefined variable: init
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &retrieve
 - **Line:** None
-- **Execution Time:** 0.68s
+- **Execution Time:** 0.72s
 
 **Stderr:**
 ```text
@@ -148,7 +194,7 @@ Runtime Error: Undefined variable: &retrieve
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $b
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -162,7 +208,7 @@ Runtime Error: Undefined variable: $b
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $right
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.73s
 
 **Stderr:**
 ```text
@@ -176,7 +222,7 @@ Runtime Error: Undefined variable: $right
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: load
 - **Line:** None
-- **Execution Time:** 0.68s
+- **Execution Time:** 0.73s
 
 **Stderr:**
 ```text
@@ -190,7 +236,7 @@ Runtime Error: Undefined variable: load
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.59s
+- **Execution Time:** 0.64s
 
 **Stderr:**
 ```text
@@ -199,10 +245,10 @@ Runtime Error: Undefined variable: load
 [91m============================================================[0m
 [93mLocation:[0m Line 296, Column 141
 [93mUnexpected token:[0m '=' (type: EQUAL)
-[93mExpected one of:[0m (, +/-, TEST, number, NOT_OP, string, @variable, R, $variable, NOT, ... and 7 more
+[93mExpected one of:[0m string, &variable, $variable, (, TEST, @variable, +/-, %variable, NOT, None, ... and 7 more
 
 [93mContext:[0m
-293 | &send($message) = {if not false {for $pivot in @products {for $data in range(1) {@customers[0] = $x; -982}}; for $weight...
+293 | &send($message) = {if not false {for $pivot in @products {for $data in range(1) {@customers[0] = $x; -982}}; fo...
 ```
 
 ### examples_01101_01200.pyrl
@@ -211,7 +257,7 @@ Runtime Error: Undefined variable: load
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $distance
 - **Line:** None
-- **Execution Time:** 0.69s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -225,7 +271,7 @@ Runtime Error: Undefined variable: $distance
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: none
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.73s
 
 **Stderr:**
 ```text
@@ -239,7 +285,7 @@ Runtime Error: Undefined variable: none
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &fetch
 - **Line:** None
-- **Execution Time:** 0.68s
+- **Execution Time:** 0.75s
 
 **Stderr:**
 ```text
@@ -253,7 +299,7 @@ Runtime Error: Undefined variable: &fetch
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.58s
+- **Execution Time:** 0.62s
 
 **Stderr:**
 ```text
@@ -262,12 +308,12 @@ Runtime Error: Undefined variable: &fetch
 [91m============================================================[0m
 [93mLocation:[0m Line 288, Column 294
 [93mUnexpected token:[0m '=' (type: EQUAL)
-[93mExpected one of:[0m None, (, TEST, boolean, &variable, identifier, %variable, @variable, NOT_OP, +/-, ... and 7 more
+[93mExpected one of:[0m boolean, TEST, &variable, {, identifier, number, string, (, NOT_OP, R, ... and 7 more
 
 [93mContext:[0m
 285 | # Example 1424
 286 | # ==================================================
-287 | class Job {init($product) ...
+287 | class Job {init($product) = {if @reco...
 ```
 
 ### examples_01501_01600.pyrl
@@ -276,7 +322,7 @@ Runtime Error: Undefined variable: &fetch
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &update
 - **Line:** None
-- **Execution Time:** 0.64s
+- **Execution Time:** 0.69s
 
 **Stderr:**
 ```text
@@ -290,7 +336,7 @@ Runtime Error: Undefined variable: &update
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.60s
+- **Execution Time:** 0.63s
 
 **Stderr:**
 ```text
@@ -299,13 +345,13 @@ Runtime Error: Undefined variable: &update
 [91m============================================================[0m
 [93mLocation:[0m Line 360, Column 404
 [93mUnexpected token:[0m '%' (type: MUL_OP)
-[93mExpected one of:[0m @variable, return, if, boolean, number, TEST, None, [, %variable, (, ... and 14 more
+[93mExpected one of:[0m for, NOT, boolean, NOT_OP, while, (, @variable, [, number, {, ... and 14 more
 
 [93mContext:[0m
 357 | 
 358 | # Example 1627
 359 | # ==================================================
-360 | &check($score, $mass, $output)...
+360 | &check($score, $mass, $output) = {for...
 ```
 
 ### examples_01701_01800.pyrl
@@ -314,7 +360,7 @@ Runtime Error: Undefined variable: &update
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: true
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.73s
 
 **Stderr:**
 ```text
@@ -328,7 +374,7 @@ Runtime Error: Undefined variable: true
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: compute
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.75s
 
 **Stderr:**
 ```text
@@ -342,7 +388,7 @@ Runtime Error: Undefined variable: compute
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $median
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -356,7 +402,7 @@ Runtime Error: Undefined variable: $median
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: clean
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.67s
 
 **Stderr:**
 ```text
@@ -393,12 +439,12 @@ Runtime Error: Undefined variable: &notify
 [91m============================================================[0m
 [93mLocation:[0m Line 554, Column 461
 [93mUnexpected token:[0m '*' (type: MUL_OP)
-[93mExpected one of:[0m return, &variable, R, while, TEST, for, @variable, boolean, }, $variable, ... and 14 more
+[93mExpected one of:[0m number, %variable, return, (, R, {, while, boolean, print, &variable, ... and 14 more
 
 [93mContext:[0m
 551 | # Example 2247
 552 | # ==================================================
-553 | class Observer extends Task {ini...
+553 | class Observer extends Task {init() ...
 ```
 
 ### examples_02301_02400.pyrl
@@ -407,7 +453,7 @@ Runtime Error: Undefined variable: &notify
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: none
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.75s
 
 **Stderr:**
 ```text
@@ -449,7 +495,7 @@ Runtime Error: Undefined variable: %dict
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: null
 - **Line:** None
-- **Execution Time:** 0.65s
+- **Execution Time:** 0.66s
 
 **Stderr:**
 ```text
@@ -463,7 +509,7 @@ Runtime Error: Undefined variable: null
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.59s
+- **Execution Time:** 0.66s
 
 **Stderr:**
 ```text
@@ -472,13 +518,13 @@ Runtime Error: Undefined variable: null
 [91m============================================================[0m
 [93mLocation:[0m Line 327, Column 45
 [93mUnexpected token:[0m '=' (type: EQUAL)
-[93mExpected one of:[0m NOT_OP, [, +/-, number, &variable, (, NOT, None, boolean, $variable, ... and 7 more
+[93mExpected one of:[0m number, @variable, +/-, %variable, boolean, {, $variable, None, (, [, ... and 7 more
 
 [93mContext:[0m
 324 |     $density = %storage
 325 |     @products[9] = %record
 326 |     # Handle error
-327 |     return print(%database, @tra...
+327 |     return print(%database, @tr...
 ```
 
 ### examples_02801_02900.pyrl
@@ -487,7 +533,7 @@ Runtime Error: Undefined variable: null
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $capacity
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.66s
 
 **Stderr:**
 ```text
@@ -501,7 +547,7 @@ Runtime Error: Undefined variable: $capacity
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Unknown error
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.73s
 
 ### examples_03001_03100.pyrl
 
@@ -509,7 +555,7 @@ Runtime Error: Undefined variable: $capacity
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &delete
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.73s
 
 **Stderr:**
 ```text
@@ -523,7 +569,7 @@ Runtime Error: Undefined variable: &delete
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: null
 - **Line:** None
-- **Execution Time:** 0.69s
+- **Execution Time:** 0.74s
 
 **Stderr:**
 ```text
@@ -551,7 +597,7 @@ Runtime Error: Undefined variable: @tasks
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Unknown error
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.71s
 
 ### examples_03401_03500.pyrl
 
@@ -559,7 +605,7 @@ Runtime Error: Undefined variable: @tasks
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: %context
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -573,7 +619,7 @@ Runtime Error: Undefined variable: %context
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: true
 - **Line:** None
-- **Execution Time:** 0.68s
+- **Execution Time:** 0.70s
 
 **Stderr:**
 ```text
@@ -587,7 +633,7 @@ Runtime Error: Undefined variable: true
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: %document
 - **Line:** None
-- **Execution Time:** 0.68s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -601,7 +647,7 @@ Runtime Error: Undefined variable: %document
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.64s
+- **Execution Time:** 0.67s
 
 **Stderr:**
 ```text
@@ -610,13 +656,13 @@ Runtime Error: Undefined variable: %document
 [91m============================================================[0m
 [93mLocation:[0m Line 555, Column 352
 [93mUnexpected token:[0m '%' (type: MUL_OP)
-[93mExpected one of:[0m {, if, R, SEMICOLON, &variable, identifier, %variable, [, +/-, string, ... and 14 more
+[93mExpected one of:[0m TEST, }, boolean, R, %variable, if, {, $variable, +/-, &variable, ... and 14 more
 
 [93mContext:[0m
 552 |     assert load($pos, @block)
 553 |     $x = "tag"
 554 | def verify($product, $power):
-555 |     &init() = {if -384...
+555 |     &init() = {if -384 * $m...
 ```
 
 ### examples_03801_03900.pyrl
@@ -639,7 +685,7 @@ Runtime Error: Undefined variable: @sequence
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &observe
 - **Line:** None
-- **Execution Time:** 0.68s
+- **Execution Time:** 0.72s
 
 **Stderr:**
 ```text
@@ -653,7 +699,7 @@ Runtime Error: Undefined variable: &observe
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: initialize
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.69s
 
 **Stderr:**
 ```text
@@ -667,7 +713,7 @@ Runtime Error: Undefined variable: initialize
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: @requests
 - **Line:** None
-- **Execution Time:** 0.69s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -681,7 +727,7 @@ Runtime Error: Undefined variable: @requests
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: true
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.70s
 
 **Stderr:**
 ```text
@@ -695,7 +741,7 @@ Runtime Error: Undefined variable: true
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: null
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -709,7 +755,7 @@ Runtime Error: Undefined variable: null
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $root
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -723,7 +769,7 @@ Runtime Error: Undefined variable: $root
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $avg
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.70s
 
 **Stderr:**
 ```text
@@ -737,7 +783,7 @@ Runtime Error: Undefined variable: $avg
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: true
 - **Line:** None
-- **Execution Time:** 0.73s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -751,7 +797,7 @@ Runtime Error: Undefined variable: true
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Unknown error
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.71s
 
 ### examples_04801_04900.pyrl
 
@@ -759,7 +805,7 @@ Runtime Error: Undefined variable: true
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Unknown error
 - **Line:** None
-- **Execution Time:** 0.65s
+- **Execution Time:** 0.66s
 
 ### examples_04901_05000.pyrl
 
@@ -767,7 +813,7 @@ Runtime Error: Undefined variable: true
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $pressure
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -781,7 +827,7 @@ Runtime Error: Undefined variable: $pressure
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: none
 - **Line:** None
-- **Execution Time:** 0.72s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -795,7 +841,7 @@ Runtime Error: Undefined variable: none
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $length
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.70s
 
 **Stderr:**
 ```text
@@ -809,7 +855,7 @@ Runtime Error: Undefined variable: $length
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $length
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.70s
 
 **Stderr:**
 ```text
@@ -837,7 +883,7 @@ Runtime Error: Undefined variable: $quotient
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &log
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.68s
 
 **Stderr:**
 ```text
@@ -851,7 +897,7 @@ Runtime Error: Undefined variable: &log
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &handle
 - **Line:** None
-- **Execution Time:** 0.69s
+- **Execution Time:** 0.65s
 
 **Stderr:**
 ```text
@@ -865,7 +911,7 @@ Runtime Error: Undefined variable: &handle
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $price
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.77s
 
 **Stderr:**
 ```text
@@ -879,7 +925,7 @@ Runtime Error: Undefined variable: $price
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Unknown error
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.77s
 
 ### examples_05801_05900.pyrl
 
@@ -887,7 +933,7 @@ Runtime Error: Undefined variable: $price
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: @options
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.74s
 
 **Stderr:**
 ```text
@@ -901,7 +947,7 @@ Runtime Error: Undefined variable: @options
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: null
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.75s
 
 **Stderr:**
 ```text
@@ -915,7 +961,7 @@ Runtime Error: Undefined variable: null
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: %state
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.74s
 
 **Stderr:**
 ```text
@@ -929,7 +975,7 @@ Runtime Error: Undefined variable: %state
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: check
 - **Line:** None
-- **Execution Time:** 0.64s
+- **Execution Time:** 0.74s
 
 **Stderr:**
 ```text
@@ -943,7 +989,7 @@ Runtime Error: Undefined variable: check
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &split
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.66s
 
 **Stderr:**
 ```text
@@ -957,7 +1003,7 @@ Runtime Error: Undefined variable: &split
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $word
 - **Line:** None
-- **Execution Time:** 0.72s
+- **Execution Time:** 0.79s
 
 **Stderr:**
 ```text
@@ -971,7 +1017,7 @@ Runtime Error: Undefined variable: $word
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &debug
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.76s
 
 **Stderr:**
 ```text
@@ -985,7 +1031,7 @@ Runtime Error: Undefined variable: &debug
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.69s
 
 **Stderr:**
 ```text
@@ -994,10 +1040,10 @@ Runtime Error: Undefined variable: &debug
 [91m============================================================[0m
 [93mLocation:[0m Line 530, Column 70
 [93mUnexpected token:[0m '==' (type: COMP_OP)
-[93mExpected one of:[0m newline, while, ASSERT, +/-, VUE, boolean, {, %variable, CLASS, NOT, ... and 18 more
+[93mExpected one of:[0m number, while, R, return, [, newline, NOT, DEDENT, None, def, ... and 18 more
 
 [93mContext:[0m
-527 | &configure($accumulator, $word) = {for $median in range(10) {%product; for $margin in @cache {false; print(-25.18)};...
+527 | &configure($accumulator, $word) = {for $median in range(10) {%product; for $margin in @cache {false; print(-25.18)}; @words...
 ```
 
 ### examples_06601_06700.pyrl
@@ -1006,7 +1052,7 @@ Runtime Error: Undefined variable: &debug
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &show
 - **Line:** None
-- **Execution Time:** 0.73s
+- **Execution Time:** 0.76s
 
 **Stderr:**
 ```text
@@ -1020,7 +1066,7 @@ Runtime Error: Undefined variable: &show
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: @lines
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.75s
 
 **Stderr:**
 ```text
@@ -1034,7 +1080,7 @@ Runtime Error: Undefined variable: @lines
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: true
 - **Line:** None
-- **Execution Time:** 0.72s
+- **Execution Time:** 0.79s
 
 **Stderr:**
 ```text
@@ -1048,7 +1094,7 @@ Runtime Error: Undefined variable: true
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: %theme
 - **Line:** None
-- **Execution Time:** 0.70s
+- **Execution Time:** 0.73s
 
 **Stderr:**
 ```text
@@ -1062,7 +1108,7 @@ Runtime Error: Undefined variable: %theme
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: @settings
 - **Line:** None
-- **Execution Time:** 0.73s
+- **Execution Time:** 0.79s
 
 **Stderr:**
 ```text
@@ -1076,7 +1122,7 @@ Runtime Error: Undefined variable: @settings
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: @matrix
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.75s
 
 **Stderr:**
 ```text
@@ -1090,7 +1136,7 @@ Runtime Error: Undefined variable: @matrix
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $length
 - **Line:** None
-- **Execution Time:** 0.69s
+- **Execution Time:** 0.76s
 
 **Stderr:**
 ```text
@@ -1104,7 +1150,7 @@ Runtime Error: Undefined variable: $length
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $token
 - **Line:** None
-- **Execution Time:** 0.67s
+- **Execution Time:** 0.77s
 
 **Stderr:**
 ```text
@@ -1118,7 +1164,7 @@ Runtime Error: Undefined variable: $token
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $input
 - **Line:** None
-- **Execution Time:** 0.72s
+- **Execution Time:** 0.78s
 
 **Stderr:**
 ```text
@@ -1132,7 +1178,7 @@ Runtime Error: Undefined variable: $input
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &disable
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.77s
 
 **Stderr:**
 ```text
@@ -1146,7 +1192,7 @@ Runtime Error: Undefined variable: &disable
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Unknown error
 - **Line:** None
-- **Execution Time:** 0.72s
+- **Execution Time:** 0.76s
 
 ### examples_07701_07800.pyrl
 
@@ -1154,7 +1200,7 @@ Runtime Error: Undefined variable: &disable
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: true
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.67s
 
 **Stderr:**
 ```text
@@ -1168,7 +1214,7 @@ Runtime Error: Undefined variable: true
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &archive
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.79s
 
 **Stderr:**
 ```text
@@ -1182,7 +1228,7 @@ Runtime Error: Undefined variable: &archive
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: none
 - **Line:** None
-- **Execution Time:** 0.72s
+- **Execution Time:** 0.74s
 
 **Stderr:**
 ```text
@@ -1196,7 +1242,7 @@ Runtime Error: Undefined variable: none
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &export
 - **Line:** None
-- **Execution Time:** 0.73s
+- **Execution Time:** 0.77s
 
 **Stderr:**
 ```text
@@ -1210,7 +1256,7 @@ Runtime Error: Undefined variable: &export
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Unknown error
 - **Line:** None
-- **Execution Time:** 0.76s
+- **Execution Time:** 0.78s
 
 ### examples_08201_08300.pyrl
 
@@ -1218,7 +1264,7 @@ Runtime Error: Undefined variable: &export
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: %style
 - **Line:** None
-- **Execution Time:** 0.73s
+- **Execution Time:** 0.76s
 
 **Stderr:**
 ```text
@@ -1246,7 +1292,7 @@ Runtime Error: Undefined variable: $mass
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $left
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.66s
 
 **Stderr:**
 ```text
@@ -1260,7 +1306,7 @@ Runtime Error: Undefined variable: $left
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: null
 - **Line:** None
-- **Execution Time:** 0.73s
+- **Execution Time:** 0.68s
 
 **Stderr:**
 ```text
@@ -1274,7 +1320,7 @@ Runtime Error: Undefined variable: null
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.66s
+- **Execution Time:** 0.68s
 
 **Stderr:**
 ```text
@@ -1283,13 +1329,13 @@ Runtime Error: Undefined variable: null
 [91m============================================================[0m
 [93mLocation:[0m Line 594, Column 375
 [93mUnexpected token:[0m '>=' (type: COMP_OP)
-[93mExpected one of:[0m for, &variable, }, @variable, R, number, $variable, while, SEMICOLON, NOT_OP, ... and 14 more
+[93mExpected one of:[0m R, number, print, }, NOT_OP, %variable, $variable, (, return, +/-, ... and 14 more
 
 [93mContext:[0m
 591 |     print(('city' != %context) * execute($speed, %fields))
 592 |     # Process data
 593 |     return
-594 |...
+594 | class Logg...
 ```
 
 ### examples_08701_08800.pyrl
@@ -1298,7 +1344,7 @@ Runtime Error: Undefined variable: null
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: @responses
 - **Line:** None
-- **Execution Time:** 0.72s
+- **Execution Time:** 0.74s
 
 **Stderr:**
 ```text
@@ -1312,7 +1358,7 @@ Runtime Error: Undefined variable: @responses
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.61s
+- **Execution Time:** 0.65s
 
 **Stderr:**
 ```text
@@ -1321,13 +1367,13 @@ Runtime Error: Undefined variable: @responses
 [91m============================================================[0m
 [93mLocation:[0m Line 243, Column 868
 [93mUnexpected token:[0m '=' (type: EQUAL)
-[93mExpected one of:[0m @variable, &variable, boolean, identifier, [, number, {, NOT_OP, +/-, $variable, ... and 7 more
+[93mExpected one of:[0m number, string, [, NOT_OP, +/-, &variable, NOT, None, TEST, (, ... and 7 more
 
 [93mContext:[0m
 240 | 
 241 | # Example 8820
 242 | # ==================================================
-243 | class Session {init(...
+243 | class Session {init($percentage) = {['...
 ```
 
 ### examples_08901_09000.pyrl
@@ -1336,7 +1382,7 @@ Runtime Error: Undefined variable: @responses
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &swap
 - **Line:** None
-- **Execution Time:** 0.73s
+- **Execution Time:** 0.77s
 
 **Stderr:**
 ```text
@@ -1350,7 +1396,7 @@ Runtime Error: Undefined variable: &swap
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Unknown error
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.72s
 
 ### examples_09101_09200.pyrl
 
@@ -1358,7 +1404,7 @@ Runtime Error: Undefined variable: &swap
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: &authorize
 - **Line:** None
-- **Execution Time:** 0.70s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -1372,7 +1418,7 @@ Runtime Error: Undefined variable: &authorize
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.65s
+- **Execution Time:** 0.68s
 
 **Stderr:**
 ```text
@@ -1381,12 +1427,12 @@ Runtime Error: Undefined variable: &authorize
 [91m============================================================[0m
 [93mLocation:[0m Line 468, Column 1126
 [93mUnexpected token:[0m '*' (type: MUL_OP)
-[93mExpected one of:[0m for, None, TEST, string, NOT_OP, (, R, while, if, identifier, ... and 14 more
+[93mExpected one of:[0m }, None, {, if, $variable, identifier, return, for, boolean, while, ... and 14 more
 
 [93mContext:[0m
 465 | # Example 9240
 466 | # ==================================================
-467 | class Vector {prop x = -71 prop total = @ch...
+467 | class Vector {prop x = -71 prop total...
 ```
 
 ### examples_09301_09400.pyrl
@@ -1395,7 +1441,7 @@ Runtime Error: Undefined variable: &authorize
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: %response
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.72s
 
 **Stderr:**
 ```text
@@ -1409,7 +1455,7 @@ Runtime Error: Undefined variable: %response
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** [91m============================================================[0m
 - **Line:** None
-- **Execution Time:** 0.64s
+- **Execution Time:** 0.61s
 
 **Stderr:**
 ```text
@@ -1418,13 +1464,13 @@ Runtime Error: Undefined variable: %response
 [91m============================================================[0m
 [93mLocation:[0m Line 520, Column 56
 [93mUnexpected token:[0m '*' (type: MUL_OP)
-[93mExpected one of:[0m R, +/-, if, [, NOT, for, string, {, &variable, }, ... and 14 more
+[93mExpected one of:[0m {, +/-, string, while, [, identifier, NOT, if, $variable, }, ... and 14 more
 
 [93mContext:[0m
 517 | 
 518 | # Example 9438
 519 | # ==================================================
-520 | &format($data, $density, $first) = {if 'done' {pri...
+520 | &format($data, $density, $first) = {if ...
 ```
 
 ### examples_09501_09600.pyrl
@@ -1433,7 +1479,7 @@ Runtime Error: Undefined variable: %response
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: @params
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.69s
 
 **Stderr:**
 ```text
@@ -1447,7 +1493,7 @@ Runtime Error: Undefined variable: @params
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: @requests
 - **Line:** None
-- **Execution Time:** 0.70s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -1475,7 +1521,7 @@ Runtime Error: Undefined variable: $right
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: clean
 - **Line:** None
-- **Execution Time:** 0.70s
+- **Execution Time:** 0.71s
 
 **Stderr:**
 ```text
@@ -1489,11 +1535,39 @@ Runtime Error: Undefined variable: clean
 - **Error Type:** PYRL RUNTIME ERROR
 - **Error Message:** Runtime Error: Undefined variable: $acceleration
 - **Line:** None
-- **Execution Time:** 0.71s
+- **Execution Time:** 0.72s
 
 **Stderr:**
 ```text
 Runtime Error: Undefined variable: $acceleration
+
+```
+
+### test_sqlite.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** Runtime Error: Cannot access index 'username' on str
+- **Line:** None
+- **Execution Time:** 0.61s
+
+**Stderr:**
+```text
+Runtime Error: Cannot access index 'username' on str
+
+```
+
+### web_app_db.pyrl
+
+- **Category:** root
+- **Error Type:** PYRL RUNTIME ERROR
+- **Error Message:** Runtime Error: Cannot access index '1' on str
+- **Line:** None
+- **Execution Time:** 0.60s
+
+**Stderr:**
+```text
+Runtime Error: Cannot access index '1' on str
 
 ```
 
@@ -1510,24 +1584,29 @@ Runtime Error: Undefined variable: $acceleration
 [91m============================================================[0m
 [91mPARSE ERROR[0m
 [91m============================================================[0m
-[93mLocation:[0m Line 563, Column 17
-[93mUnexpected token:[0m 'in' (type: IDENT)
+[93mLocation:[0m Line 631, Column 17
+[93mUnexpected token:[0m '{' (type: LBRACE)
 [93mExpected one of:[0m :
 
 [93mContext:[0m
-560 |         # Find matching route
-561 |         $key = $method + ":" + $path
-562 |         
-563 |         if $key in $self.routes:
-[91m                      ^^[0m
-564 |             $handler = $self.route...
+628 | def verify_user($username, $password):
+629 |     if $username in %users:
+630 |         $user = %users[$username]
+631 |         if $user{password} == $password:
+[91m                      ^[0m
+632 |   ...
 ```
 
 
 ## Error Types
 
-### PYRL RUNTIME ERROR (102 occurrences)
+### PYRL RUNTIME ERROR (109 occurrences)
 
+- 03_control_flow.pyrl
+- 04_functions.pyrl
+- 05_arrays_hashes.pyrl
+- 09_algorithms.pyrl
+- 09_algorithms_ext.pyrl
 - COMPREHENSIVE_EXAMPLES.pyrl
 - examples_00001_00100.pyrl
 - examples_00101_00200.pyrl
@@ -1629,4 +1708,6 @@ Runtime Error: Undefined variable: $acceleration
 - examples_09701_09800.pyrl
 - examples_09801_09900.pyrl
 - examples_09901_10000.pyrl
+- test_sqlite.pyrl
+- web_app_db.pyrl
 - web_server_auth.pyrl

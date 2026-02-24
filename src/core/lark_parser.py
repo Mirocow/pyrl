@@ -131,12 +131,16 @@ power_expr: unary_expr (POW_OP unary_expr)*
              | function_call
              | method_call
              | index_access
+             | hash_access_brace
              | attribute_access
              | var_ref
              | block_expr
 
 // Block expression - higher priority than hash_literal
 block_expr.2: block
+
+// Hash access with braces (Perl-style): $hash{key}
+hash_access_brace.3: primary_expr "{" (STRING | IDENT) "}"
 
 // Attribute access: $obj.attr
 attribute_access: primary_expr "." IDENT
@@ -749,6 +753,20 @@ class PyrlTransformer(Transformer):
             obj = children[0]
             attr = children[1].value if isinstance(children[1], Token) else str(children[1])
             return AttributeAccess(obj=obj, attr=attr)
+        return children[0] if children else None
+
+    def hash_access_brace(self, children):
+        """Transform Perl-style hash access: $hash{key}"""
+        if len(children) >= 2:
+            obj = children[0]
+            key_token = children[1]
+            if isinstance(key_token, Token):
+                key = StringLiteral(value=key_token.value) if key_token.type == 'STRING' else StringLiteral(value=key_token.value)
+            elif isinstance(key_token, StringLiteral):
+                key = key_token
+            else:
+                key = StringLiteral(value=str(key_token))
+            return ArrayAccess(obj=obj, index=key)  # Use ArrayAccess for [] style access
         return children[0] if children else None
 
     def assign_target(self, children): return children[0] if children else None

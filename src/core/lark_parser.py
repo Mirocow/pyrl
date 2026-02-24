@@ -68,13 +68,11 @@ block_stmt: print_statement
           | block_while
           | block_for
           | expression_statement
-          | conditional
-          | loop
 
 // Control flow inside blocks (no indentation)
-block_if: IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]
-block_while: WHILE expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
-block_for: FOR SCALAR_VAR IN expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+block_if: IF expression block [ELSE block]
+block_while: WHILE expression block
+block_for: FOR SCALAR_VAR IN expression block
 
 // OOP: Class definition - supports both { } and : with indentation
 class_definition: CLASS IDENT [EXTENDS IDENT] "{" class_member* "}"
@@ -660,6 +658,22 @@ class PyrlTransformer(Transformer):
     def FUNC_VAR(self, t): return FuncVar(name=t.value[1:])
     def IDENT(self, t): return IdentRef(name=t.value)
     def TEST(self, t): return IdentRef(name=t.value)  # Allow test as function name
+    def PRINT(self, t): return IdentRef(name=t.value)  # Allow print as function name
+    def RETURN(self, t): return IdentRef(name=t.value)
+    def ASSERT(self, t): return IdentRef(name=t.value)
+    def FOR(self, t): return IdentRef(name=t.value)
+    def WHILE(self, t): return IdentRef(name=t.value)
+    def IF(self, t): return IdentRef(name=t.value)
+    def ELSE(self, t): return IdentRef(name=t.value)
+    def ELIF(self, t): return IdentRef(name=t.value)
+    def DEF(self, t): return IdentRef(name=t.value)
+    def CLASS(self, t): return IdentRef(name=t.value)
+    def EXTENDS(self, t): return IdentRef(name=t.value)
+    def METHOD(self, t): return IdentRef(name=t.value)
+    def INIT(self, t): return IdentRef(name=t.value)
+    def PROP(self, t): return IdentRef(name=t.value)
+    def VUE(self, t): return IdentRef(name=t.value)
+    def IN(self, t): return IdentRef(name=t.value)
 
     def NUMBER(self, t):
         v = t.value

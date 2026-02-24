@@ -74,14 +74,23 @@ block_if: "if" expression block ["else" block]
 block_while: "while" expression block
 block_for: "for" SCALAR_VAR "in" expression block
 
-// OOP: Class definition
+// OOP: Class definition - supports both { } and : with indentation
 class_definition: "class" IDENT ["extends" IDENT] "{" class_member* "}"
+                | "class" IDENT ["extends" IDENT] ":" _NL INDENT (_NL | class_member_indented)+ DEDENT
+
 class_member: method_def
             | property_def
+
+class_member_indented: method_def_indented
+                     | property_def
 
 // Method definitions
 method_def: "method" IDENT "(" [arg_list] ")" "=" block
           | "init" "(" [arg_list] ")" "=" block
+
+// Method with indentation
+method_def_indented: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
+                   | "init" "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
 
 // Property definition
 property_def: "prop" IDENT ["=" expression]
@@ -145,14 +154,14 @@ array_literal: "[" [_NL* expression ("," _NL* expression)* _NL*] [","] "]"
 
 regex_literal: "r" STRING
 
-conditional: "if" expression ":" _NL INDENT statement+ DEDENT else_clause?
-else_clause: "elif" expression ":" _NL INDENT statement+ DEDENT else_clause?
-           | "else" ":" _NL INDENT statement+ DEDENT
+conditional: "if" expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
+else_clause: "elif" expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
+           | "else" ":" _NL INDENT (_NL | statement)+ DEDENT
 
-loop: "for" SCALAR_VAR "in" expression ":" _NL INDENT statement+ DEDENT
-    | "while" expression ":" _NL INDENT statement+ DEDENT
+loop: "for" SCALAR_VAR "in" expression ":" _NL INDENT (_NL | statement)+ DEDENT
+    | "while" expression ":" _NL INDENT (_NL | statement)+ DEDENT
 
-test_block: "test" STRING? ":" _NL INDENT statement+ DEDENT
+test_block: "test" STRING? ":" _NL INDENT (_NL | statement)+ DEDENT
 
 print_statement: "print" "(" expression ")"
 
@@ -1264,6 +1273,47 @@ class PyrlTransformer(Transformer):
                 value = child
 
         return PropertyDef(name=name or '', value=value)
+
+    def class_member_indented(self, children):
+        """Transform class member in indented class body."""
+        return children[0] if children else None
+
+    def method_def_indented(self, children):
+        """Transform method definition with indentation."""
+        name = None
+        params = []
+        body = []
+
+        for child in children:
+            if isinstance(child, Token):
+                if child.type in ('IDENT', 'INIT'):
+                    if child.value == 'init':
+                        name = 'init'
+                    elif name is None:
+                        name = child.value
+            elif isinstance(child, IdentRef):
+                name = child.name
+            elif isinstance(child, list):
+                # Check if this is a param list
+                is_param_list = all(isinstance(p, (ScalarVar, FuncVar)) for p in child if p is not None)
+                if is_param_list:
+                    for p in child:
+                        if isinstance(p, ScalarVar):
+                            params.append(('$' + p.name, 'scalar'))
+                        elif isinstance(p, FuncVar):
+                            params.append(('&' + p.name, 'func'))
+                else:
+                    body = self._filter_tokens(child)
+            elif isinstance(child, Block):
+                body = child.statements
+            elif isinstance(child, ScalarVar):
+                params.append(('$' + child.name, 'scalar'))
+            elif isinstance(child, FuncVar):
+                params.append(('&' + child.name, 'func'))
+            elif child is not None and not isinstance(child, Token):
+                body.append(child)
+
+        return MethodDef(name=name or 'init', params=params, body=body)
 
     def method_call(self, children):
         """Transform method call: $obj.method(args)"""

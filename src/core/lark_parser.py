@@ -58,15 +58,18 @@ compound_stmt: function_definition
 // Function definitions - only with "def" keyword
 function_definition: DEF IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statement)+ DEDENT
 
-// Block syntax for anonymous functions
+// Block syntax for anonymous functions and control flow
 // Statements separated by newlines or semicolons
 block: "{" [block_stmt (";"? block_stmt)* ";"?] "}"
-block_stmt: print_statement
-          | return_statement
+block_stmt: return_statement
+          | print_statement
+          | assertion_statement
           | assignment
+          | func_var_definition
           | expression_statement
-          | loop
-          | conditional
+          | FOR SCALAR_VAR IN expression block
+          | WHILE expression block
+          | IF expression block [ELSE block]
 
 // Control flow - unified syntax (both : and {} supported)
 
@@ -134,7 +137,8 @@ power_expr: unary_expr (POW_OP unary_expr)*
 block_expr.2: block
 
 // Hash access with braces (Perl-style): $hash{key}
-hash_access_brace.3: primary_expr "{" (STRING | IDENT) "}"
+// Only match if primary_expr is a variable (not any expression like True)
+hash_access_brace.3: (SCALAR_VAR | HASH_VAR) "{" (STRING | IDENT) "}"
 
 // Attribute access: $obj.attr
 attribute_access: primary_expr "." IDENT
@@ -168,14 +172,14 @@ array_literal: "[" [expression ("," expression)*] [","] "]"
 regex_literal: "r" STRING
 
 conditional: IF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
-           | IF expression block [ELSE block]
+           | IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]
 else_clause: ELIF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
            | ELSE ":" _NL INDENT (_NL | statement)+ DEDENT
 
 loop: FOR SCALAR_VAR IN expression ":" _NL INDENT (_NL | statement)+ DEDENT
     | WHILE expression ":" _NL INDENT (_NL | statement)+ DEDENT
-    | FOR SCALAR_VAR IN expression "{" block_stmt* "}"
-    | WHILE expression "{" block_stmt* "}"
+    | FOR SCALAR_VAR IN expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+    | WHILE expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
 
 test_block: TEST STRING ":" _NL INDENT (_NL | statement)+ DEDENT
 

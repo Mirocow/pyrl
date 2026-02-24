@@ -76,30 +76,20 @@ def print_debug_error(error_type: str, error: Exception, stderr: Optional[str] =
         error_str = str(error)
         has_formatted_error = "PARSE ERROR" in error_str or "RUNTIME ERROR" in error_str
 
-        print(f"\n{Colors.RED}{'='*60}{Colors.RESET}", file=sys.stderr)
-        print(f"{Colors.RED}{format_error_type(error_type)}{Colors.RESET}", file=sys.stderr)
-        print(f"{Colors.RED}{'='*60}{Colors.RESET}", file=sys.stderr)
-
         if has_formatted_error:
-            # Error already has formatting, print it directly
-            print(error_str, file=sys.stderr)
+            # Error already has formatting, print it directly without outer header
+            print(f"\n{error_str.rstrip()}", file=sys.stderr)
         else:
-            # Normal error, print with labels
+            # Normal error, print with outer header and labels
+            print(f"\n{Colors.RED}{'='*60}{Colors.RESET}", file=sys.stderr)
+            print(f"{Colors.RED}{format_error_type(error_type)}{Colors.RESET}", file=sys.stderr)
+            print(f"{Colors.RED}{'='*60}{Colors.RESET}", file=sys.stderr)
             print(f"{Colors.YELLOW}Message:{Colors.RESET} {error}", file=sys.stderr)
             print(f"{Colors.YELLOW}Type:{Colors.RESET} {type(error).__name__}", file=sys.stderr)
             if hasattr(error, '__traceback__') and error.__traceback__:
                 print(f"{Colors.YELLOW}Traceback:{Colors.RESET}", file=sys.stderr)
                 traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
-
-        if stderr:
-            print(f"{Colors.YELLOW}Stderr:{Colors.RESET}", file=sys.stderr)
-            for line in stderr.split('\n')[:30]:
-                print(f"  {Colors.GRAY}{line}{Colors.RESET}", file=sys.stderr)
-        if stdout:
-            print(f"{Colors.YELLOW}Stdout:{Colors.RESET}", file=sys.stderr)
-            for line in stdout.split('\n')[:10]:
-                print(f"  {Colors.GRAY}{line}{Colors.RESET}", file=sys.stderr)
-        print(f"{Colors.RED}{'='*60}{Colors.RESET}\n", file=sys.stderr)
+            print(f"{Colors.RED}{'='*60}{Colors.RESET}\n", file=sys.stderr)
 
 # --- Runner Class ---
 
@@ -141,13 +131,24 @@ class PyrlTestRunner:
                     stderr=result.stderr
                 )
             else:
+                # Extract error message from stderr
+                stderr_text = result.stderr.strip() if result.stderr else ""
+                if "PARSE ERROR" in stderr_text or "RUNTIME ERROR" in stderr_text:
+                    # Already formatted error - use entire stderr
+                    error_message = stderr_text
+                elif stderr_text:
+                    # Plain error - use last line
+                    error_message = stderr_text.split('\n')[-1]
+                else:
+                    error_message = "Unknown error"
+
                 return TestResult(
                     filename=filename,
                     category=category,
                     success=False,
                     execution_time=duration,
                     error_type="PyrlRuntimeError",
-                    error_message=result.stderr.strip().split('\n')[-1] if result.stderr else "Unknown error",
+                    error_message=error_message,
                     stderr=result.stderr,
                     stdout=result.stdout
                 )

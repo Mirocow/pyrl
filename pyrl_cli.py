@@ -55,22 +55,20 @@ class PyrlCLI:
             error_str = str(error)
             has_formatted_error = "PARSE ERROR" in error_str or "RUNTIME ERROR" in error_str
 
-            print(f"\n\033[91m{'='*60}\033[0m", file=sys.stderr)
-            print(f"\033[91m{self._format_error_type(error_type)}\033[0m", file=sys.stderr)
-            print(f"\033[91m{'='*60}\033[0m", file=sys.stderr)
-
             if has_formatted_error:
-                # Error already has formatting, print it directly
-                print(error_str, file=sys.stderr)
+                # Error already has formatting, print it directly without outer header
+                print(f"\n{error_str}", file=sys.stderr)
             else:
-                # Normal error, print with labels
+                # Normal error, print with outer header and labels
+                print(f"\n\033[91m{'='*60}\033[0m", file=sys.stderr)
+                print(f"\033[91m{self._format_error_type(error_type)}\033[0m", file=sys.stderr)
+                print(f"\033[91m{'='*60}\033[0m", file=sys.stderr)
                 print(f"\033[93mMessage:\033[0m {error}", file=sys.stderr)
                 print(f"\033[93mType:\033[0m {type(error).__name__}", file=sys.stderr)
                 if hasattr(error, '__traceback__') and error.__traceback__:
                     print(f"\033[93mTraceback:\033[0m", file=sys.stderr)
                     traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
-
-            print(f"\033[91m{'='*60}\033[0m\n", file=sys.stderr)
+                print(f"\033[91m{'='*60}\033[0m\n", file=sys.stderr)
         else:
             print(f"\033[91m{self._format_error_type(error_type)}\033[0m {error}")
 

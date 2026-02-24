@@ -18,27 +18,22 @@ $result = double(21)
 print("double(21) = " + str($result))
 
 print("=== Anonymous Function with Loop ===")
-&sum_range($start, $end) = {
+&sum_range($start, $end):
     $total = 0
-    for $i in range($start, $end + 1) {
+    for $i in range($start, $end + 1):
         $total = $total + $i
-    }
     return $total
-}
 
 $sum_1_to_10 = sum_range(1, 10)
 print("sum_range(1, 10) = " + str($sum_1_to_10))
 
 print("=== Anonymous Function with Condition ===")
-&classify($n) = {
-    if $n > 0 {
+&classify($n):
+    if $n > 0:
         return "positive"
-    }
-    if $n < 0 {
+    if $n < 0:
         return "negative"
-    }
     return "zero"
-}
 
 print("classify(5) = " + classify(5))
 print("classify(-3) = " + classify(-3))

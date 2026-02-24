@@ -3,7 +3,7 @@
   "architectures": [
     "PyrlForCausalLM"
   ],
-  "vocab_size": 1778,
+  "vocab_size": 13078,
   "hidden_size": 768,
   "intermediate_size": 3072,
   "num_hidden_layers": 12,
@@ -18,30 +18,21 @@
   "trained": true,
   "training_history": [
     {
-      "epoch": 6,
-      "train_loss": 1.2183339070000714,
-      "val_loss": 1.2683339070000714
+      "epoch": 1,
+      "train_loss": 1.8985647142903341,
+      "val_loss": 1.958180098905719
     },
     {
-      "epoch": 7,
-      "train_loss": 1.0746150432823918,
-      "val_loss": 1.1246150432823918
+      "epoch": 2,
+      "train_loss": 1.8306996533212743,
+      "val_loss": 1.8903150379366591
     },
     {
-      "epoch": 8,
-      "train_loss": 0.9971382017458363,
-      "val_loss": 1.0471382017458364
-    },
-    {
-      "epoch": 9,
-      "train_loss": 0.7606675185116828,
-      "val_loss": 0.8106675185116828
-    },
-    {
-      "epoch": 10,
-      "train_loss": 0.6524047235366075,
-      "val_loss": 0.7024047235366075
+      "epoch": 3,
+      "train_loss": 1.5533233141042575,
+      "val_loss": 1.6129386987196423
     }
   ],
-  "best_val_loss": 0.7024047235366075
+  "best_val_loss": 1.6129386987196423,
+  "grammar_features_enabled": true
 }

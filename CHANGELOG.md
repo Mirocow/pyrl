@@ -5,6 +5,62 @@ All notable changes to the Pyrl language will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-02-24
+
+### Added
+
+#### Grammar-Based Model Training
+- **NEW**: `scripts/train_model.py` completely rewritten with grammar-based features
+- Uses Lark parser from `src/core/lark_parser.py` to parse examples
+- Extracts grammar features for each example (AST nodes, keywords, operators)
+- Calculates parse success rate for training data
+
+#### Training Features
+- `GrammarFeatureExtractor` class for extracting features from code
+- AST node type extraction for each parsed example
+- Sigil usage statistics (scalar, array, hash, function)
+- Keyword and operator frequency analysis
+- Parse success tracking
+
+#### Tokenizer Enhancements
+- Added web server built-in functions: `html_response`, `json_response`, `redirect`, `parse_form`, `parse_cookies`, etc.
+- Added `time`, `datetime` builtins
+- Added password hashing functions: `hash_password`, `verify_password`
+- Added session functions: `generate_token`, `validate_token`
+- Support for Perl-style regex: `m/`, `qr/`, `s/`
+
+### Changed
+
+#### `scripts/train_model.py`
+- Now reads `.pyrl` files from `examples/` directory by default
+- Excludes `dontwork` subdirectory by default (use `--include-dontwork` to include)
+- Saves training statistics including parse success rate
+- Generates grammar statistics for the dataset
+
+### Usage
+
+```bash
+# Train with default examples (excludes dontwork)
+python scripts/train_model.py
+
+# Train with all examples including dontwork
+python scripts/train_model.py --include-dontwork
+
+# Custom configuration
+python scripts/train_model.py --epochs 20 --batch-size 64 --hidden-size 1024
+
+# Disable grammar features
+python scripts/train_model.py --no-grammar
+```
+
+### Training Results (Example)
+```
+Total examples: 131 (31 working + 100 from dontwork)
+Parse success: 121 (92.4%)
+Parse failed: 10 (syntax errors in dontwork folder)
+Vocabulary size: 13,078 tokens
+```
+
 ## [2.1.0] - 2025-02-24
 
 ### Added

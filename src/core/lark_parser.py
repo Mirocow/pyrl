@@ -67,9 +67,9 @@ block_stmt: return_statement
           | assignment
           | func_var_definition
           | expression_statement
-          | FOR SCALAR_VAR IN expression block
-          | WHILE expression block
-          | IF expression block [ELSE block]
+          | FOR SCALAR_VAR IN expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+          | WHILE expression "{" [block_stmt (";"? block_stmt)* ";"?] "}"
+          | IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]
 
 // Control flow - unified syntax (both : and {} supported)
 
@@ -137,8 +137,8 @@ power_expr: unary_expr (POW_OP unary_expr)*
 block_expr.2: block
 
 // Hash access with braces (Perl-style): $hash{key}
-// Only match if primary_expr is a variable (not any expression like True)
-hash_access_brace.3: (SCALAR_VAR | HASH_VAR) "{" (STRING | IDENT) "}"
+// Only for direct variable access, not after expressions
+hash_access_brace: (SCALAR_VAR | HASH_VAR) "{" (STRING | IDENT) "}"
 
 // Attribute access: $obj.attr
 attribute_access: primary_expr "." IDENT

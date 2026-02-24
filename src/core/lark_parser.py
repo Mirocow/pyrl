@@ -63,6 +63,7 @@ function_definition: "def" IDENT "(" [arg_list] ")" ":" _NL INDENT (_NL | statem
 block: "{" [block_stmt (";"? block_stmt)* ";"?] "}"
 block_stmt: assignment
           | return_statement
+          | print_statement
           | expression_statement
           | block_if
           | block_while

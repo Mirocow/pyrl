@@ -674,6 +674,56 @@ def pyrl_json_stringify(obj, indent=None):
 
 
 # ===========================================
+# Environment Functions
+# ===========================================
+
+@builtin('env_get')
+def pyrl_env_get(key, default=None):
+    """Get environment variable value.
+    
+    Args:
+        key: Environment variable name
+        default: Default value if not found
+        
+    Returns:
+        Environment variable value or default
+        
+    Example:
+        $port = env_get("PYRL_PORT", "8080")
+        $db = env_get("PYRL_DB_PATH", "data/app.db")
+    """
+    import os
+    return os.environ.get(key, default)
+
+
+@builtin('env_set')
+def pyrl_env_set(key, value):
+    """Set environment variable value.
+    
+    Args:
+        key: Environment variable name
+        value: Value to set
+        
+    Returns:
+        None
+    """
+    import os
+    os.environ[key] = str(value)
+    return None
+
+
+@builtin('env_keys')
+def pyrl_env_keys():
+    """Get all environment variable names.
+    
+    Returns:
+        List of environment variable names
+    """
+    import os
+    return list(os.environ.keys())
+
+
+# ===========================================
 # Constants
 # ===========================================
 

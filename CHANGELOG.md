@@ -5,6 +5,55 @@ All notable changes to the Pyrl language will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-02-24
+
+### Added
+
+#### SQLite Storage for Sessions and Data
+- **NEW**: Web applications now use SQLite for persistent storage
+- Database files stored in `data/{app_name}.db` based on pyrl filename
+- Automatic database initialization with required tables
+- Sessions, users, and activity logs stored in SQLite
+
+#### New Built-in Functions
+- `env_get(key, default)` - Get environment variable value
+- `env_set(key, value)` - Set environment variable value
+- `env_keys()` - List all environment variable names
+
+#### Database Tables (Auto-created)
+- `users` - User accounts with roles and metadata
+- `sessions` - Active sessions with expiration tracking
+- `activity_log` - Audit trail of user actions
+
+### Changed
+
+#### `scripts/run_web_app.py`
+- Automatically creates `data/` directory
+- Sets `PYRL_DB_PATH`, `PYRL_APP_NAME`, `PYRL_DATA_DIR` environment variables
+- Database path: `data/{pyrl_filename}.db`
+
+#### `examples/web_server_auth.pyrl`
+- Complete rewrite to use SQLite instead of in-memory hashes
+- All data persists across server restarts
+- Activity logging for audit trail
+- Automatic cleanup of expired sessions
+
+### New API Endpoints
+- `GET /api/sessions` - List active sessions
+- `GET /api/activity` - View activity log
+- `POST /api/user/create` - Create new user via API
+
+### Usage
+
+```bash
+# Database is automatically created at data/web_server_auth.db
+python scripts/run_web_app.py --file examples/web_server_auth.pyrl --port 8080
+
+# Each pyrl app gets its own database
+python scripts/run_web_app.py --file examples/my_app.pyrl --port 8080
+# Database: data/my_app.db
+```
+
 ## [2.2.0] - 2025-02-24
 
 ### Added

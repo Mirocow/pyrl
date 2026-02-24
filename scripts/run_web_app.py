@@ -30,6 +30,7 @@ from urllib.parse import urlparse, parse_qs
 import threading
 import time
 from pathlib import Path
+from datetime import datetime
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -47,7 +48,30 @@ class PyrlWebApp:
         self.app_instance = None
         self.handle_func = None
         self.routes = {}
+        self.db_path = None
+        self._setup_database()
         self.load_app()
+    
+    def _setup_database(self):
+        """Setup SQLite database for the application."""
+        # Get pyrl file name without extension
+        pyrl_path = Path(self.pyrl_file)
+        app_name = pyrl_path.stem  # e.g., 'web_server_auth' from 'web_server_auth.pyrl'
+        
+        # Create data directory in project root
+        project_root = Path(__file__).parent.parent
+        data_dir = project_root / 'data'
+        data_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Database path: data/{app_name}.db
+        self.db_path = str(data_dir / f'{app_name}.db')
+        
+        # Set environment variable for Pyrl app to use
+        os.environ['PYRL_DB_PATH'] = self.db_path
+        os.environ['PYRL_APP_NAME'] = app_name
+        os.environ['PYRL_DATA_DIR'] = str(data_dir)
+        
+        print(f"Database path: {self.db_path}")
     
     def load_app(self):
         """Load the Pyrl application file."""
@@ -196,9 +220,26 @@ def run_server(host: str, port: int, pyrl_file: str):
     print("=" * 60)
     print()
     
+    # Get pyrl file name for database
+    pyrl_path = Path(pyrl_file)
+    app_name = pyrl_path.stem
+    
+    # Create data directory
+    project_root = Path(__file__).parent.parent
+    data_dir = project_root / 'data'
+    data_dir.mkdir(parents=True, exist_ok=True)
+    db_path = data_dir / f'{app_name}.db'
+    
     # Set environment variables for the Pyrl app
     os.environ['PYRL_PORT'] = str(port)
     os.environ['PYRL_HOST'] = host
+    os.environ['PYRL_DB_PATH'] = str(db_path)
+    os.environ['PYRL_APP_NAME'] = app_name
+    os.environ['PYRL_DATA_DIR'] = str(data_dir)
+    
+    print(f"Application: {app_name}")
+    print(f"Database: {db_path}")
+    print()
     
     # Load the Pyrl application
     web_app = PyrlWebApp(pyrl_file)

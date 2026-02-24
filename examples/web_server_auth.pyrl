@@ -1,6 +1,7 @@
 # ============================================================
-# Pyrl Web Server - Полноценный сервер с авторизацией
+# Pyrl Web Server - Полноценный сервер с авторизацией на SQLite
 # Запуск: python scripts/run_web_app.py --file examples/web_server_auth.pyrl --port 8080
+# База данных: data/web_server_auth.db (создается автоматически)
 # ============================================================
 
 # ============================================================
@@ -8,21 +9,78 @@
 # ============================================================
 
 $APP_NAME = "Pyrl Admin"
-$APP_VERSION = "1.0.0"
+$APP_VERSION = "2.0.0"
 $PORT = env_get("PYRL_PORT", "8080")
 $SECRET_KEY = env_get("PYRL_SECRET", "pyrl_secret_key_2024")
+$DB_PATH = env_get("PYRL_DB_PATH", "data/web_server_auth.db")
+$APP_NAME_FROM_ENV = env_get("PYRL_APP_NAME", "web_server_auth")
 
 # ============================================================
-# ДАННЫЕ
+# ИНИЦИАЛИЗАЦИЯ БАЗЫ ДАННЫХ
 # ============================================================
 
-%users = {
-    "admin": {password: "admin123", role: "Administrator", name: "Admin User", email: "admin@pyrl.local"},
-    "user": {password: "user123", role: "User", name: "John Doe", email: "john@pyrl.local"},
-    "guest": {password: "guest123", role: "Guest", name: "Guest User", email: "guest@pyrl.local"}
-}
+# Подключение к БД (создается автоматически если не существует)
+$db = db_connect($DB_PATH)
 
-%sessions = {}
+# Создание таблиц при первом запуске
+def init_database():
+    # Таблица пользователей
+    $result = db_execute($db, """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'User',
+            name TEXT NOT NULL,
+            email TEXT,
+            created_at REAL,
+            last_login REAL
+        )
+    """)
+    
+    # Таблица сессий
+    $result = db_execute($db, """
+        CREATE TABLE IF NOT EXISTS sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            token TEXT UNIQUE NOT NULL,
+            username TEXT NOT NULL,
+            created_at REAL NOT NULL,
+            expires_at REAL NOT NULL,
+            ip_address TEXT,
+            user_agent TEXT
+        )
+    """)
+    
+    # Таблица логов активности
+    $result = db_execute($db, """
+        CREATE TABLE IF NOT EXISTS activity_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            action TEXT NOT NULL,
+            details TEXT,
+            ip_address TEXT,
+            created_at REAL NOT NULL
+        )
+    """)
+    
+    # Проверяем есть ли пользователи, если нет - создаем дефолтных
+    $result = db_query_one($db, "SELECT COUNT(*) as count FROM users")
+    if $result["row"]["count"] == 0:
+        print("Creating default users...")
+        
+        # Создаем дефолтных пользователей
+        $now = time()
+        db_execute($db, "INSERT INTO users (username, password, role, name, email, created_at) VALUES (?, ?, ?, ?, ?, ?)", 
+            ["admin", "admin123", "Administrator", "Admin User", "admin@pyrl.local", $now])
+        db_execute($db, "INSERT INTO users (username, password, role, name, email, created_at) VALUES (?, ?, ?, ?, ?, ?)", 
+            ["user", "user123", "User", "John Doe", "john@pyrl.local", $now])
+        db_execute($db, "INSERT INTO users (username, password, role, name, email, created_at) VALUES (?, ?, ?, ?, ?, ?)", 
+            ["guest", "guest123", "Guest", "Guest User", "guest@pyrl.local", $now])
+        
+        print("Default users created: admin, user, guest")
+
+# Инициализируем БД
+init_database()
 
 # ============================================================
 # HTML ШАБЛОНЫ
@@ -141,6 +199,14 @@ $LOGIN_PAGE = """
             padding: 2px 6px;
             border-radius: 3px;
         }
+        .db-info {
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.8em;
+            color: #2e7d32;
+        }
     </style>
 </head>
 <body>
@@ -171,6 +237,10 @@ $LOGIN_PAGE = """
             <code>admin / admin123</code> - Administrator<br>
             <code>user / user123</code> - User<br>
             <code>guest / guest123</code> - Guest
+        </div>
+        
+        <div class="db-info">
+            SQLite Database: {{DB_PATH}}
         </div>
         
         <div class="footer">
@@ -266,7 +336,7 @@ $DASHBOARD_PAGE = """
             font-size: 1.5em; margin-bottom: 15px;
         }
         .stat-icon.users { background: #e3f2fd; color: #2196f3; }
-        .stat-icon.posts { background: #e8f5e9; color: #4caf50; }
+        .stat-icon.sessions { background: #e8f5e9; color: #4caf50; }
         .stat-icon.views { background: #fff3e0; color: #ff9800; }
         .stat-icon.storage { background: #fce4ec; color: #e91e63; }
         .stat-value { font-size: 2.2em; font-weight: 700; color: #1a1a2e; }
@@ -323,11 +393,19 @@ $DASHBOARD_PAGE = """
             font-size: 0.95em;
         }
         .action-btn:hover { background: #e94560; color: white; }
+        .db-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
     <header class="header">
-        <h1>Pyrl<span>Admin</span></h1>
+        <h1>Pyrl<span>Admin</span> <span class="db-badge">SQLite</span></h1>
         <div class="user-info">
             <div class="user-details">
                 <div class="user-name">{{USERNAME}}</div>
@@ -343,56 +421,37 @@ $DASHBOARD_PAGE = """
     <div class="container">
         <div class="welcome-banner">
             <h2>Welcome, {{USERNAME}}!</h2>
-            <p>You are logged in as <strong>{{ROLE}}</strong>. Session active.</p>
+            <p>You are logged in as <strong>{{ROLE}}</strong>. Session stored in SQLite.</p>
         </div>
         
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon users">Users</div>
-                <div class="stat-value">1,234</div>
+                <div class="stat-value">{{USERS_COUNT}}</div>
                 <div class="stat-label">Total Users</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon posts">Posts</div>
-                <div class="stat-value">567</div>
-                <div class="stat-label">Posts Created</div>
+                <div class="stat-icon sessions">Sessions</div>
+                <div class="stat-value">{{SESSIONS_COUNT}}</div>
+                <div class="stat-label">Active Sessions</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon views">Views</div>
-                <div class="stat-value">89.5K</div>
-                <div class="stat-label">Page Views</div>
+                <div class="stat-icon views">Log</div>
+                <div class="stat-value">{{LOG_COUNT}}</div>
+                <div class="stat-label">Activity Records</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon storage">Disk</div>
-                <div class="stat-value">2.4 GB</div>
-                <div class="stat-label">Storage Used</div>
+                <div class="stat-icon storage">DB</div>
+                <div class="stat-value">{{DB_SIZE}}</div>
+                <div class="stat-label">Database Size</div>
             </div>
         </div>
         
         <div class="content-grid">
             <div class="card">
-                <div class="card-header">Recent Activity</div>
+                <div class="card-header">Recent Activity (from SQLite)</div>
                 <div class="card-body">
-                    <div class="activity-item">
-                        <div class="activity-icon login">Auth</div>
-                        <div class="activity-text">User <strong>{{USERNAME}}</strong> logged in</div>
-                        <div class="activity-time">Just now</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon create">New</div>
-                        <div class="activity-text">New user <strong>john_doe</strong> registered</div>
-                        <div class="activity-time">5 min ago</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon update">Edit</div>
-                        <div class="activity-text">Settings updated by <strong>admin</strong></div>
-                        <div class="activity-time">1 hour ago</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon create">File</div>
-                        <div class="activity-text">New page <strong>About Us</strong> created</div>
-                        <div class="activity-time">3 hours ago</div>
-                    </div>
+                    {{ACTIVITY_LIST}}
                 </div>
             </div>
             
@@ -400,11 +459,10 @@ $DASHBOARD_PAGE = """
                 <div class="card-header">Quick Actions</div>
                 <div class="card-body">
                     <div class="quick-actions">
-                        <button class="action-btn">Add New User</button>
-                        <button class="action-btn">Create New Post</button>
-                        <button class="action-btn">System Settings</button>
-                        <button class="action-btn">View Reports</button>
-                        <button class="action-btn">Manage Plugins</button>
+                        <button class="action-btn" onclick="fetch('/api/users').then(r=>r.json()).then(d=>console.log(d))">View All Users (API)</button>
+                        <button class="action-btn" onclick="fetch('/api/status').then(r=>r.json()).then(d=>console.log(d))">Server Status (API)</button>
+                        <button class="action-btn" onclick="fetch('/api/sessions').then(r=>r.json()).then(d=>console.log(d))">View Sessions (API)</button>
+                        <button class="action-btn" onclick="alert('Database: {{DB_PATH}}')">Show DB Info</button>
                     </div>
                 </div>
             </div>
@@ -463,57 +521,127 @@ $ERROR_PAGE = """
 """
 
 # ============================================================
-# БИЗНЕС-ЛОГИКА
+# БИЗНЕС-ЛОГИКА (SQLite)
 # ============================================================
 
 # Генерация токена сессии
 def generate_token($username):
     $timestamp = str(time())
     $data = $username + ":" + $timestamp + ":" + $SECRET_KEY
-    return str(hash($data))
+    return str(hash($data)) + "_" + str(int(time()))
 
-# Проверка пользователя
-def verify_user($username, $password):
-    $user = get(%users, $username, None)
-    if $user != None:
-        if $user["password"] == $password:
-            return {success: True, user: $user}
-    return {success: False, user: None}
+# Получение пользователя из БД
+def get_user($username):
+    $result = db_query_one($db, "SELECT * FROM users WHERE username = ?", [$username])
+    if $result["success"] and $result["row"] != None:
+        return $result["row"]
+    return None
 
-# Проверка credentials и возврат токена
+# Проверка credentials
 def check_login($username, $password):
-    $user = get(%users, $username, None)
+    $user = get_user($username)
     if $user != None:
         if $user["password"] == $password:
             return $user
     return None
 
-# Создание сессии
-def create_session($username):
+# Создание сессии в БД
+def create_session($username, $ip_address, $user_agent):
     $token = generate_token($username)
-    %sessions[$token] = {
-        username: $username,
-        created: str(time()),
-        expires: time() + 3600
-    }
-    return $token
+    $now = time()
+    $expires = $now + 3600  # 1 час
+    
+    $result = db_execute($db, 
+        "INSERT INTO sessions (token, username, created_at, expires_at, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)",
+        [$token, $username, $now, $expires, $ip_address, $user_agent]
+    )
+    
+    if $result["success"]:
+        # Логируем вход
+        log_activity($username, "login", "User logged in", $ip_address)
+        
+        # Обновляем last_login
+        db_execute($db, "UPDATE users SET last_login = ? WHERE username = ?", [$now, $username])
+        
+        return $token
+    return None
 
-# Проверка сессии
+# Проверка сессии из БД
 def validate_session($token):
-    $session = get(%sessions, $token, None)
-    if $session != None:
-        if $session["expires"] > time():
-            return {valid: True, username: $session["username"]}
+    $now = time()
+    $result = db_query_one($db, 
+        "SELECT * FROM sessions WHERE token = ? AND expires_at > ?",
+        [$token, $now]
+    )
+    
+    if $result["success"] and $result["row"] != None:
+        $session = $result["row"]
+        return {valid: True, username: $session["username"], session: $session}
     return {valid: False}
+
+# Удаление сессии (logout)
+def delete_session($token):
+    $result = db_execute($db, "DELETE FROM sessions WHERE token = ?", [$token])
+    return $result["success"]
+
+# Очистка устаревших сессий
+def cleanup_sessions():
+    $now = time()
+    db_execute($db, "DELETE FROM sessions WHERE expires_at < ?", [$now])
+
+# Логирование активности
+def log_activity($username, $action, $details, $ip_address):
+    $now = time()
+    db_execute($db, 
+        "INSERT INTO activity_log (username, action, details, ip_address, created_at) VALUES (?, ?, ?, ?, ?)",
+        [$username, $action, $details, $ip_address, $now]
+    )
+
+# Получение статистики
+def get_stats():
+    $users = db_query_one($db, "SELECT COUNT(*) as count FROM users")
+    $sessions = db_query_one($db, "SELECT COUNT(*) as count FROM sessions WHERE expires_at > ?", [time()])
+    $logs = db_query_one($db, "SELECT COUNT(*) as count FROM activity_log")
+    
+    return {
+        users_count: $users["row"]["count"],
+        sessions_count: $sessions["row"]["count"],
+        log_count: $logs["row"]["count"]
+    }
+
+# Получение последних активностей
+def get_recent_activity($limit):
+    $result = db_query($db, 
+        "SELECT * FROM activity_log ORDER BY created_at DESC LIMIT ?",
+        [$limit]
+    )
+    if $result["success"]:
+        return $result["rows"]
+    return []
+
+# Форматирование времени
+def format_time($timestamp):
+    $diff = time() - $timestamp
+    if $diff < 60:
+        return "Just now"
+    if $diff < 3600:
+        return str(int($diff / 60)) + " min ago"
+    if $diff < 86400:
+        return str(int($diff / 3600)) + " hours ago"
+    return str(int($diff / 86400)) + " days ago"
 
 # ============================================================
 # HTTP ОБРАБОТЧИК
 # ============================================================
 
 def handle_request($method, $path, %headers, $body):
+    # Очищаем устаревшие сессии
+    cleanup_sessions()
+    
     # GET / - Страница входа
     if $path == "/" and $method == "GET":
         $html = replace($LOGIN_PAGE, "{{VERSION}}", $APP_VERSION)
+        $html = replace($html, "{{DB_PATH}}", $DB_PATH)
         return html_response($html)
     
     # POST /login - Обработка входа
@@ -531,7 +659,19 @@ def handle_request($method, $path, %headers, $body):
                 body: ""
             }
         
-        $token = create_session($username)
+        # Получаем IP и User-Agent
+        $ip = get(%headers, "X-Forwarded-For", get(%headers, "Host", "unknown"))
+        $ua = get(%headers, "User-Agent", "unknown")
+        
+        $token = create_session($username, $ip, $ua)
+        
+        if $token == None:
+            return {
+                status: 302,
+                headers: {"Location": "/?error=1"},
+                body: ""
+            }
+        
         return {
             status: 302,
             headers: {
@@ -551,12 +691,44 @@ def handle_request($method, $path, %headers, $body):
         
         if $session["valid"]:
             $username = $session["username"]
-            $user = %users[$username]
+            $user = get_user($username)
+            
+            if $user == None:
+                return redirect("/")
+            
+            # Получаем статистику
+            $stats = get_stats()
+            
+            # Получаем активности
+            @activities = get_recent_activity(5)
+            $activity_html = ""
+            for $act in @activities:
+                $icon_class = "login"
+                if $act["action"] == "login":
+                    $icon_class = "login"
+                if $act["action"] == "logout":
+                    $icon_class = "update"
+                if $act["action"] == "create":
+                    $icon_class = "create"
+                
+                $activity_html = $activity_html + """
+                    <div class="activity-item">
+                        <div class="activity-icon """ + $icon_class + """>""" + upper($act["action"][0]) + """</div>
+                        <div class="activity-text">""" + $act["details"] + """</div>
+                        <div class="activity-time">""" + format_time($act["created_at"]) + """</div>
+                    </div>
+                """
             
             $html = $DASHBOARD_PAGE
             $html = replace($html, "{{USERNAME}}", $user["name"])
             $html = replace($html, "{{ROLE}}", $user["role"])
             $html = replace($html, "{{AVATAR}}", upper($username[0]))
+            $html = replace($html, "{{USERS_COUNT}}", str($stats["users_count"]))
+            $html = replace($html, "{{SESSIONS_COUNT}}", str($stats["sessions_count"]))
+            $html = replace($html, "{{LOG_COUNT}}", str($stats["log_count"]))
+            $html = replace($html, "{{DB_SIZE}}", "SQLite")
+            $html = replace($html, "{{DB_PATH}}", $DB_PATH)
+            $html = replace($html, "{{ACTIVITY_LIST}}", $activity_html)
             
             return html_response($html)
         
@@ -564,6 +736,18 @@ def handle_request($method, $path, %headers, $body):
     
     # POST /logout - Выход
     if $path == "/logout" and $method == "POST":
+        $cookie = get(%headers, "Cookie", "")
+        %cookies = parse_cookies($cookie)
+        $token = get(%cookies, "session", "")
+        
+        if $token != "":
+            # Получаем username перед удалением
+            $session = validate_session($token)
+            if $session["valid"]:
+                $ip = get(%headers, "Host", "unknown")
+                log_activity($session["username"], "logout", "User logged out", $ip)
+            delete_session($token)
+        
         return {
             status: 302,
             headers: {
@@ -574,47 +758,64 @@ def handle_request($method, $path, %headers, $body):
         }
     
     # ============================================================
-    # REST API
+    # REST API (SQLite)
     # ============================================================
     
     # GET /api/status - Статус сервера
     if $path == "/api/status" and $method == "GET":
+        $stats = get_stats()
         return json_response({
             app: $APP_NAME,
             version: $APP_VERSION,
             status: "running",
-            users_count: len(%users),
-            sessions_count: len(%sessions),
+            database: $DB_PATH,
+            users_count: $stats["users_count"],
+            sessions_count: $stats["sessions_count"],
+            log_count: $stats["log_count"],
             uptime: time()
         })
     
-    # GET /api/users - Список пользователей (без паролей)
+    # GET /api/users - Список пользователей
     if $path == "/api/users" and $method == "GET":
-        @users_list = []
-        for $username in keys(%users):
-            $user = %users[$username]
-            append(@users_list, {
-                username: $username,
-                role: $user["role"],
-                name: $user["name"],
-                email: $user["email"]
-            })
-        return json_response({users: @users_list, count: len(@users_list)})
+        $result = db_query($db, "SELECT id, username, role, name, email, created_at, last_login FROM users")
+        if $result["success"]:
+            return json_response({users: $result["rows"], count: len($result["rows"])})
+        return json_response({error: "Database error"}, 500)
+    
+    # GET /api/sessions - Список активных сессий
+    if $path == "/api/sessions" and $method == "GET":
+        $result = db_query($db, 
+            "SELECT token, username, created_at, expires_at, ip_address FROM sessions WHERE expires_at > ?",
+            [time()]
+        )
+        if $result["success"]:
+            return json_response({sessions: $result["rows"], count: len($result["rows"])})
+        return json_response({error: "Database error"}, 500)
+    
+    # GET /api/activity - Последние активности
+    if $path == "/api/activity" and $method == "GET":
+        $result = db_query($db, "SELECT * FROM activity_log ORDER BY created_at DESC LIMIT 50")
+        if $result["success"]:
+            return json_response({activities: $result["rows"], count: len($result["rows"])})
+        return json_response({error: "Database error"}, 500)
     
     # GET /api/user/NAME - Информация о пользователе
     if startswith($path, "/api/user/") and $method == "GET":
         $username = replace($path, "/api/user/", "")
-        $user = get(%users, $username, None)
+        $user = get_user($username)
         if $user != None:
             return json_response({
-                username: $username,
+                id: $user["id"],
+                username: $user["username"],
                 role: $user["role"],
                 name: $user["name"],
-                email: $user["email"]
+                email: $user["email"],
+                created_at: $user["created_at"],
+                last_login: $user["last_login"]
             })
         return json_response({error: "User not found"}, 404)
     
-    # POST /api/verify - Проверка credentials (для внешних приложений)
+    # POST /api/verify - Проверка credentials
     if $path == "/api/verify" and $method == "POST":
         %data = json_parse($body)
         $username = get(%data, "username", "")
@@ -622,7 +823,10 @@ def handle_request($method, $path, %headers, $body):
         $user = check_login($username, $password)
         
         if $user != None:
-            $token = create_session($username)
+            $ip = get(%headers, "Host", "unknown")
+            $ua = get(%headers, "User-Agent", "unknown")
+            $token = create_session($username, $ip, $ua)
+            
             return json_response({
                 success: True,
                 token: $token,
@@ -642,7 +846,7 @@ def handle_request($method, $path, %headers, $body):
         
         if $session["valid"]:
             $username = $session["username"]
-            $user = %users[$username]
+            $user = get_user($username)
             return json_response({
                 valid: True,
                 username: $username,
@@ -655,8 +859,43 @@ def handle_request($method, $path, %headers, $body):
     if $path == "/api/logout" and $method == "POST":
         %data = json_parse($body)
         $token = get(%data, "token", "")
-        # Удаляем сессию (упрощенно)
+        
+        if $token != "":
+            $session = validate_session($token)
+            if $session["valid"]:
+                log_activity($session["username"], "logout", "API logout", "api")
+            delete_session($token)
+        
         return json_response({success: True, message: "Logged out"})
+    
+    # POST /api/user/create - Создание пользователя
+    if $path == "/api/user/create" and $method == "POST":
+        %data = json_parse($body)
+        $username = get(%data, "username", "")
+        $password = get(%data, "password", "")
+        $role = get(%data, "role", "User")
+        $name = get(%data, "name", $username)
+        $email = get(%data, "email", "")
+        
+        if $username == "" or $password == "":
+            return json_response({error: "Username and password required"}, 400)
+        
+        # Проверяем существует ли пользователь
+        $existing = get_user($username)
+        if $existing != None:
+            return json_response({error: "User already exists"}, 409)
+        
+        $now = time()
+        $result = db_execute($db,
+            "INSERT INTO users (username, password, role, name, email, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+            [$username, $password, $role, $name, $email, $now]
+        )
+        
+        if $result["success"]:
+            log_activity("system", "create", "Created user: " + $username, "api")
+            return json_response({success: True, id: $result["lastrowid"]})
+        
+        return json_response({error: "Failed to create user"}, 500)
     
     # 404 - Страница не найдена
     $html = replace($ERROR_PAGE, "{{CODE}}", "404")
@@ -670,6 +909,7 @@ def handle_request($method, $path, %headers, $body):
 print("")
 print("=" * 60)
 print("  " + $APP_NAME + " v" + $APP_VERSION)
+print("  SQLite Storage: " + $DB_PATH)
 print("=" * 60)
 print("")
 print("  Web Interface:")
@@ -681,14 +921,22 @@ print("    user  / user123   (User)")
 print("    guest / guest123  (Guest)")
 print("")
 print("  REST API Endpoints:")
-print("    GET  /api/status       - Server status")
-print("    GET  /api/users        - List users")
-print("    GET  /api/user/{name}  - Get user info")
-print("    POST /api/verify       - Verify credentials")
-print("    POST /api/validate     - Validate session token")
-print("    POST /api/logout       - API logout")
+print("    GET  /api/status        - Server status")
+print("    GET  /api/users         - List users")
+print("    GET  /api/sessions      - Active sessions")
+print("    GET  /api/activity      - Activity log")
+print("    GET  /api/user/{name}   - Get user info")
+print("    POST /api/user/create   - Create new user")
+print("    POST /api/verify        - Verify credentials")
+print("    POST /api/validate      - Validate session token")
+print("    POST /api/logout        - API logout")
+print("")
+print("  Database Tables:")
+print("    - users (id, username, password, role, name, email)")
+print("    - sessions (token, username, created_at, expires_at)")
+print("    - activity_log (username, action, details, created_at)")
 print("")
 print("=" * 60)
 print("")
 
-$app = {handle: &handle_request, port: int($PORT)}
+$app = {handle: &handle_request, port: int($PORT), db: $DB_PATH}

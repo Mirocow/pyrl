@@ -172,7 +172,22 @@ hash_item: (STRING | IDENT) ":" expression
 // Array literal - supports multi-line
 array_literal: "[" [expression ("," expression)*] [","] "]"
 
+// Regular expressions - both Python-style and Perl-style
+// Python-style: r"pattern" or r'pattern'
+// Perl-style: m/pattern/mods, qr/pattern/mods, s/pat/repl/mods
 regex_literal: "r" STRING
+             | PERL_REGEX
+
+// Perl-style regex (match, quote, substitute)
+// m/pattern/mods - match, qr/pattern/mods - quote, s/pat/repl/mods - substitute
+// Also shorthand: /pattern/mods (without m)
+PERL_REGEX.2: /m\/[^\/]+\/[imsxg]*/
+            | /m~[^~]+~[imsxg]*/
+            | /qr\/[^\/]+\/[imsxg]*/
+            | /qr~[^~]+~[imsxg]*/
+            | /s\/[^\/]*\/[^\/]*\/[imsxg]*/
+            | /s~[^~]*~[^~]*~[imsxg]*/
+            | /\/[^\/]+\/[imsxg]*/
 
 conditional: IF expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
            | IF expression "{" [block_stmt (";"? block_stmt)* ";"?] "}" [ELSE "{" [block_stmt (";"? block_stmt)* ";"?] "}"]

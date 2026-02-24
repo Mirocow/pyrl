@@ -1,0 +1,75 @@
+# ============================================
+# TEST: Perl-style Regular Expressions
+# ============================================
+
+test "Perl regex m// basic match":
+    $text = "hello world"
+    assert $text =~ m/world/
+    print("m// basic match: OK")
+
+test "Perl regex m// case-insensitive":
+    $text = "HELLO"
+    assert $text =~ m/hello/i
+    print("m//i case-insensitive: OK")
+
+test "Perl regex m~ delimiter":
+    $text = "path/to/file"
+    assert $text =~ m~path~
+    print("m~~ delimiter: OK")
+
+test "Perl regex shorthand /pattern/":
+    $email = "user@domain.com"
+    assert $email =~ /@/
+    print("/pattern/ shorthand: OK")
+
+test "Perl regex multiple modifiers":
+    $text = "HELLO WORLD"
+    assert $text =~ m/hello/i
+    assert $text =~ m/WORLD/
+    print("Multiple modifiers: OK")
+
+test "Perl regex qr// compiled pattern":
+    $pattern = qr/\d+/
+    $data = "123"
+    assert $data =~ $pattern
+    print("qr// compiled pattern: OK")
+
+test "Perl regex qr// with modifiers":
+    $pattern = qr/hello/i
+    $text = "HELLO"
+    assert $text =~ $pattern
+    print("qr//i with modifiers: OK")
+
+test "Perl regex s/// substitution":
+    $result = s/foo/bar/
+    print("s/// substitution: OK")
+
+test "Perl regex s///g global substitution":
+    $result = s/aaa/xxx/g
+    print("s///g global: OK")
+
+test "Perl regex s~~~ different delimiter":
+    $result = s~old~new~
+    print("s~~~ delimiter: OK")
+
+test "Perl regex digit pattern":
+    $text = "abc123def"
+    assert $text =~ m/\d+/
+    print("Digit pattern: OK")
+
+test "Perl regex word boundary":
+    $text = "hello world"
+    assert $text =~ m/world/
+    print("Word pattern: OK")
+
+test "Perl regex IP address pattern":
+    $ip = "192.168.1.1"
+    assert $ip =~ m/\d+\.\d+\.\d+\.\d+/
+    print("IP pattern: OK")
+
+test "Perl regex email pattern":
+    $email = "test@example.com"
+    assert $email =~ m/\w+@\w+\.\w+/
+    print("Email pattern: OK")
+
+print("=== All Perl Regex Tests Passed ===")

@@ -74,7 +74,7 @@ block_stmt: assignment
 // Control flow inside blocks (no indentation)
 block_if: "if" expression block ["else" block]
 block_while: "while" expression block
-block_for: "for" SCALAR_VAR "in" expression block
+block_for: "for" SCALAR_VAR IN expression block
 
 // OOP: Class definition - supports both { } and : with indentation
 class_definition: "class" IDENT ["extends" IDENT] "{" class_member* "}"
@@ -112,7 +112,7 @@ assign_target: SCALAR_VAR
 
 ?and_expr: comparison_expr (AND comparison_expr)*
 
-?comparison_expr: additive_expr (COMP_OP additive_expr)*
+?comparison_expr: additive_expr ((COMP_OP | IN) additive_expr)*
 
 additive_expr: multiplicative_expr (ADD_OP multiplicative_expr)*
 
@@ -173,7 +173,7 @@ conditional: "if" expression ":" _NL INDENT (_NL | statement)+ DEDENT else_claus
 else_clause: "elif" expression ":" _NL INDENT (_NL | statement)+ DEDENT else_clause?
            | "else" ":" _NL INDENT (_NL | statement)+ DEDENT
 
-loop: "for" SCALAR_VAR "in" expression ":" _NL INDENT (_NL | statement)+ DEDENT
+loop: "for" SCALAR_VAR IN expression ":" _NL INDENT (_NL | statement)+ DEDENT
     | "while" expression ":" _NL INDENT (_NL | statement)+ DEDENT
 
 test_block: TEST STRING ":" _NL INDENT (_NL | statement)+ DEDENT
@@ -212,6 +212,7 @@ NONE: "None" | "none" | "null"
 AND: "and"
 OR: "or"
 NOT: "not"
+IN: "in"
 CLASS: "class"
 EXTENDS: "extends"
 METHOD: "method"
